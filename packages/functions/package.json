@@ -1,0 +1,16 @@
+{
+  "name": "@imovel/functions",
+  "version": "0.0.0",
+  "type": "module",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.826.0",
+    "@aws-sdk/client-s3": "^3.826.0",
+    "@aws-sdk/lib-dynamodb": "^3.826.0",
+    "@aws-sdk/s3-request-presigner": "^3.826.0",
+    "@imovel/core": "*",
+    "sst": "*"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8"
+  }
+}
