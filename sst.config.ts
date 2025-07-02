@@ -13,12 +13,13 @@ export default $config({
     await import("./infra/dynamo");
     const cognito = await import("./infra/cognito");
     const storage = await import("./infra/storage");
-    await import("./infra/api");
+    const api = await import("./infra/api");
     await import("./infra/web");
 
     return {
       MyBucket: storage.bucket.name,
       MyCognitoUserPool: cognito.poolClient.id,
+      Api: api.myApi.url
     };
   },
 });

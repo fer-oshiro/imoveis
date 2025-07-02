@@ -43,7 +43,6 @@ export async function generatePresignedUrl({
     ContentType?: string;
 }) {
 
-    console.log({ key, ContentType })
     if (!['image/jpeg', 'image/png', 'application/pdf'].includes(ContentType)) throw new Error("Invalid ContentType");
 
     const command = new PutObjectCommand({

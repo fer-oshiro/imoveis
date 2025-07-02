@@ -8,13 +8,11 @@ const docClient = DynamoDBDocumentClient.from(client);
 export const comprovantes = async (event: any) => {
     if (event.requestContext.http.method === "POST") {
         const body = JSON.parse(event.body || "{}");
-        console.log("Received body:", body);
         const response = await docClient.send(new PutCommand({
             TableName: Resource.table.name,
             Item: body
         }));
 
-        console.log("PutCommand response:", response);
         if (response.$metadata.httpStatusCode !== 200) {
             console.error("Failed to put item:", response);
             return {

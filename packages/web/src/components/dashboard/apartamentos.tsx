@@ -70,8 +70,32 @@ export const Apartamentos = () => {
     });
   };
 
+  const handleTeste = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/test`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("idToken") || ""}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Erro ao executar teste");
+      }
+      const data = await response.json();
+      console.log("Teste executado com sucesso:", data);
+    } catch (error) {
+      console.error("Erro ao executar teste:", error);
+    }
+  };
   return (
     <div className="mt-4 text-lg text-gray-700 w-5xl">
+      <button
+        className="bg-blue-500 text-white px-4 py-2 rounded"
+        onClick={handleTeste}
+      >
+        Teste
+      </button>
       <button
         className="bg-blue-500 text-white px-4 py-2 rounded"
         onClick={handleClick}
