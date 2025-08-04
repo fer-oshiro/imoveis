@@ -24,7 +24,7 @@ export const DataFormatada = ({ dataISO }: Props) => {
           ? "text-red-500"
           : dias > 30
           ? "text-yellow-500"
-          : dias > 20
+          : dias > 25
           ? "text-gray-400"
           : ""
       }

@@ -16,10 +16,6 @@ export const EnviarComprovante = ({ user }) => {
 
   const handleUpload = async (e) => {
     e.preventDefault();
-    if (!file) {
-      setError("Por favor, selecione um arquivo.");
-      return;
-    }
 
     setLoading(true);
     setError(null);
@@ -27,47 +23,50 @@ export const EnviarComprovante = ({ user }) => {
     const form = new FormData(e.target);
     console.log(form, e.target);
     const date = form.get("date") as string;
-    const time = form.get("time") as string;
+    const time = "12:00";
     const number = form.get("number") as string;
 
     console.log("Form data:", { date, time, number });
 
     try {
-      const url = process.env.NEXT_PUBLIC_API_URL + "/img";
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("idToken") || ""}`,
-        },
-        body: JSON.stringify({
-          key: "comprovantes/" + file.name,
-          expiresIn: 3600,
-          ContentType: fileType,
-        }),
-      });
+      if (file) {
+        const url = process.env.NEXT_PUBLIC_API_URL + "/img";
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("idToken") || ""}`,
+          },
+          body: JSON.stringify({
+            key: "comprovantes/" + file.name,
+            expiresIn: 3600,
+            ContentType: fileType,
+          }),
+        });
 
-      if (!response.ok) {
-        throw new Error("Erro ao gerar URL para upload");
+        if (!response.ok) {
+          throw new Error("Erro ao gerar URL para upload");
+        }
+
+        const data = await response.json();
+        console.log("Signed URL:", data.signedUrl);
+
+        // Upload the file to the signed URL
+        const uploadResponse = await fetch(data.signedUrl, {
+          method: "PUT",
+          headers: {
+            "Content-Type": fileType,
+          },
+          body: file,
+        });
+        if (!uploadResponse.ok) {
+          throw new Error("Erro ao fazer upload do arquivo");
+        }
+        console.log("Arquivo enviado com sucesso!", uploadResponse);
       }
-
-      const data = await response.json();
-      console.log("Signed URL:", data.signedUrl);
-
-      // Upload the file to the signed URL
-      const uploadResponse = await fetch(data.signedUrl, {
-        method: "PUT",
-        headers: {
-          "Content-Type": fileType,
-        },
-        body: file,
-      });
-      if (!uploadResponse.ok) {
-        throw new Error("Erro ao fazer upload do arquivo");
-      }
-      console.log("Arquivo enviado com sucesso!", uploadResponse);
 
       const userId = `USER#${user.telefone.match(/\d+/g)?.join("") || ""}`;
+
       const dataDeposito = `${date}T${time}:00.000Z`;
       const sk = `COMPROVANTE#${dataDeposito}`;
       const depositante = user.name;
@@ -84,7 +83,7 @@ export const EnviarComprovante = ({ user }) => {
             PK: userId,
             SK: sk,
             tipo: "comprovante",
-            nomeArquivo: file.name,
+            nomeArquivo: file?.name ?? "",
             depositante,
             valor: number,
             dataDeposito,
@@ -125,6 +124,8 @@ export const EnviarComprovante = ({ user }) => {
           Upload
         </button>
       </form>
+      {error?.toString()}
+      {file?.text()}
     </div>
   );
 };
