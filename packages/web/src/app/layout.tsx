@@ -30,7 +30,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#000000" />
         <meta
           name="description"
-          content="Veja os imóveis disponíveis no Oshiro"
+          content="Veja os imóveis disponíveis no Oshiro Imóveis"
         />
       </head>
       <body
