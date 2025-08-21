@@ -1,5 +1,7 @@
 import { Title } from '@/components/ui/title'
 import Image from 'next/image'
+import { LOCATIONS } from '@/constants/location'
+import { Card } from '@/components/lading-page/card'
 
 export default function Home() {
   return (
@@ -10,10 +12,19 @@ export default function Home() {
           Oshiro <span className="block text-sm">IMÓVEIS</span>
         </h1>
       </div>
-      <section className='px-12 sm:px-8 mt-8'>
-        <Title maxW='25ch'>Encontre seu lugar ideal para ficar</Title>
-        <p className='my-8 sm:my-4'>Descubra acomodações únicas para alugar por semana ou mês — de apartamentos completos a kitnets aconchegantes.</p>
+      <section className="px-12 sm:px-8 mt-8">
+        <Title maxW="25ch">Encontre seu lugar ideal para ficar</Title>
+        <p className="my-8 sm:my-4">Descubra acomodações únicas para alugar por semana ou mês — de apartamentos
+          completos a kitnets aconchegantes.</p>
       </section>
+
+      <div className="grid gap-8 mx-20">
+        {
+          LOCATIONS.map((location) => (
+            <Card key={location.title} location={location} />
+          ))
+        }
+      </div>
     </>
   )
 }

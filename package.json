@@ -5,8 +5,8 @@
     "packages/*"
   ],
   "scripts": {
-    "deploy": "AWS_PROFILE=personal sst deploy --stage prod",
-    "dev": "AWS_PROFILE=personal sst dev"
+    "deploy": "AWS_PROFILE=dev sst deploy --stage prod",
+    "dev": "AWS_PROFILE=dev sst dev"
   },
   "devDependencies": {
     "@tsconfig/node22": "~22.0.2",
