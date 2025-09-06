@@ -16,7 +16,7 @@ export default class ApartmentRepository {
     return ApartmentRepository.instance;
   }
 
-  public async getApartments(): Promise<any> {
+  public async getApartments(): Promise<Apartment[]> {
     const response = await docClient.send(
       new ScanCommand({
         TableName: Resource.table.name,
@@ -27,7 +27,8 @@ export default class ApartmentRepository {
         },
       })
     );
-    return response.Items || [];
+
+    return response.Items?.map(item => Apartment.create(item)) || [];
   }
 
   public async createApartment(apartment: Apartment): Promise<Apartment> {
