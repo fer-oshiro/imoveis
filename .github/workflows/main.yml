@@ -1,0 +1,44 @@
+name: Deploy (SST)
+
+on:
+  push:
+    branches: [main, prod]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: us-east-1
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Select stage & role
+        id: sel
+        run: |
+          if [[ "${GITHUB_REF##*/}" == "main" ]]; then
+            echo "STAGE=stg" >> $GITHUB_OUTPUT
+            echo "ROLE=arn:aws:iam::121620439865:role/sst-deploy-stg" >> $GITHUB_OUTPUT
+          else
+            echo "STAGE=prod" >> $GITHUB_OUTPUT
+            echo "ROLE=arn:aws:iam::121620439865:role/sst-deploy-prod" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Configure AWS creds (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ steps.sel.outputs.ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Build (se necessário)
+        run: npm run build --if-present
+
+      - name: Deploy SST
+        run: npx sst deploy --stage ${{ steps.sel.outputs.STAGE }} --region ${{ env.AWS_REGION }}
