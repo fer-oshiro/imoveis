@@ -1,12 +1,14 @@
 {
   "name": "imovel",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
-    "deploy": "AWS_PROFILE=personal sst deploy --stage prod",
-    "dev": "AWS_PROFILE=personal sst dev"
+    "dev": "sst dev",
+    "deploy:stg": "npx sst deploy --stage stg",
+    "deploy:prod": "npx sst deploy --stage prod",
+    "remove:stg": "npx sst remove --stage stg"
   },
   "devDependencies": {
     "@tsconfig/node22": "~22.0.2",

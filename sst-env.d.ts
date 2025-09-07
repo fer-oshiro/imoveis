@@ -9,6 +9,11 @@ declare module "sst" {
       "type": "sst.aws.ApiGatewayV2"
       "url": string
     }
+    "ImovelOshiroClient": {
+      "id": string
+      "secret": string
+      "type": "sst.aws.CognitoUserPoolClient"
+    }
     "ImovelOshiroUserPool": {
       "id": string
       "type": "sst.aws.CognitoUserPool"
@@ -18,10 +23,9 @@ declare module "sst" {
       "type": "sst.aws.Function"
       "url": string
     }
-    "UserPoolClient": {
-      "id": string
-      "secret": string
-      "type": "sst.aws.CognitoUserPoolClient"
+    "OshiroImovelBucket": {
+      "name": string
+      "type": "sst.aws.Bucket"
     }
     "bucket": {
       "name": string
