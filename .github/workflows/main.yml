@@ -2,13 +2,21 @@ name: Deploy (SST)
 
 on:
   push:
-    branches: [main, prod]
+    branches: [main]
+    tags: ['v*']
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    concurrency:
+      group: deploy-${{ github.ref_name }}
+      cancel-in-progress: true
     env:
       AWS_REGION: us-east-1
+
     steps:
       - uses: actions/checkout@v4
 
@@ -17,18 +25,17 @@ jobs:
           node-version: "20"
           cache: "npm"
 
-      - name: Install deps
-        run: npm ci
+      - run: npm ci --no-audit --no-fund
 
       - name: Select stage & role
         id: sel
         run: |
-          if [[ "${GITHUB_REF##*/}" == "main" ]]; then
-            echo "STAGE=stg" >> $GITHUB_OUTPUT
-            echo "ROLE=arn:aws:iam::121620439865:role/sst-deploy-stg" >> $GITHUB_OUTPUT
-          else
+          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
             echo "STAGE=prod" >> $GITHUB_OUTPUT
             echo "ROLE=arn:aws:iam::121620439865:role/sst-deploy-prod" >> $GITHUB_OUTPUT
+          else
+            echo "STAGE=stg" >> $GITHUB_OUTPUT
+            echo "ROLE=arn:aws:iam::121620439865:role/sst-deploy-stg" >> $GITHUB_OUTPUT
           fi
 
       - name: Configure AWS creds (OIDC)
