@@ -35,6 +35,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ steps.sel.outputs.ROLE }}
+          role-session-name: gha-${{ github.run_id }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Build (se necessário)
