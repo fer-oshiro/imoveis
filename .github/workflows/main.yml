@@ -41,7 +41,7 @@ jobs:
         with:
           role-to-assume: ${{ steps.sel.outputs.ROLE }}
           role-session-name: gha-${{ github.run_id }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: us-east-1
 
       - name: Deploy SST
         run: npx sst deploy --stage ${{ steps.sel.outputs.STAGE }}
