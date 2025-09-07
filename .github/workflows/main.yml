@@ -14,8 +14,6 @@ jobs:
     concurrency:
       group: deploy-${{ github.ref_name }}
       cancel-in-progress: true
-    env:
-      AWS_REGION: us-east-1
 
     steps:
       - uses: actions/checkout@v4
@@ -45,8 +43,5 @@ jobs:
           role-session-name: gha-${{ github.run_id }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Build (se necessário)
-        run: npm run build --if-present
-
       - name: Deploy SST
-        run: npx sst deploy --stage ${{ steps.sel.outputs.STAGE }} --region ${{ env.AWS_REGION }}
+        run: npx sst deploy --stage ${{ steps.sel.outputs.STAGE }}
