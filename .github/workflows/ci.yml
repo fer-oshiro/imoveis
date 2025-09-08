@@ -18,11 +18,11 @@ jobs:
           node-version: 20
           cache: npm
 
-      - name: Configure AWS creds (OIDC)
+      - name: Configure AWS creds (PRs do mesmo repo)
+        if: github.event.pull_request.head.repo.full_name == github.repository
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: sst-deploy-stg
-          role-session-name: gha-${{ github.run_id }}
+          role-to-assume: arn:aws:iam::121620439865:role/sst-deploy-stg
           aws-region: us-east-1
 
       - name: Install dependencies
