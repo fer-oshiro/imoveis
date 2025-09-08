@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import React, { useEffect } from 'react'
 import { DataFormatada } from './DataFormatada'
 import { EnviarComprovante } from './enviarComprovante'
@@ -121,7 +123,7 @@ export const Apartamentos = () => {
           </tr>
         </thead>
         <tbody>
-          {apartamentos.map((apartamento) => (
+          {apartamentos.map((apartamento: any) => (
             <tr key={apartamento.PK}>
               <td>{apartamento.name}</td>
               <td>{apartamento.cpf}</td>

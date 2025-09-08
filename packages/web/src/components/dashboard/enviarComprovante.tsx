@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import React from 'react'
 
-export const EnviarComprovante = ({ user }) => {
+export const EnviarComprovante = ({ user }: any) => {
   const [loading, setLoading] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
   const [file, setFile] = React.useState<File | null>(null)
@@ -14,7 +16,7 @@ export const EnviarComprovante = ({ user }) => {
     console.log('File type:', file?.type)
   }
 
-  const handleUpload = async (e) => {
+  const handleUpload = async (e: any) => {
     e.preventDefault()
 
     setLoading(true)
