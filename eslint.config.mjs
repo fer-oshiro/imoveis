@@ -1,10 +1,10 @@
-import js from '@eslint/js';
-import tseslint from 'typescript-eslint';
-import react from 'eslint-plugin-react';
-import reactHooks from 'eslint-plugin-react-hooks';
-import importPlugin from 'eslint-plugin-import';
-import eslintConfigPrettier from 'eslint-config-prettier';
-import globals from 'globals';
+import js from '@eslint/js'
+import tseslint from 'typescript-eslint'
+import react from 'eslint-plugin-react'
+import reactHooks from 'eslint-plugin-react-hooks'
+import importPlugin from 'eslint-plugin-import'
+import eslintConfigPrettier from 'eslint-config-prettier'
+import globals from 'globals'
 
 export default [
   {
@@ -34,10 +34,8 @@ export default [
     settings: {
       'import/resolver': {
         typescript: {
-          project: [
-            './tsconfig.json',
-            './packages/*/tsconfig.json',
-        ] }, 
+          project: ['./tsconfig.json', './packages/*/tsconfig.json'],
+        },
         node: true,
       },
       react: { version: 'detect' },
@@ -77,11 +75,18 @@ export default [
     languageOptions: {
       globals: {
         ...globals.node,
-        describe: true, it: true, test: true, expect: true, vi: true,
-        beforeAll: true, afterAll: true, beforeEach: true, afterEach: true,
+        describe: true,
+        it: true,
+        test: true,
+        expect: true,
+        vi: true,
+        beforeAll: true,
+        afterAll: true,
+        beforeEach: true,
+        afterEach: true,
       },
     },
   },
 
   eslintConfigPrettier,
-];
+]
