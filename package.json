@@ -9,7 +9,7 @@
     "deploy:stg": "sst deploy --stage stg",
     "deploy:prod": "sst deploy --stage prod",
     "remove:stg": "sst remove --stage stg",
-    "test": "sst shell vitest",
+    "test": "sst shell vitest run",
     "format": "prettier -w . --ignore-unknown",
     "format:check": "prettier -c . --ignore-unknown",
     "prepare": "husky",
