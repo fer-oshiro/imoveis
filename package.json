@@ -6,17 +6,36 @@
   ],
   "scripts": {
     "dev": "sst dev",
-    "deploy:stg": "npx sst deploy --stage stg",
-    "deploy:prod": "npx sst deploy --stage prod",
-    "remove:stg": "npx sst remove --stage stg"
+    "deploy:stg": "sst deploy --stage stg",
+    "deploy:prod": "sst deploy --stage prod",
+    "remove:stg": "sst remove --stage stg",
+    "test": "sst shell vitest",
+    "format": "prettier -w . --ignore-unknown",
+    "format:check": "prettier -c . --ignore-unknown",
+    "prepare": "husky",
+    "lint": "eslint \"packages/**/*.{ts,tsx,js,jsx,mjs,cjs}\"",
+    "lint:fix": "eslint --fix \"packages/**/*.{ts,tsx,js,jsx,mjs,cjs}\"",
+    "lint:debug": "node -e \"console.log('node',process.version)\" && npx eslint --version && npm run -s lint"
   },
   "devDependencies": {
+    "@eslint/js": "^9.35.0",
     "@tsconfig/node22": "~22.0.2",
+    "eslint": "^9.35.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "globals": "^16.3.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.6",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
-    "typescript": "~5.9.2"
+    "typescript": "~5.9.2",
+    "typescript-eslint": "^8.42.0"
   },
   "dependencies": {
     "sst": "~3.17.10"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
