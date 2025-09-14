@@ -40,4 +40,6 @@ jobs:
         run: npm run lint
 
       - name: Run tests
-        run: npm test
+        run: |
+          set -e
+          npx sst shell --print-logs vitest run
