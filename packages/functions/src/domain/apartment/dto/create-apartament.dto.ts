@@ -1,19 +1,14 @@
-import { z } from "zod";
+import { z } from 'zod'
 
-export const OccupancyStatus = z.enum(["occupied", "available", "maintenance"]);
-export const Status = z.enum([
-  "occupied",
-  "available",
-  "maintenance",
-  "reserved",
-]);
-export const RentalSource = z.enum(["direct", "imobiliare", "airbnb"]);
+export const OccupancyStatus = z.enum(['occupied', 'available', 'maintenance'])
+export const Status = z.enum(['occupied', 'available', 'maintenance', 'reserved'])
+export const RentalSource = z.enum(['direct', 'imobiliare', 'airbnb'])
 
 export const createApartmentDto = z.object({
   unitCode: z.string(),
-  occupancyStatus: OccupancyStatus.default("available"),
-  status: Status.default("available"),
-  rentalSource: RentalSource.default("direct"),
+  occupancyStatus: OccupancyStatus.default('available'),
+  status: Status.default('available'),
+  rentalSource: RentalSource.default('direct'),
   baseRent: z.string().optional(),
   cleaningFee: z.string().optional().optional(),
   primaryResident: z.string().optional(),
@@ -27,6 +22,6 @@ export const createApartmentDto = z.object({
   updateAt: z.string().optional(),
   createdAt: z.string().optional(),
   endDate: z.string().optional(),
-});
+})
 
-export type CreateApartmentDto = z.infer<typeof createApartmentDto>;
+export type CreateApartmentDto = z.infer<typeof createApartmentDto>

@@ -1,1 +1,1 @@
-export const bucket = new sst.aws.Bucket("bucket");
+export const bucket = new sst.aws.Bucket('bucket')

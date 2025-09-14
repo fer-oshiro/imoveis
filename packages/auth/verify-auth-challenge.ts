@@ -1,7 +1,9 @@
-export const handler = async (event) => {
-    const expectedAnswer = event.request.privateChallengeParameters.answer;
-    const userAnswer = event.request.challengeAnswer;
+import { VerifyAuthChallengeResponseTriggerEvent } from 'aws-lambda'
 
-    event.response.answerCorrect = userAnswer === expectedAnswer;
-    return event;
-};
+export const handler = async (event: VerifyAuthChallengeResponseTriggerEvent) => {
+  const expectedAnswer = event.request.privateChallengeParameters.answer
+  const userAnswer = event.request.challengeAnswer
+
+  event.response.answerCorrect = userAnswer === expectedAnswer
+  return event
+}

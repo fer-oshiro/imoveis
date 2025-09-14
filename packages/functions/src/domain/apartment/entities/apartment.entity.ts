@@ -5,10 +5,10 @@ export class Apartment {
 
     private unitCode: string,
     private unitLabel: string,
-    private address: string = "",
+    private address: string = '',
     private occupancyStatus: string,
-    private status: string = "occupied", // previous values: available, occupied, maintenance
-    private rentalSource: string = "direct", // previous values: direct, imobiliare, airbnb
+    private status: string = 'occupied', // previous values: available, occupied, maintenance
+    private rentalSource: string = 'direct', // previous values: direct, imobiliare, airbnb
 
     private baseRent: string,
     private cleaningFee: string,
@@ -26,7 +26,7 @@ export class Apartment {
 
     private updateAt: string,
     private createdAt: string = new Date().toISOString(),
-    private endDate: string = ""
+    private endDate: string = '',
   ) {}
 
   public static create(
@@ -39,14 +39,14 @@ export class Apartment {
     rentalSource: string,
     baseRent: string,
     cleaningFee: string,
-    primaryResident: string = "",
-    mainTenant: string = "",
-    cpf: string = "",
-    hasCleaningService: string = "no",
-    waterIncluded: string = "no",
-    electricityIncluded: string = "no",
-    contactPhone: string = "",
-    contactMethod: string = "whatsapp"
+    primaryResident: string = '',
+    mainTenant: string = '',
+    cpf: string = '',
+    hasCleaningService: string = 'no',
+    waterIncluded: string = 'no',
+    electricityIncluded: string = 'no',
+    contactPhone: string = '',
+    contactMethod: string = 'whatsapp',
   ): Apartment {
     return new Apartment(
       `APARTMENT#${unitCode}`,
@@ -67,17 +67,17 @@ export class Apartment {
       electricityIncluded,
       contactPhone,
       contactMethod,
-      new Date().toISOString()
-    );
+      new Date().toISOString(),
+    )
   }
 
   inactivate(): void {
-    this.status = "inactive";
-    const date = this.sk.split("#")[2];
-    this.sk = `INFO#INACTIVE#${date}`;
+    this.status = 'inactive'
+    const date = this.sk.split('#')[2]
+    this.sk = `INFO#INACTIVE#${date}`
   }
 
-  public toJSON(): Record<string, any> {
+  public toJSON() {
     return {
       pk: this.pk,
       sk: this.sk,
@@ -100,6 +100,6 @@ export class Apartment {
       updateAt: this.updateAt,
       createdAt: this.createdAt,
       endDate: this.endDate,
-    };
+    }
   }
 }

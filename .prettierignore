@@ -1,0 +1,25 @@
+node_modules
+dist
+build
+coverage
+.tmp
+.temp
+.out
+.outdir
+
+# SST / infra
+.sst
+.cdk
+cdk.out
+.serverless
+.open-next
+.artifacts
+
+# Apps web
+.next
+out
+
+# Outras
+*.log
+*.lock
+**/*.svg

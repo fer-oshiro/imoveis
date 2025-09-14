@@ -1,10 +1,8 @@
 export const Users = () => {
   return (
-    <div className="mt-4 text-lg text-gray-700 w-4xl">
-      <table className="min-w-full bg-white border border-gray-200">
-        <caption className="text-lg font-semibold mb-4">
-          Lista de Usuários
-        </caption>
+    <div className="mt-4 w-4xl text-lg text-gray-700">
+      <table className="min-w-full border border-gray-200 bg-white">
+        <caption className="mb-4 text-lg font-semibold">Lista de Usuários</caption>
         <thead>
           <tr>
             <th>Nome</th>
@@ -41,5 +39,5 @@ export const Users = () => {
         </tbody>
       </table>
     </div>
-  );
-};
+  )
+}

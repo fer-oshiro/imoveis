@@ -1,63 +1,59 @@
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import {
-  DynamoDBDocumentClient,
-  PutCommand,
-  ScanCommand,
-} from "@aws-sdk/lib-dynamodb";
-import { th } from "date-fns/locale";
-import { Resource } from "sst";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
-const client = new DynamoDBClient();
-const docClient = DynamoDBDocumentClient.from(client);
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
+import { DynamoDBDocumentClient, PutCommand, ScanCommand } from '@aws-sdk/lib-dynamodb'
+import { Resource } from 'sst'
+
+import { logger } from './infra/logger'
+
+const client = new DynamoDBClient()
+const docClient = DynamoDBDocumentClient.from(client)
 
 export const comprovantes = async (event: any) => {
-  if (event.requestContext.http.method === "POST") {
-    const body = JSON.parse(event.body || "{}");
-    console.log("Received body:", body);
-    const dataDeposito = body.dataDeposito;
-    if (dataDeposito.startsWith("T")) throw new Error("Invalid date format");
-    if (dataDeposito.split("T")[1].length !== 13)
-      throw new Error("Invalid time format");
-    const aaa = new Date(dataDeposito);
-    if (isNaN(aaa.getTime())) throw new Error("Invalid date");
+  if (event.requestContext.http.method === 'POST') {
+    const body = JSON.parse(event.body || '{}')
+    logger.debug('Received body:', body)
+    const dataDeposito = body.dataDeposito
+    if (dataDeposito.startsWith('T')) throw new Error('Invalid date format')
+    if (dataDeposito.split('T')[1].length !== 13) throw new Error('Invalid time format')
+    const aaa = new Date(dataDeposito)
+    if (isNaN(aaa.getTime())) throw new Error('Invalid date')
     const response = await docClient.send(
       new PutCommand({
         TableName: Resource.table.name,
         Item: body,
-      })
-    );
+      }),
+    )
 
     if (response.$metadata.httpStatusCode !== 200) {
-      console.error("Failed to put item:", response);
+      logger.error({ message: 'Failed to put item:', response })
       return {
         statusCode: 500,
-        body: "Failed to put item",
-      };
+        body: 'Failed to put item',
+      }
     }
     return {
       statusCode: 200,
-      body: "success",
-    };
+      body: 'success',
+    }
   }
 
   const response = await docClient.send(
     new ScanCommand({
       TableName: Resource.table.name,
-      FilterExpression: "begins_with(SK, :sk) AND tipo = :tipo",
+      FilterExpression: 'begins_with(SK, :sk) AND tipo = :tipo',
       ExpressionAttributeValues: {
-        ":sk": "COMPROVANTE#",
-        ":tipo": "comprovante",
+        ':sk': 'COMPROVANTE#',
+        ':tipo': 'comprovante',
       },
-    })
-  );
+    }),
+  )
 
   return {
     statusCode: 200,
     body: JSON.stringify({
-      items:
-        response.Items?.sort((a, b) => a.unidade.localeCompare(b.unidade)) ||
-        [],
+      items: response.Items?.sort((a, b) => a.unidade.localeCompare(b.unidade)) || [],
       total: response.Count,
     }),
-  };
-};
+  }
+}
