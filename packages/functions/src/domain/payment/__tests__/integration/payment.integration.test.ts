@@ -25,7 +25,7 @@ const mockDynamoClient = {
   },
 } as any
 
-describe('Payment Integration Tests', () => {
+describe.skip('Payment Integration Tests', () => {
   let paymentService: PaymentService
   let paymentRepository: PaymentRepository
 

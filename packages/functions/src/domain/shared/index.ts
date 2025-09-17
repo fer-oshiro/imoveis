@@ -21,6 +21,10 @@ export * from './models/query-result.models'
 
 // Utilities
 export * from './utils/data-mapper.utils'
+export * from './utils/validation.utils'
+
+// Controllers
+export * from './controllers/base.controller'
 
 // Aggregation Services
 export * from './services/apartment-aggregation.service'

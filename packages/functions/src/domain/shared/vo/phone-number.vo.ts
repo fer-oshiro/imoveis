@@ -30,12 +30,12 @@ export class PhoneNumberVO {
       let parsed = parsePhoneNumberFromString(phoneNumber, defaultCountry)
 
       // If parsing fails with default country, try without country
-      if (!parsed || !parsed.isValid()) {
+      if (!parsed?.isValid()) {
         parsed = parsePhoneNumberFromString(phoneNumber)
       }
 
       // If still invalid, throw error
-      if (!parsed || !parsed.isValid()) {
+      if (!parsed?.isValid()) {
         throw new ValidationError('Invalid phone number format')
       }
 

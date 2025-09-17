@@ -41,7 +41,7 @@ export class CNPJVO {
       weight = weight === 2 ? 9 : weight - 1
     }
     let remainder = sum % 11
-    let firstDigit = remainder < 2 ? 0 : 11 - remainder
+    const firstDigit = remainder < 2 ? 0 : 11 - remainder
 
     if (parseInt(cnpj.charAt(12)) !== firstDigit) {
       return false
@@ -55,7 +55,7 @@ export class CNPJVO {
       weight = weight === 2 ? 9 : weight - 1
     }
     remainder = sum % 11
-    let secondDigit = remainder < 2 ? 0 : 11 - remainder
+    const secondDigit = remainder < 2 ? 0 : 11 - remainder
 
     return parseInt(cnpj.charAt(13)) === secondDigit
   }

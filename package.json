@@ -16,8 +16,13 @@
     "test:ui": "vitest --ui",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "lint": "npm run lint --workspace=packages/functions",
+    "lint:fix": "npm run lint:fix --workspace=packages/functions",
+    "typecheck": "npm run typecheck --workspace=packages/functions",
+    "typecheck:src": "npm run typecheck:src --workspace=packages/functions",
     "lint-staged": "lint-staged",
-    "prepare": "husky"
+    "prepare": "husky",
+    "check-commit": "npm run lint-staged && npm run typecheck --workspace=packages/functions"
   },
   "devDependencies": {
     "@tsconfig/node22": "~22.0.2",
@@ -34,7 +39,13 @@
     "sst": "~3.17.10"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,json,css,scss,md}": [
+    "*.{json,css,scss,md}": [
+      "prettier --write"
+    ],
+    "packages/functions/src/**/*.{ts,tsx}": [
+      "prettier --write"
+    ],
+    "packages/web/**/*.{js,jsx,ts,tsx}": [
       "prettier --write"
     ],
     "*.{js,jsx,ts,tsx}": [

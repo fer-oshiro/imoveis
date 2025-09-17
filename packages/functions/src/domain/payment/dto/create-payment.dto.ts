@@ -1,35 +1,59 @@
-import { PaymentStatus, PaymentType } from '../vo/payment-enums.vo'
+import { z } from 'zod'
+import { PaymentStatus, PaymentType, PAYMENT_TYPE_VALUES } from '../vo/payment-enums.vo'
+import { phoneNumberValidator } from '../../user/utils/validation.utils'
 
-export interface CreatePaymentDto {
-  apartmentUnitCode: string
-  userPhoneNumber: string
-  amount: number
-  dueDate: string // ISO string
-  contractId: string
-  type?: PaymentType
-  description?: string
-  createdBy?: string
-}
+// Zod schemas for validation
+export const createPaymentDtoSchema = z.object({
+  apartmentUnitCode: z.string().min(1, 'Apartment unit code is required').trim().toUpperCase(),
+  userPhoneNumber: phoneNumberValidator,
+  amount: z.number().positive('Amount must be greater than zero'),
+  dueDate: z
+    .string()
+    .datetime('Invalid due date format')
+    .transform((val) => new Date(val)),
+  contractId: z.string().min(1, 'Contract ID is required').trim(),
+  type: z.enum(PAYMENT_TYPE_VALUES as [string, ...string[]]).optional(),
+  description: z.string().trim().optional(),
+  createdBy: z.string().trim().optional(),
+})
 
-export interface SubmitPaymentProofDto {
-  paymentId: string
-  proofDocumentKey: string
-  paymentDate: string // ISO string
-  updatedBy?: string
-}
+export type CreatePaymentDto = z.infer<typeof createPaymentDtoSchema>
 
-export interface ValidatePaymentDto {
-  paymentId: string
-  validatedBy: string
-  action: 'validate' | 'reject'
-}
+export const submitPaymentProofDtoSchema = z.object({
+  paymentId: z.string().min(1, 'Payment ID is required').trim(),
+  proofDocumentKey: z.string().min(1, 'Proof document key is required').trim(),
+  paymentDate: z
+    .string()
+    .datetime('Invalid payment date format')
+    .transform((val) => new Date(val))
+    .refine((date) => date <= new Date(), 'Payment date cannot be in the future'),
+  updatedBy: z.string().trim().optional(),
+})
 
-export interface UpdatePaymentDto {
-  amount?: number
-  dueDate?: string // ISO string
-  description?: string
-  updatedBy?: string
-}
+export type SubmitPaymentProofDto = z.infer<typeof submitPaymentProofDtoSchema>
+
+export const validatePaymentDtoSchema = z.object({
+  paymentId: z.string().min(1, 'Payment ID is required').trim(),
+  validatedBy: z.string().min(1, 'Validator ID is required').trim(),
+  action: z.enum(['validate', 'reject'], {
+    errorMap: () => ({ message: 'Action must be either "validate" or "reject"' }),
+  }),
+})
+
+export type ValidatePaymentDto = z.infer<typeof validatePaymentDtoSchema>
+
+export const updatePaymentDtoSchema = z.object({
+  amount: z.number().positive('Amount must be greater than zero').optional(),
+  dueDate: z
+    .string()
+    .datetime('Invalid due date format')
+    .transform((val) => new Date(val))
+    .optional(),
+  description: z.string().trim().optional(),
+  updatedBy: z.string().trim().optional(),
+})
+
+export type UpdatePaymentDto = z.infer<typeof updatePaymentDtoSchema>
 
 export interface PaymentResponseDto {
   paymentId: string
@@ -52,126 +76,21 @@ export interface PaymentResponseDto {
   version: number
 }
 
-// Validation utilities
-export class CreatePaymentDtoValidator {
-  static validate(dto: CreatePaymentDto): void {
-    if (!dto.apartmentUnitCode?.trim()) {
-      throw new Error('Apartment unit code is required')
-    }
-    if (!dto.userPhoneNumber?.trim()) {
-      throw new Error('User phone number is required')
-    }
-    if (!dto.amount || dto.amount <= 0) {
-      throw new Error('Amount must be greater than zero')
-    }
-    if (!dto.dueDate) {
-      throw new Error('Due date is required')
-    }
-    if (!dto.contractId?.trim()) {
-      throw new Error('Contract ID is required')
-    }
-
-    // Validate date format
-    const dueDate = new Date(dto.dueDate)
-    if (isNaN(dueDate.getTime())) {
-      throw new Error('Invalid due date format')
-    }
-
-    // Validate phone number format (basic validation)
-    const phoneRegex = /^\+?[\d\s\-\(\)]+$/
-    if (!phoneRegex.test(dto.userPhoneNumber)) {
-      throw new Error('Invalid phone number format')
-    }
-  }
-
-  static sanitize(dto: CreatePaymentDto): CreatePaymentDto {
-    return {
-      ...dto,
-      apartmentUnitCode: dto.apartmentUnitCode.trim().toUpperCase(),
-      userPhoneNumber: dto.userPhoneNumber.trim(),
-      contractId: dto.contractId.trim(),
-      description: dto.description?.trim(),
-      createdBy: dto.createdBy?.trim(),
-    }
-  }
+// Validation utilities using Zod
+export function validateCreatePaymentDto(data: unknown): CreatePaymentDto {
+  return createPaymentDtoSchema.parse(data)
 }
 
-export class SubmitPaymentProofDtoValidator {
-  static validate(dto: SubmitPaymentProofDto): void {
-    if (!dto.paymentId?.trim()) {
-      throw new Error('Payment ID is required')
-    }
-    if (!dto.proofDocumentKey?.trim()) {
-      throw new Error('Proof document key is required')
-    }
-    if (!dto.paymentDate) {
-      throw new Error('Payment date is required')
-    }
-
-    // Validate date format
-    const paymentDate = new Date(dto.paymentDate)
-    if (isNaN(paymentDate.getTime())) {
-      throw new Error('Invalid payment date format')
-    }
-
-    // Payment date should not be in the future
-    if (paymentDate > new Date()) {
-      throw new Error('Payment date cannot be in the future')
-    }
-  }
-
-  static sanitize(dto: SubmitPaymentProofDto): SubmitPaymentProofDto {
-    return {
-      ...dto,
-      paymentId: dto.paymentId.trim(),
-      proofDocumentKey: dto.proofDocumentKey.trim(),
-      updatedBy: dto.updatedBy?.trim(),
-    }
-  }
+export function validateSubmitPaymentProofDto(data: unknown): SubmitPaymentProofDto {
+  return submitPaymentProofDtoSchema.parse(data)
 }
 
-export class ValidatePaymentDtoValidator {
-  static validate(dto: ValidatePaymentDto): void {
-    if (!dto.paymentId?.trim()) {
-      throw new Error('Payment ID is required')
-    }
-    if (!dto.validatedBy?.trim()) {
-      throw new Error('Validator ID is required')
-    }
-    if (!['validate', 'reject'].includes(dto.action)) {
-      throw new Error('Action must be either "validate" or "reject"')
-    }
-  }
-
-  static sanitize(dto: ValidatePaymentDto): ValidatePaymentDto {
-    return {
-      ...dto,
-      paymentId: dto.paymentId.trim(),
-      validatedBy: dto.validatedBy.trim(),
-    }
-  }
+export function validateValidatePaymentDto(data: unknown): ValidatePaymentDto {
+  return validatePaymentDtoSchema.parse(data)
 }
 
-export class UpdatePaymentDtoValidator {
-  static validate(dto: UpdatePaymentDto): void {
-    if (dto.amount !== undefined && dto.amount <= 0) {
-      throw new Error('Amount must be greater than zero')
-    }
-    if (dto.dueDate) {
-      const dueDate = new Date(dto.dueDate)
-      if (isNaN(dueDate.getTime())) {
-        throw new Error('Invalid due date format')
-      }
-    }
-  }
-
-  static sanitize(dto: UpdatePaymentDto): UpdatePaymentDto {
-    return {
-      ...dto,
-      description: dto.description?.trim(),
-      updatedBy: dto.updatedBy?.trim(),
-    }
-  }
+export function validateUpdatePaymentDto(data: unknown): UpdatePaymentDto {
+  return updatePaymentDtoSchema.parse(data)
 }
 
 // Response DTO mapper

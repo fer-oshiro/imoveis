@@ -39,7 +39,7 @@ export class CPFVO {
       sum += parseInt(cpf.charAt(i)) * (10 - i)
     }
     let remainder = sum % 11
-    let firstDigit = remainder < 2 ? 0 : 11 - remainder
+    const firstDigit = remainder < 2 ? 0 : 11 - remainder
 
     if (parseInt(cpf.charAt(9)) !== firstDigit) {
       return false
@@ -51,7 +51,7 @@ export class CPFVO {
       sum += parseInt(cpf.charAt(i)) * (11 - i)
     }
     remainder = sum % 11
-    let secondDigit = remainder < 2 ? 0 : 11 - remainder
+    const secondDigit = remainder < 2 ? 0 : 11 - remainder
 
     return parseInt(cpf.charAt(10)) === secondDigit
   }

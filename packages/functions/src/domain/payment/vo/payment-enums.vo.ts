@@ -13,3 +13,6 @@ export enum PaymentType {
   UTILITIES = 'utilities',
   OTHER = 'other',
 }
+
+export const PAYMENT_STATUS_VALUES = Object.values(PaymentStatus)
+export const PAYMENT_TYPE_VALUES = Object.values(PaymentType)

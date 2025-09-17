@@ -155,7 +155,7 @@ export class UserAggregationService {
       // Get the related users and their relationships
       const relatedUsersWithRelations: UserWithRelation[] = []
 
-      for (const phoneNumber of relatedUserPhones) {
+      for (const phoneNumber of Array.from(relatedUserPhones)) {
         const relatedUser = allUsers.find((u) => u.phoneNumber.value === phoneNumber)
         if (!relatedUser) continue
 

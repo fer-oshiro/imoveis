@@ -3,13 +3,13 @@ import { IPaymentRepository } from '../repositories/payment.repository'
 import { PaymentStatus, PaymentType } from '../vo/payment-enums.vo'
 import {
   CreatePaymentDto,
-  CreatePaymentDtoValidator,
+  validateCreatePaymentDto,
   SubmitPaymentProofDto,
-  SubmitPaymentProofDtoValidator,
+  validateSubmitPaymentProofDto,
   ValidatePaymentDto,
-  ValidatePaymentDtoValidator,
+  validateValidatePaymentDto,
   UpdatePaymentDto,
-  UpdatePaymentDtoValidator,
+  validateUpdatePaymentDto,
   PaymentResponseDto,
   PaymentResponseDtoMapper,
 } from '../dto'
@@ -19,8 +19,7 @@ export class PaymentService {
 
   async createPayment(dto: CreatePaymentDto): Promise<PaymentResponseDto> {
     // Validate input
-    CreatePaymentDtoValidator.validate(dto)
-    const sanitizedDto = CreatePaymentDtoValidator.sanitize(dto)
+    const sanitizedDto = validateCreatePaymentDto(dto)
 
     // Generate payment ID
     const paymentId = this.generatePaymentId(sanitizedDto.apartmentUnitCode)
@@ -31,9 +30,9 @@ export class PaymentService {
       apartmentUnitCode: sanitizedDto.apartmentUnitCode,
       userPhoneNumber: sanitizedDto.userPhoneNumber,
       amount: sanitizedDto.amount,
-      dueDate: new Date(sanitizedDto.dueDate),
+      dueDate: sanitizedDto.dueDate,
       contractId: sanitizedDto.contractId,
-      type: sanitizedDto.type,
+      type: sanitizedDto.type as PaymentType,
       description: sanitizedDto.description,
       createdBy: sanitizedDto.createdBy,
     })
@@ -46,8 +45,7 @@ export class PaymentService {
 
   async submitPaymentProof(dto: SubmitPaymentProofDto): Promise<PaymentResponseDto> {
     // Validate input
-    SubmitPaymentProofDtoValidator.validate(dto)
-    const sanitizedDto = SubmitPaymentProofDtoValidator.sanitize(dto)
+    const sanitizedDto = validateSubmitPaymentProofDto(dto)
 
     // Find existing payment
     const existingPayment = await this.paymentRepository.findById(sanitizedDto.paymentId)
@@ -70,8 +68,7 @@ export class PaymentService {
 
   async validatePayment(dto: ValidatePaymentDto): Promise<PaymentResponseDto> {
     // Validate input
-    ValidatePaymentDtoValidator.validate(dto)
-    const sanitizedDto = ValidatePaymentDtoValidator.sanitize(dto)
+    const sanitizedDto = validateValidatePaymentDto(dto)
 
     // Find existing payment
     const existingPayment = await this.paymentRepository.findById(sanitizedDto.paymentId)
@@ -94,8 +91,7 @@ export class PaymentService {
 
   async updatePayment(paymentId: string, dto: UpdatePaymentDto): Promise<PaymentResponseDto> {
     // Validate input
-    UpdatePaymentDtoValidator.validate(dto)
-    const sanitizedDto = UpdatePaymentDtoValidator.sanitize(dto)
+    const sanitizedDto = validateUpdatePaymentDto(dto)
 
     // Find existing payment
     const existingPayment = await this.paymentRepository.findById(paymentId)

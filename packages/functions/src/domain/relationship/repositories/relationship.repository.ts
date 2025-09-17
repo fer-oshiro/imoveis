@@ -16,8 +16,19 @@ export class RelationshipRepository
   extends BaseRepository<UserApartmentRelation, RelationshipKey>
   implements IRelationshipRepository
 {
+  private static instance: RelationshipRepository
+
   constructor(tableName: string, dynamoClient: DynamoDBDocumentClient) {
     super(tableName, dynamoClient)
+  }
+
+  public static getInstance(): RelationshipRepository {
+    if (!RelationshipRepository.instance) {
+      const { dynamoClient } = require('../../../infra/database')
+      const tableName = process.env.TABLE_NAME || 'imovel-oshiro-table'
+      RelationshipRepository.instance = new RelationshipRepository(tableName, dynamoClient)
+    }
+    return RelationshipRepository.instance
   }
 
   async findById(key: RelationshipKey): Promise<UserApartmentRelation | null> {
