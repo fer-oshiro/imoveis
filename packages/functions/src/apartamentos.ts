@@ -40,13 +40,13 @@ export const apartamentos = async (event: any) => {
       return response.Items[0];
     }
     return null;
-  });
+  }) || [];
 
   const comprovante = await Promise.all(ultimoComprovante);
 
   response.Items?.forEach((item, index) => {
     item.ultimo_pagamento =
-      comprovante[index]?.dataDeposito?.split("T")?.[0] || null;
+      (comprovante[index] as any)?.dataDeposito?.split("T")?.[0] || null;
   });
 
   return {

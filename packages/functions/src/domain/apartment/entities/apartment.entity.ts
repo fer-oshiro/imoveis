@@ -1,82 +1,149 @@
-import { ApartmentStatusType, RentalSource, RentalSourceType, Status,  } from "../dto/create-apartament.dto";
+import { EntityMetadataVO, ContactInfoVO, ContactMethod } from "../../shared";
+import { ApartmentStatus, RentalType } from "../vo/apartment-enums.vo";
+import { ApartmentAmenities, ApartmentAmenitiesVO } from "../vo/apartment-amenities.vo";
 
 export class Apartment {
   constructor(
     private pk: string,
-    private sk: string = `INFO#ACTIVE#${new Date().toISOString()}`,
-
+    private sk: string,
     private unitCode: string,
     private unitLabel: string,
-    private address: string = "",
-    private status: ApartmentStatusType = "occupied",
-    private rentalSource: RentalSourceType = "direct",
+    private address: string,
+    private status: ApartmentStatus,
+    private rentalType: RentalType,
+    private baseRent: number,
+    private cleaningFee: number,
+    private images: string[], // S3 bucket keys
+    private amenities: ApartmentAmenities,
+    private contactInfo: ContactInfoVO,
+    private airbnbLink?: string,
+    private isAvailable: boolean = false,
+    private availableFrom?: Date,
+    private metadata: EntityMetadataVO = EntityMetadataVO.create()
+  ) { }
 
-    private baseRent: string,
-    private cleaningFee: string,
-
-    private primaryResident: string,
-    private mainTenant: string,
-    private cpf: string,
-
-    private hasCleaningService: string,
-    private waterIncluded: string,
-    private electricityIncluded: string,
-
-    private contactPhone: string,
-    private contactMethod: string,
-
-    private updateAt: string,
-    private createdAt: string = new Date().toISOString(),
-    private endDate: string = ""
-  ) {}
-
-  public static create({
-    sk = `INFO#ACTIVE#${new Date().toISOString()}`,
-    unitCode = "",
-    unitLabel = "",
-    address = "",
-    status = "occupied",
-    rentalSource = "direct",
-    baseRent = "",
-    cleaningFee = "",
-    primaryResident = "",
-    mainTenant = "",
-    cpf = "",
-    hasCleaningService = "no",
-    waterIncluded = "no",
-    electricityIncluded = "no",
-    contactPhone = "",
-    contactMethod = "whatsapp"
+  public static create(data: {
+    unitCode: string;
+    unitLabel: string;
+    address: string;
+    status?: ApartmentStatus;
+    rentalType?: RentalType;
+    baseRent: number;
+    cleaningFee?: number;
+    images?: string[];
+    amenities?: Partial<ApartmentAmenities>;
+    contactPhone: string;
+    contactMethod?: ContactMethod;
+    airbnbLink?: string;
+    isAvailable?: boolean;
+    availableFrom?: Date;
+    createdBy?: string;
   }): Apartment {
-    const apartamentStatus = Status.parse(status);
-    const apartamentRentalSource = RentalSource.parse(rentalSource);
+    const contactInfo = ContactInfoVO.create(
+      data.contactPhone,
+      data.contactMethod || ContactMethod.WHATSAPP
+    );
+
+    const amenities = new ApartmentAmenitiesVO(data.amenities);
+    const metadata = EntityMetadataVO.create(data.createdBy);
 
     return new Apartment(
-      `APARTMENT#${unitCode}`,
-      sk ?? `INFO#ACTIVE#${new Date().toISOString()}`,
-      unitCode,
-      unitLabel,
-      address,
-      apartamentStatus,
-      apartamentRentalSource,
-      baseRent,
-      cleaningFee,
-      primaryResident,
-      mainTenant,
-      cpf,
-      hasCleaningService,
-      waterIncluded,
-      electricityIncluded,
-      contactPhone,
-      contactMethod,
-      new Date().toISOString()
+      `APARTMENT#${data.unitCode}`,
+      `INFO`,
+      data.unitCode,
+      data.unitLabel,
+      data.address,
+      data.status || ApartmentStatus.AVAILABLE,
+      data.rentalType || RentalType.LONG_TERM,
+      data.baseRent,
+      data.cleaningFee || 0,
+      data.images || [],
+      amenities,
+      contactInfo,
+      data.airbnbLink,
+      data.isAvailable ?? false,
+      data.availableFrom,
+      metadata
     );
   }
 
-  inactivate(): void {
-    this.status = "inactive";
-    const date = this.sk.split("#")[2];
-    this.sk = `INFO#INACTIVE#${date}`;
+  // Getters
+  get unitCodeValue(): string { return this.unitCode; }
+  get unitLabelValue(): string { return this.unitLabel; }
+  get addressValue(): string { return this.address; }
+  get statusValue(): ApartmentStatus { return this.status; }
+  get rentalTypeValue(): RentalType { return this.rentalType; }
+  get baseRentValue(): number { return this.baseRent; }
+  get cleaningFeeValue(): number { return this.cleaningFee; }
+  get imagesValue(): string[] { return [...this.images]; }
+  get amenitiesValue(): ApartmentAmenities { return this.amenities; }
+  get contactInfoValue(): ContactInfoVO { return this.contactInfo; }
+  get airbnbLinkValue(): string | undefined { return this.airbnbLink; }
+  get isAvailableValue(): boolean { return this.isAvailable; }
+  get availableFromValue(): Date | undefined { return this.availableFrom; }
+  get metadataValue(): EntityMetadataVO { return this.metadata; }
+
+  // Business methods
+  markAsOccupied(updatedBy?: string): void {
+    this.status = ApartmentStatus.OCCUPIED;
+    this.isAvailable = false;
+    this.availableFrom = undefined;
+    this.metadata = this.metadata.update(updatedBy);
+  }
+
+  markAsAvailable(availableFrom?: Date, updatedBy?: string): void {
+    this.status = ApartmentStatus.AVAILABLE;
+    this.isAvailable = true;
+    this.availableFrom = availableFrom;
+    this.metadata = this.metadata.update(updatedBy);
+  }
+
+  markAsInactive(updatedBy?: string): void {
+    this.status = ApartmentStatus.INACTIVE;
+    this.isAvailable = false;
+    this.availableFrom = undefined;
+    this.metadata = this.metadata.update(updatedBy);
+  }
+
+  updateRentalType(rentalType: RentalType, updatedBy?: string): void {
+    this.rentalType = rentalType;
+    this.metadata = this.metadata.update(updatedBy);
+  }
+
+  updateAirbnbLink(airbnbLink: string | undefined, updatedBy?: string): void {
+    this.airbnbLink = airbnbLink;
+    this.metadata = this.metadata.update(updatedBy);
+  }
+
+  addImage(imageKey: string, updatedBy?: string): void {
+    if (!this.images.includes(imageKey)) {
+      this.images.push(imageKey);
+      this.metadata = this.metadata.update(updatedBy);
+    }
+  }
+
+  removeImage(imageKey: string, updatedBy?: string): void {
+    const index = this.images.indexOf(imageKey);
+    if (index > -1) {
+      this.images.splice(index, 1);
+      this.metadata = this.metadata.update(updatedBy);
+    }
+  }
+
+  updatePricing(baseRent: number, cleaningFee?: number, updatedBy?: string): void {
+    this.baseRent = baseRent;
+    if (cleaningFee !== undefined) {
+      this.cleaningFee = cleaningFee;
+    }
+    this.metadata = this.metadata.update(updatedBy);
+  }
+
+  isAirbnbEnabled(): boolean {
+    return this.rentalType === RentalType.AIRBNB || this.rentalType === RentalType.BOTH;
+  }
+
+  isLongTermEnabled(): boolean {
+    return this.rentalType === RentalType.LONG_TERM || this.rentalType === RentalType.BOTH;
   }
 
   public toJSON(): Record<string, any> {
@@ -87,20 +154,50 @@ export class Apartment {
       unitLabel: this.unitLabel,
       address: this.address,
       status: this.status,
-      rentalSource: this.rentalSource,
+      rentalType: this.rentalType,
       baseRent: this.baseRent,
       cleaningFee: this.cleaningFee,
-      primaryResident: this.primaryResident,
-      mainTenant: this.mainTenant,
-      cpf: this.cpf,
-      hasCleaningService: this.hasCleaningService,
-      waterIncluded: this.waterIncluded,
-      electricityIncluded: this.electricityIncluded,
-      contactPhone: this.contactPhone,
-      contactMethod: this.contactMethod,
-      updateAt: this.updateAt,
-      createdAt: this.createdAt,
-      endDate: this.endDate,
+      images: this.images,
+      amenities: this.amenities instanceof ApartmentAmenitiesVO ? this.amenities.toJSON() : this.amenities,
+      contactInfo: this.contactInfo.toJSON(),
+      airbnbLink: this.airbnbLink,
+      isAvailable: this.isAvailable,
+      availableFrom: this.availableFrom?.toISOString(),
+      ...this.metadata.toJSON(),
     };
+  }
+
+  public static fromJSON(data: Record<string, any>): Apartment {
+    const contactInfo = ContactInfoVO.fromJSON(data.contactInfo || {
+      phoneNumber: data.contactPhone || '',
+      contactMethod: data.contactMethod || ContactMethod.WHATSAPP
+    });
+
+    const amenities = ApartmentAmenitiesVO.fromJSON(data.amenities || {
+      hasCleaningService: data.hasCleaningService === 'yes' || data.hasCleaningService === true,
+      waterIncluded: data.waterIncluded === 'yes' || data.waterIncluded === true,
+      electricityIncluded: data.electricityIncluded === 'yes' || data.electricityIncluded === true,
+    });
+
+    const metadata = EntityMetadataVO.fromJSON(data);
+
+    return new Apartment(
+      data.pk,
+      data.sk,
+      data.unitCode,
+      data.unitLabel,
+      data.address,
+      data.status as ApartmentStatus,
+      data.rentalType as RentalType || RentalType.LONG_TERM,
+      Number(data.baseRent) || 0,
+      Number(data.cleaningFee) || 0,
+      data.images || [],
+      amenities,
+      contactInfo,
+      data.airbnbLink,
+      data.isAvailable ?? false,
+      data.availableFrom ? new Date(data.availableFrom) : undefined,
+      metadata
+    );
   }
 }

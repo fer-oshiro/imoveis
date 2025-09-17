@@ -1,7 +1,8 @@
 import { EntityNotFoundError, ValidationError, BusinessRuleViolationError } from '../../shared/errors/domain-error';
 import { UserApartmentRelation } from '../entities/user-apartment-relation.entity';
 import { IRelationshipRepository, RelationshipKey } from '../repositories/relationship.repository.interface';
-import { CreateRelationshipDto, UpdateRelationshipDto } from '../dto';
+import { CreateRelationshipDto } from '../dto/create-relationship.dto';
+import { UpdateRelationshipDto } from '../dto/update-relationship.dto';
 import { UserRole } from '../vo/user-role.vo';
 
 export interface UserWithRelation {

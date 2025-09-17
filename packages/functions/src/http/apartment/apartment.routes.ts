@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { ApartmentController } from "./apartment.controller";
-import { createApartmentDto } from "../../domain/apartment/dto/create-apartament.dto";
+import { createApartmentDto } from "../../domain/apartment/dto/create-apartment.dto";
 
 export async function apartmentRoutes(app: FastifyInstance) {
   const controller = new ApartmentController();

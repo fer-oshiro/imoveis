@@ -1,16 +1,15 @@
 import {
+    DeleteCommand,
     DynamoDBDocumentClient,
     GetCommand,
     PutCommand,
-    DeleteCommand,
-    QueryCommand,
-    BatchGetCommand
+    QueryCommand
 } from '@aws-sdk/lib-dynamodb';
-import { BaseRepository } from '../../shared/repositories/base-repository.abstract';
 import { PhoneNumberVO } from '../../shared';
 import { DatabaseError } from '../../shared/errors/domain-error';
+import { BaseRepository } from '../../shared/repositories/base-repository.abstract';
 import { UserApartmentRelation } from '../entities/user-apartment-relation.entity';
-import { UserRoleVO, UserRole } from '../vo/user-role.vo';
+import { UserRole, UserRoleVO } from '../vo/user-role.vo';
 import { IRelationshipRepository, RelationshipKey } from './relationship.repository.interface';
 
 export class RelationshipRepository extends BaseRepository<UserApartmentRelation, RelationshipKey> implements IRelationshipRepository {
