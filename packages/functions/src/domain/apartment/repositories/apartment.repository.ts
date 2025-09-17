@@ -1,40 +1,35 @@
-import {
-  PutCommand,
-  ScanCommand,
-  GetCommand,
-  DeleteCommand
-} from "@aws-sdk/lib-dynamodb";
-import { Resource } from "sst";
+import { PutCommand, ScanCommand, GetCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb'
+import { Resource } from 'sst'
 
-import { docClient } from "../../../infra/database";
-import { DomainError } from "../../shared";
-import { Apartment } from "../entities/apartment.entity";
-import { ApartmentStatus, RentalType } from "../vo/apartment-enums.vo";
-import { ApartmentQueryDto } from "../dto";
+import { docClient } from '../../../infra/database'
+import { DomainError } from '../../shared'
+import { Apartment } from '../entities/apartment.entity'
+import { ApartmentStatus, RentalType } from '../vo/apartment-enums.vo'
+import { ApartmentQueryDto } from '../dto'
 
 export interface IApartmentRepository {
-  findAll(): Promise<Apartment[]>;
-  findByUnitCode(unitCode: string): Promise<Apartment | null>;
-  findByStatus(status: ApartmentStatus): Promise<Apartment[]>;
-  findByRentalType(rentalType: RentalType): Promise<Apartment[]>;
-  findAvailable(): Promise<Apartment[]>;
-  findAirbnbApartments(): Promise<Apartment[]>;
-  findWithQuery(query: ApartmentQueryDto): Promise<Apartment[]>;
-  save(apartment: Apartment): Promise<Apartment>;
-  update(unitCode: string, apartment: Apartment): Promise<Apartment>;
-  delete(unitCode: string): Promise<void>;
+  findAll(): Promise<Apartment[]>
+  findByUnitCode(unitCode: string): Promise<Apartment | null>
+  findByStatus(status: ApartmentStatus): Promise<Apartment[]>
+  findByRentalType(rentalType: RentalType): Promise<Apartment[]>
+  findAvailable(): Promise<Apartment[]>
+  findAirbnbApartments(): Promise<Apartment[]>
+  findWithQuery(query: ApartmentQueryDto): Promise<Apartment[]>
+  save(apartment: Apartment): Promise<Apartment>
+  update(unitCode: string, apartment: Apartment): Promise<Apartment>
+  delete(unitCode: string): Promise<void>
 }
 
 export default class ApartmentRepository implements IApartmentRepository {
-  private static instance: ApartmentRepository;
+  private static instance: ApartmentRepository
 
-  private constructor() { }
+  private constructor() {}
 
   public static getInstance(): ApartmentRepository {
     if (!ApartmentRepository.instance) {
-      ApartmentRepository.instance = new ApartmentRepository();
+      ApartmentRepository.instance = new ApartmentRepository()
     }
-    return ApartmentRepository.instance;
+    return ApartmentRepository.instance
   }
 
   public async findAll(): Promise<Apartment[]> {
@@ -42,18 +37,18 @@ export default class ApartmentRepository implements IApartmentRepository {
       const response = await docClient.send(
         new ScanCommand({
           TableName: Resource.table.name,
-          FilterExpression: "begins_with(PK, :pk) AND SK = :sk",
+          FilterExpression: 'begins_with(PK, :pk) AND SK = :sk',
           ExpressionAttributeValues: {
-            ":pk": "APARTMENT#",
-            ":sk": "INFO",
+            ':pk': 'APARTMENT#',
+            ':sk': 'INFO',
           },
-        })
-      );
+        }),
+      )
 
-      return response.Items?.map(item => Apartment.fromJSON(item)) || [];
+      return response.Items?.map((item) => Apartment.fromJSON(item)) || []
     } catch (error) {
-      console.error('Error in findAll:', error);
-      throw new DomainError('Failed to find apartments', 'APARTMENT_REPOSITORY_ERROR');
+      console.error('Error in findAll:', error)
+      throw new DomainError('Failed to find apartments', 'APARTMENT_REPOSITORY_ERROR')
     }
   }
 
@@ -64,15 +59,15 @@ export default class ApartmentRepository implements IApartmentRepository {
           TableName: Resource.table.name,
           Key: {
             PK: `APARTMENT#${unitCode}`,
-            SK: "INFO",
+            SK: 'INFO',
           },
-        })
-      );
+        }),
+      )
 
-      return response.Item ? Apartment.fromJSON(response.Item) : null;
+      return response.Item ? Apartment.fromJSON(response.Item) : null
     } catch (error) {
-      console.error('Error in findByUnitCode:', error);
-      throw new DomainError('Failed to find apartment by unit code', 'APARTMENT_REPOSITORY_ERROR');
+      console.error('Error in findByUnitCode:', error)
+      throw new DomainError('Failed to find apartment by unit code', 'APARTMENT_REPOSITORY_ERROR')
     }
   }
 
@@ -81,22 +76,22 @@ export default class ApartmentRepository implements IApartmentRepository {
       const response = await docClient.send(
         new ScanCommand({
           TableName: Resource.table.name,
-          FilterExpression: "begins_with(PK, :pk) AND SK = :sk AND #status = :status",
+          FilterExpression: 'begins_with(PK, :pk) AND SK = :sk AND #status = :status',
           ExpressionAttributeNames: {
-            "#status": "status",
+            '#status': 'status',
           },
           ExpressionAttributeValues: {
-            ":pk": "APARTMENT#",
-            ":sk": "INFO",
-            ":status": status,
+            ':pk': 'APARTMENT#',
+            ':sk': 'INFO',
+            ':status': status,
           },
-        })
-      );
+        }),
+      )
 
-      return response.Items?.map(item => Apartment.fromJSON(item)) || [];
+      return response.Items?.map((item) => Apartment.fromJSON(item)) || []
     } catch (error) {
-      console.error('Error in findByStatus:', error);
-      throw new DomainError('Failed to find apartments by status', 'APARTMENT_REPOSITORY_ERROR');
+      console.error('Error in findByStatus:', error)
+      throw new DomainError('Failed to find apartments by status', 'APARTMENT_REPOSITORY_ERROR')
     }
   }
 
@@ -105,20 +100,24 @@ export default class ApartmentRepository implements IApartmentRepository {
       const response = await docClient.send(
         new ScanCommand({
           TableName: Resource.table.name,
-          FilterExpression: "begins_with(PK, :pk) AND SK = :sk AND (rentalType = :rentalType OR rentalType = :both)",
+          FilterExpression:
+            'begins_with(PK, :pk) AND SK = :sk AND (rentalType = :rentalType OR rentalType = :both)',
           ExpressionAttributeValues: {
-            ":pk": "APARTMENT#",
-            ":sk": "INFO",
-            ":rentalType": rentalType,
-            ":both": RentalType.BOTH,
+            ':pk': 'APARTMENT#',
+            ':sk': 'INFO',
+            ':rentalType': rentalType,
+            ':both': RentalType.BOTH,
           },
-        })
-      );
+        }),
+      )
 
-      return response.Items?.map(item => Apartment.fromJSON(item)) || [];
+      return response.Items?.map((item) => Apartment.fromJSON(item)) || []
     } catch (error) {
-      console.error('Error in findByRentalType:', error);
-      throw new DomainError('Failed to find apartments by rental type', 'APARTMENT_REPOSITORY_ERROR');
+      console.error('Error in findByRentalType:', error)
+      throw new DomainError(
+        'Failed to find apartments by rental type',
+        'APARTMENT_REPOSITORY_ERROR',
+      )
     }
   }
 
@@ -127,19 +126,19 @@ export default class ApartmentRepository implements IApartmentRepository {
       const response = await docClient.send(
         new ScanCommand({
           TableName: Resource.table.name,
-          FilterExpression: "begins_with(PK, :pk) AND SK = :sk AND isAvailable = :available",
+          FilterExpression: 'begins_with(PK, :pk) AND SK = :sk AND isAvailable = :available',
           ExpressionAttributeValues: {
-            ":pk": "APARTMENT#",
-            ":sk": "INFO",
-            ":available": true,
+            ':pk': 'APARTMENT#',
+            ':sk': 'INFO',
+            ':available': true,
           },
-        })
-      );
+        }),
+      )
 
-      return response.Items?.map(item => Apartment.fromJSON(item)) || [];
+      return response.Items?.map((item) => Apartment.fromJSON(item)) || []
     } catch (error) {
-      console.error('Error in findAvailable:', error);
-      throw new DomainError('Failed to find available apartments', 'APARTMENT_REPOSITORY_ERROR');
+      console.error('Error in findAvailable:', error)
+      throw new DomainError('Failed to find available apartments', 'APARTMENT_REPOSITORY_ERROR')
     }
   }
 
@@ -148,57 +147,58 @@ export default class ApartmentRepository implements IApartmentRepository {
       const response = await docClient.send(
         new ScanCommand({
           TableName: Resource.table.name,
-          FilterExpression: "begins_with(PK, :pk) AND SK = :sk AND (rentalType = :airbnb OR rentalType = :both) AND attribute_exists(airbnbLink)",
+          FilterExpression:
+            'begins_with(PK, :pk) AND SK = :sk AND (rentalType = :airbnb OR rentalType = :both) AND attribute_exists(airbnbLink)',
           ExpressionAttributeValues: {
-            ":pk": "APARTMENT#",
-            ":sk": "INFO",
-            ":airbnb": RentalType.AIRBNB,
-            ":both": RentalType.BOTH,
+            ':pk': 'APARTMENT#',
+            ':sk': 'INFO',
+            ':airbnb': RentalType.AIRBNB,
+            ':both': RentalType.BOTH,
           },
-        })
-      );
+        }),
+      )
 
-      return response.Items?.map(item => Apartment.fromJSON(item)) || [];
+      return response.Items?.map((item) => Apartment.fromJSON(item)) || []
     } catch (error) {
-      console.error('Error in findAirbnbApartments:', error);
-      throw new DomainError('Failed to find Airbnb apartments', 'APARTMENT_REPOSITORY_ERROR');
+      console.error('Error in findAirbnbApartments:', error)
+      throw new DomainError('Failed to find Airbnb apartments', 'APARTMENT_REPOSITORY_ERROR')
     }
   }
 
   public async findWithQuery(query: ApartmentQueryDto): Promise<Apartment[]> {
     try {
-      let filterExpression = "begins_with(PK, :pk) AND SK = :sk";
+      let filterExpression = 'begins_with(PK, :pk) AND SK = :sk'
       const expressionAttributeValues: Record<string, any> = {
-        ":pk": "APARTMENT#",
-        ":sk": "INFO",
-      };
-      const expressionAttributeNames: Record<string, string> = {};
+        ':pk': 'APARTMENT#',
+        ':sk': 'INFO',
+      }
+      const expressionAttributeNames: Record<string, string> = {}
 
       if (query.status) {
-        filterExpression += " AND #status = :status";
-        expressionAttributeNames["#status"] = "status";
-        expressionAttributeValues[":status"] = query.status;
+        filterExpression += ' AND #status = :status'
+        expressionAttributeNames['#status'] = 'status'
+        expressionAttributeValues[':status'] = query.status
       }
 
       if (query.rentalType) {
-        filterExpression += " AND (rentalType = :rentalType OR rentalType = :both)";
-        expressionAttributeValues[":rentalType"] = query.rentalType;
-        expressionAttributeValues[":both"] = RentalType.BOTH;
+        filterExpression += ' AND (rentalType = :rentalType OR rentalType = :both)'
+        expressionAttributeValues[':rentalType'] = query.rentalType
+        expressionAttributeValues[':both'] = RentalType.BOTH
       }
 
       if (query.isAvailable !== undefined) {
-        filterExpression += " AND isAvailable = :available";
-        expressionAttributeValues[":available"] = query.isAvailable;
+        filterExpression += ' AND isAvailable = :available'
+        expressionAttributeValues[':available'] = query.isAvailable
       }
 
       if (query.minRent !== undefined) {
-        filterExpression += " AND baseRent >= :minRent";
-        expressionAttributeValues[":minRent"] = query.minRent;
+        filterExpression += ' AND baseRent >= :minRent'
+        expressionAttributeValues[':minRent'] = query.minRent
       }
 
       if (query.maxRent !== undefined) {
-        filterExpression += " AND baseRent <= :maxRent";
-        expressionAttributeValues[":maxRent"] = query.maxRent;
+        filterExpression += ' AND baseRent <= :maxRent'
+        expressionAttributeValues[':maxRent'] = query.maxRent
       }
 
       const response = await docClient.send(
@@ -210,55 +210,55 @@ export default class ApartmentRepository implements IApartmentRepository {
             ExpressionAttributeNames: expressionAttributeNames,
           }),
           ...(query.limit && { Limit: query.limit }),
-        })
-      );
+        }),
+      )
 
-      let apartments = response.Items?.map(item => Apartment.fromJSON(item)) || [];
+      let apartments = response.Items?.map((item) => Apartment.fromJSON(item)) || []
 
       // Apply sorting
       if (query.sortBy) {
         apartments.sort((a, b) => {
-          let aValue: any;
-          let bValue: any;
+          let aValue: any
+          let bValue: any
 
           switch (query.sortBy) {
             case 'unitCode':
-              aValue = a.unitCodeValue;
-              bValue = b.unitCodeValue;
-              break;
+              aValue = a.unitCodeValue
+              bValue = b.unitCodeValue
+              break
             case 'baseRent':
-              aValue = a.baseRentValue;
-              bValue = b.baseRentValue;
-              break;
+              aValue = a.baseRentValue
+              bValue = b.baseRentValue
+              break
             case 'createdAt':
-              aValue = a.metadataValue.createdAt;
-              bValue = b.metadataValue.createdAt;
-              break;
+              aValue = a.metadataValue.createdAt
+              bValue = b.metadataValue.createdAt
+              break
             case 'updatedAt':
-              aValue = a.metadataValue.updatedAt;
-              bValue = b.metadataValue.updatedAt;
-              break;
+              aValue = a.metadataValue.updatedAt
+              bValue = b.metadataValue.updatedAt
+              break
             default:
-              return 0;
+              return 0
           }
 
           if (query.sortOrder === 'desc') {
-            return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
+            return aValue > bValue ? -1 : aValue < bValue ? 1 : 0
           } else {
-            return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+            return aValue < bValue ? -1 : aValue > bValue ? 1 : 0
           }
-        });
+        })
       }
 
       // Apply offset
       if (query.offset) {
-        apartments = apartments.slice(query.offset);
+        apartments = apartments.slice(query.offset)
       }
 
-      return apartments;
+      return apartments
     } catch (error) {
-      console.error('Error in findWithQuery:', error);
-      throw new DomainError('Failed to query apartments', 'APARTMENT_REPOSITORY_ERROR');
+      console.error('Error in findWithQuery:', error)
+      throw new DomainError('Failed to query apartments', 'APARTMENT_REPOSITORY_ERROR')
     }
   }
 
@@ -268,13 +268,13 @@ export default class ApartmentRepository implements IApartmentRepository {
         new PutCommand({
           TableName: Resource.table.name,
           Item: apartment.toJSON(),
-        })
-      );
+        }),
+      )
 
-      return apartment;
+      return apartment
     } catch (error) {
-      console.error('Error in save:', error);
-      throw new DomainError('Failed to save apartment', 'APARTMENT_REPOSITORY_ERROR');
+      console.error('Error in save:', error)
+      throw new DomainError('Failed to save apartment', 'APARTMENT_REPOSITORY_ERROR')
     }
   }
 
@@ -284,14 +284,14 @@ export default class ApartmentRepository implements IApartmentRepository {
         new PutCommand({
           TableName: Resource.table.name,
           Item: apartment.toJSON(),
-          ConditionExpression: "attribute_exists(PK)",
-        })
-      );
+          ConditionExpression: 'attribute_exists(PK)',
+        }),
+      )
 
-      return apartment;
+      return apartment
     } catch (error) {
-      console.error('Error in update:', error);
-      throw new DomainError('Failed to update apartment', 'APARTMENT_REPOSITORY_ERROR');
+      console.error('Error in update:', error)
+      throw new DomainError('Failed to update apartment', 'APARTMENT_REPOSITORY_ERROR')
     }
   }
 
@@ -302,23 +302,23 @@ export default class ApartmentRepository implements IApartmentRepository {
           TableName: Resource.table.name,
           Key: {
             PK: `APARTMENT#${unitCode}`,
-            SK: "INFO",
+            SK: 'INFO',
           },
-        })
-      );
+        }),
+      )
     } catch (error) {
-      console.error('Error in delete:', error);
-      throw new DomainError('Failed to delete apartment', 'APARTMENT_REPOSITORY_ERROR');
+      console.error('Error in delete:', error)
+      throw new DomainError('Failed to delete apartment', 'APARTMENT_REPOSITORY_ERROR')
     }
   }
 
   // Legacy method for backward compatibility
   public async getApartments(): Promise<Apartment[]> {
-    return this.findAll();
+    return this.findAll()
   }
 
   // Legacy method for backward compatibility
   public async createApartment(apartment: Apartment): Promise<Apartment> {
-    return this.save(apartment);
+    return this.save(apartment)
   }
 }

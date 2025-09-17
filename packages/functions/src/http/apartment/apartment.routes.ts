@@ -1,21 +1,21 @@
-import { FastifyInstance } from "fastify";
-import { ApartmentController } from "./apartment.controller";
-import { createApartmentDto } from "../../domain/apartment/dto/create-apartment.dto";
+import { FastifyInstance } from 'fastify'
+import { ApartmentController } from './apartment.controller'
+import { createApartmentDto } from '../../domain/apartment/dto/create-apartment.dto'
 
 export async function apartmentRoutes(app: FastifyInstance) {
-  const controller = new ApartmentController();
+  const controller = new ApartmentController()
 
-  app.get("/", async () => {
-    return controller.getApartments();
-  });
+  app.get('/', async () => {
+    return controller.getApartments()
+  })
 
-  app.get("/:id", async (request) => {
-    const params = request.params as { id: string };
-    return controller.getApartmentById(params.id);
-  });
+  app.get('/:id', async (request) => {
+    const params = request.params as { id: string }
+    return controller.getApartmentById(params.id)
+  })
 
-  app.post("/", async (request) => {
-    const body = createApartmentDto.parse(request.body);
-    return controller.createApartment(body);
-  });
+  app.post('/', async (request) => {
+    const body = createApartmentDto.parse(request.body)
+    return controller.createApartment(body)
+  })
 }

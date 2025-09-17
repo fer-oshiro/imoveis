@@ -1,1 +1,1 @@
-export * from './user-apartment-relation.entity';
+export * from './user-apartment-relation.entity'

@@ -1,1 +1,1 @@
-export * from './validation.utils';
+export * from './validation.utils'

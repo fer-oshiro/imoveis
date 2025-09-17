@@ -1,35 +1,37 @@
 export interface EntityMetadata {
-  createdAt: Date;
-  updatedAt: Date;
-  createdBy?: string;
-  updatedBy?: string;
-  version: number;
+  createdAt: Date
+  updatedAt: Date
+  createdBy?: string
+  updatedBy?: string
+  version: number
 }
 
 export class EntityMetadataVO implements EntityMetadata {
-  public readonly createdAt: Date;
-  public readonly updatedAt: Date;
-  public readonly createdBy?: string;
-  public readonly updatedBy?: string;
-  public readonly version: number;
+  public readonly createdAt: Date
+  public readonly updatedAt: Date
+  public readonly createdBy?: string
+  public readonly updatedBy?: string
+  public readonly version: number
 
-  constructor(data: {
-    createdAt?: Date;
-    updatedAt?: Date;
-    createdBy?: string;
-    updatedBy?: string;
-    version?: number;
-  } = {}) {
-    const now = new Date();
-    this.createdAt = data.createdAt || now;
-    this.updatedAt = data.updatedAt || now;
-    this.createdBy = data.createdBy;
-    this.updatedBy = data.updatedBy;
-    this.version = data.version || 1;
+  constructor(
+    data: {
+      createdAt?: Date
+      updatedAt?: Date
+      createdBy?: string
+      updatedBy?: string
+      version?: number
+    } = {},
+  ) {
+    const now = new Date()
+    this.createdAt = data.createdAt || now
+    this.updatedAt = data.updatedAt || now
+    this.createdBy = data.createdBy
+    this.updatedBy = data.updatedBy
+    this.version = data.version || 1
   }
 
   static create(createdBy?: string): EntityMetadataVO {
-    return new EntityMetadataVO({ createdBy });
+    return new EntityMetadataVO({ createdBy })
   }
 
   update(updatedBy?: string): EntityMetadataVO {
@@ -39,7 +41,7 @@ export class EntityMetadataVO implements EntityMetadata {
       createdBy: this.createdBy,
       updatedBy,
       version: this.version + 1,
-    });
+    })
   }
 
   toJSON(): Record<string, any> {
@@ -49,7 +51,7 @@ export class EntityMetadataVO implements EntityMetadata {
       createdBy: this.createdBy,
       updatedBy: this.updatedBy,
       version: this.version,
-    };
+    }
   }
 
   static fromJSON(data: Record<string, any>): EntityMetadataVO {
@@ -59,6 +61,6 @@ export class EntityMetadataVO implements EntityMetadata {
       createdBy: data.createdBy,
       updatedBy: data.updatedBy,
       version: data.version,
-    });
+    })
   }
 }

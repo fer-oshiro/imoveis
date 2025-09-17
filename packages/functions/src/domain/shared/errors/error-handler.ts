@@ -1,11 +1,11 @@
-import { DomainError } from './domain-error';
+import { DomainError } from './domain-error'
 
 export interface ErrorResponse {
   error: {
-    code: string;
-    message: string;
-    statusCode: number;
-  };
+    code: string
+    message: string
+    statusCode: number
+  }
 }
 
 export class ErrorHandler {
@@ -17,11 +17,11 @@ export class ErrorHandler {
           message: error.message,
           statusCode: error.statusCode,
         },
-      };
+      }
     }
 
     // Log unexpected errors
-    console.error('Unexpected error:', error);
+    console.error('Unexpected error:', error)
 
     return {
       error: {
@@ -29,13 +29,13 @@ export class ErrorHandler {
         message: 'An unexpected error occurred',
         statusCode: 500,
       },
-    };
+    }
   }
 
   static isRetryableError(error: Error): boolean {
     if (error instanceof DomainError) {
-      return error.statusCode >= 500;
+      return error.statusCode >= 500
     }
-    return true; // Assume unknown errors are retryable
+    return true // Assume unknown errors are retryable
   }
 }

@@ -1,14 +1,14 @@
 // Entities
-export * from './entities';
+export * from './entities'
 
 // Value Objects
-export * from './vo';
+export * from './vo'
 
 // DTOs
-export * from './dto';
+export * from './dto'
 
 // Repositories
-export * from './repositories';
+export * from './repositories'
 
 // Services
-export * from './services';
+export * from './services'

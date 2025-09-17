@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   test: {
@@ -8,7 +8,7 @@ export default defineConfig({
       'packages/**/src/**/*.test.ts',
       'packages/**/src/**/*.test.js',
       'packages/**/__tests__/**/*.test.ts',
-      'packages/**/__tests__/**/*.test.js'
+      'packages/**/__tests__/**/*.test.js',
     ],
     exclude: [
       '**/node_modules/**',
@@ -18,7 +18,7 @@ export default defineConfig({
       '**/.next/**',
       '**/.nuxt/**',
       '**/.output/**',
-      '**/.vitepress/cache/**'
+      '**/.vitepress/cache/**',
     ],
     testTimeout: 30000,
     hookTimeout: 30000,
@@ -29,4 +29,4 @@ export default defineConfig({
       '@core': './packages/core/src',
     },
   },
-});
+})

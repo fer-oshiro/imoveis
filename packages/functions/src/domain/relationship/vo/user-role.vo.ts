@@ -1,87 +1,89 @@
-import { ValidationError } from '../../shared/errors/domain-error';
+import { ValidationError } from '../../shared/errors/domain-error'
 
 export enum UserRole {
-    PRIMARY_TENANT = 'primary_tenant',
-    SECONDARY_TENANT = 'secondary_tenant',
-    EMERGENCY_CONTACT = 'emergency_contact',
-    ADMIN = 'admin',
-    OPS = 'ops'
+  PRIMARY_TENANT = 'primary_tenant',
+  SECONDARY_TENANT = 'secondary_tenant',
+  EMERGENCY_CONTACT = 'emergency_contact',
+  ADMIN = 'admin',
+  OPS = 'ops',
 }
 
 export class UserRoleVO {
-    public readonly value: UserRole;
+  public readonly value: UserRole
 
-    constructor(role: UserRole | string) {
-        this.value = this.validateAndNormalize(role);
+  constructor(role: UserRole | string) {
+    this.value = this.validateAndNormalize(role)
+  }
+
+  private validateAndNormalize(role: UserRole | string): UserRole {
+    if (!role) {
+      throw new ValidationError('User role is required')
     }
 
-    private validateAndNormalize(role: UserRole | string): UserRole {
-        if (!role) {
-            throw new ValidationError('User role is required');
-        }
+    const normalizedRole = typeof role === 'string' ? role.toLowerCase() : role
 
-        const normalizedRole = typeof role === 'string' ? role.toLowerCase() : role;
-
-        if (!Object.values(UserRole).includes(normalizedRole as UserRole)) {
-            throw new ValidationError(`Invalid user role: ${role}. Valid roles are: ${Object.values(UserRole).join(', ')}`);
-        }
-
-        return normalizedRole as UserRole;
+    if (!Object.values(UserRole).includes(normalizedRole as UserRole)) {
+      throw new ValidationError(
+        `Invalid user role: ${role}. Valid roles are: ${Object.values(UserRole).join(', ')}`,
+      )
     }
 
-    static create(role: UserRole | string): UserRoleVO {
-        return new UserRoleVO(role);
-    }
+    return normalizedRole as UserRole
+  }
 
-    get isPrimaryTenant(): boolean {
-        return this.value === UserRole.PRIMARY_TENANT;
-    }
+  static create(role: UserRole | string): UserRoleVO {
+    return new UserRoleVO(role)
+  }
 
-    get isSecondaryTenant(): boolean {
-        return this.value === UserRole.SECONDARY_TENANT;
-    }
+  get isPrimaryTenant(): boolean {
+    return this.value === UserRole.PRIMARY_TENANT
+  }
 
-    get isTenant(): boolean {
-        return this.isPrimaryTenant || this.isSecondaryTenant;
-    }
+  get isSecondaryTenant(): boolean {
+    return this.value === UserRole.SECONDARY_TENANT
+  }
 
-    get isEmergencyContact(): boolean {
-        return this.value === UserRole.EMERGENCY_CONTACT;
-    }
+  get isTenant(): boolean {
+    return this.isPrimaryTenant || this.isSecondaryTenant
+  }
 
-    get isAdmin(): boolean {
-        return this.value === UserRole.ADMIN;
-    }
+  get isEmergencyContact(): boolean {
+    return this.value === UserRole.EMERGENCY_CONTACT
+  }
 
-    get isOps(): boolean {
-        return this.value === UserRole.OPS;
-    }
+  get isAdmin(): boolean {
+    return this.value === UserRole.ADMIN
+  }
 
-    get isStaff(): boolean {
-        return this.isAdmin || this.isOps;
-    }
+  get isOps(): boolean {
+    return this.value === UserRole.OPS
+  }
 
-    get canManagePayments(): boolean {
-        return this.isTenant || this.isStaff;
-    }
+  get isStaff(): boolean {
+    return this.isAdmin || this.isOps
+  }
 
-    get canViewApartmentDetails(): boolean {
-        return this.isTenant || this.isEmergencyContact || this.isStaff;
-    }
+  get canManagePayments(): boolean {
+    return this.isTenant || this.isStaff
+  }
 
-    equals(other: UserRoleVO): boolean {
-        return this.value === other.value;
-    }
+  get canViewApartmentDetails(): boolean {
+    return this.isTenant || this.isEmergencyContact || this.isStaff
+  }
 
-    toString(): string {
-        return this.value;
-    }
+  equals(other: UserRoleVO): boolean {
+    return this.value === other.value
+  }
 
-    toJSON(): string {
-        return this.value;
-    }
+  toString(): string {
+    return this.value
+  }
 
-    static fromJSON(data: string): UserRoleVO {
-        return new UserRoleVO(data);
-    }
+  toJSON(): string {
+    return this.value
+  }
+
+  static fromJSON(data: string): UserRoleVO {
+    return new UserRoleVO(data)
+  }
 }

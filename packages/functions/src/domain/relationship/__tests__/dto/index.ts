@@ -1,1 +1,1 @@
-export * from './create-relationship.dto.test';
+export * from './create-relationship.dto.test'

@@ -1,1 +1,1 @@
-export * from './user-role.vo.test';
+export * from './user-role.vo.test'

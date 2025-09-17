@@ -1,14 +1,14 @@
 // Entities
-export * from './entities/user.entity';
+export * from './entities/user.entity'
 
 // DTOs
-export * from './dto';
+export * from './dto'
 
 // Repositories
-export * from './repositories';
+export * from './repositories'
 
 // Services
-export * from './services';
+export * from './services'
 
 // Utils
-export * from './utils';
+export * from './utils'
