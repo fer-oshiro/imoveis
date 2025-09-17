@@ -15,3 +15,14 @@ export * from './vo/phone-number.vo'
 export * from './vo/cpf.vo'
 export * from './vo/cnpj.vo'
 export * from './vo/document.vo'
+
+// Query Result Models
+export * from './models/query-result.models'
+
+// Utilities
+export * from './utils/data-mapper.utils'
+
+// Aggregation Services
+export * from './services/apartment-aggregation.service'
+export * from './services/user-aggregation.service'
+export * from './services/payment-aggregation.service'

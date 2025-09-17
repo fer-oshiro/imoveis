@@ -3,6 +3,7 @@ import {
   ValidationError,
   BusinessRuleViolationError,
 } from '../../shared/errors/domain-error'
+import { UserAggregationService } from '../../shared/services/user-aggregation.service'
 import { User, UserStatus } from '../entities/user.entity'
 import { IUserRepository } from '../repositories/user-repository.interface'
 import {
@@ -13,6 +14,10 @@ import {
   UserDetailsResponse,
   UserDetailsDto,
 } from '../dto'
+import { UserDetails, UserWithRelation } from '../../shared/models/query-result.models'
+import { Apartment } from '../../apartment/entities/apartment.entity'
+import { Payment } from '../../payment/entities/payment.entity'
+import { UserApartmentRelation } from '../../relationship/entities/user-apartment-relation.entity'
 import { safeParseWithValidationError } from '../utils'
 
 export class UserService {
@@ -143,6 +148,37 @@ export class UserService {
       apartments: [], // Will be implemented in relationship domain task
       paymentHistory: [], // Will be implemented in payment domain task
     }
+  }
+
+  // Enhanced method using aggregation service
+  async getUserDetailsEnhanced(
+    phoneNumber: string,
+    allUsers: User[] = [],
+    userRelations: UserApartmentRelation[] = [],
+    relatedUserRelations: UserApartmentRelation[] = [],
+    apartments: Apartment[] = [],
+    payments: Payment[] = [],
+    allRelations: UserApartmentRelation[] = [],
+  ): Promise<UserDetails> {
+    const user = await this.getUserByPhoneNumber(phoneNumber)
+
+    return await UserAggregationService.aggregateUserDetails(
+      user,
+      allUsers,
+      userRelations,
+      relatedUserRelations,
+      apartments,
+      payments,
+      allRelations,
+    )
+  }
+
+  async getUsersForApartment(
+    unitCode: string,
+    users: User[],
+    relations: UserApartmentRelation[],
+  ): Promise<UserWithRelation[]> {
+    return await UserAggregationService.aggregateUsersForApartment(users, relations, unitCode)
   }
 
   async validateUserExists(phoneNumber: string): Promise<boolean> {

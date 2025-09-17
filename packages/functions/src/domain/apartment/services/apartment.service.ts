@@ -1,16 +1,18 @@
-import { DomainError } from '../../shared'
+import { DomainError, ApartmentAggregationService } from '../../shared'
 import { Apartment } from '../entities/apartment.entity'
 import ApartmentRepository, { IApartmentRepository } from '../repositories/apartment.repository'
+import { CreateApartmentDto, UpdateApartmentDto, ApartmentQueryDto } from '../dto'
 import {
-  CreateApartmentDto,
-  UpdateApartmentDto,
-  ApartmentQueryDto,
   ApartmentWithPaymentInfo,
   ApartmentDetails,
   ApartmentLog,
   ApartmentListing,
-} from '../dto'
+} from '../../shared/models/query-result.models'
 import { ApartmentStatus, RentalType } from '../vo/apartment-enums.vo'
+import { Payment } from '../../payment/entities/payment.entity'
+import { User } from '../../user/entities/user.entity'
+import { Contract } from '../../contract/entities/contract.entity'
+import { UserApartmentRelation } from '../../relationship/entities/user-apartment-relation.entity'
 
 export default class ApartmentService {
   private apartmentRepository: IApartmentRepository
@@ -20,16 +22,15 @@ export default class ApartmentService {
   }
 
   // Main usage: list apartments with last payment info (admin view)
-  async getApartmentsWithLastPayment(): Promise<ApartmentWithPaymentInfo[]> {
+  async getApartmentsWithLastPayment(
+    payments: Payment[] = [],
+  ): Promise<ApartmentWithPaymentInfo[]> {
     try {
       const apartments = await this.apartmentRepository.findAll()
-
-      // TODO: This will be implemented when Payment domain is available
-      // For now, return apartments without payment info
-      return apartments.map((apartment) => ({
-        apartment,
-        paymentStatus: 'no_payments' as const,
-      }))
+      return await ApartmentAggregationService.aggregateApartmentsWithPaymentInfo(
+        apartments,
+        payments,
+      )
     } catch (error) {
       throw new DomainError('Failed to get apartments with payment info', 'APARTMENT_QUERY_ERROR')
     }
@@ -39,19 +40,13 @@ export default class ApartmentService {
   async getAvailableApartments(): Promise<ApartmentListing[]> {
     try {
       const apartments = await this.apartmentRepository.findAvailable()
+      const longTermApartments = apartments.filter((apartment) => apartment.isLongTermEnabled())
 
-      return apartments
-        .filter((apartment) => apartment.isLongTermEnabled())
-        .map((apartment) => ({
-          apartment,
-          images: apartment.imagesValue,
-          isAvailable: apartment.isAvailableValue,
-          availableFrom: apartment.availableFromValue,
-          priceRange: {
-            min: apartment.baseRentValue,
-            max: apartment.baseRentValue + apartment.cleaningFeeValue,
-          },
-        }))
+      return await Promise.all(
+        longTermApartments.map((apartment) =>
+          ApartmentAggregationService.aggregateApartmentListing(apartment),
+        ),
+      )
     } catch (error) {
       throw new DomainError('Failed to get available apartments', 'APARTMENT_QUERY_ERROR')
     }
@@ -62,24 +57,24 @@ export default class ApartmentService {
     try {
       const apartments = await this.apartmentRepository.findAirbnbApartments()
 
-      return apartments.map((apartment) => ({
-        apartment,
-        images: apartment.imagesValue,
-        isAvailable: apartment.isAvailableValue,
-        availableFrom: apartment.availableFromValue,
-        airbnbLink: apartment.airbnbLinkValue,
-        priceRange: {
-          min: apartment.baseRentValue,
-          max: apartment.baseRentValue + apartment.cleaningFeeValue,
-        },
-      }))
+      return await Promise.all(
+        apartments.map((apartment) =>
+          ApartmentAggregationService.aggregateApartmentListing(apartment),
+        ),
+      )
     } catch (error) {
       throw new DomainError('Failed to get Airbnb apartments', 'APARTMENT_QUERY_ERROR')
     }
   }
 
   // Apartment details with related users and contracts
-  async getApartmentDetails(unitCode: string): Promise<ApartmentDetails> {
+  async getApartmentDetails(
+    unitCode: string,
+    users: User[] = [],
+    relations: UserApartmentRelation[] = [],
+    contracts: Contract[] = [],
+    payments: Payment[] = [],
+  ): Promise<ApartmentDetails> {
     try {
       const apartment = await this.apartmentRepository.findByUnitCode(unitCode)
       if (!apartment) {
@@ -90,12 +85,13 @@ export default class ApartmentService {
         )
       }
 
-      // TODO: This will be implemented when User and Contract domains are available
-      return {
+      return await ApartmentAggregationService.aggregateApartmentDetails(
         apartment,
-        users: [],
-        contractHistory: [],
-      }
+        users,
+        relations,
+        contracts,
+        payments,
+      )
     } catch (error) {
       if (error instanceof DomainError) {
         throw error
@@ -105,7 +101,12 @@ export default class ApartmentService {
   }
 
   // Apartment log with contracts and payments history
-  async getApartmentLog(unitCode: string): Promise<ApartmentLog> {
+  async getApartmentLog(
+    unitCode: string,
+    contracts: Contract[] = [],
+    payments: Payment[] = [],
+    relations: UserApartmentRelation[] = [],
+  ): Promise<ApartmentLog> {
     try {
       const apartment = await this.apartmentRepository.findByUnitCode(unitCode)
       if (!apartment) {
@@ -116,13 +117,12 @@ export default class ApartmentService {
         )
       }
 
-      // TODO: This will be implemented when Contract and Payment domains are available
-      return {
+      return await ApartmentAggregationService.aggregateApartmentLog(
         apartment,
-        contracts: [],
-        payments: [],
-        timeline: [],
-      }
+        contracts,
+        payments,
+        relations,
+      )
     } catch (error) {
       if (error instanceof DomainError) {
         throw error
