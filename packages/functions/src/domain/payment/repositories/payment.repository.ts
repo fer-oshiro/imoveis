@@ -11,6 +11,7 @@ import { Payment } from '../entities/payment.entity'
 import { PaymentStatus, PaymentType } from '../vo/payment-enums.vo'
 
 export interface IPaymentRepository extends IBaseRepository<Payment, string> {
+  findAll(): Promise<Payment[]>
   findByApartment(apartmentUnitCode: string): Promise<Payment[]>
   findByUser(userPhoneNumber: string): Promise<Payment[]>
   findLastByApartment(apartmentUnitCode: string): Promise<Payment | null>
@@ -44,6 +45,27 @@ export class PaymentRepository
       PaymentRepository.instance = new PaymentRepository(tableName, dynamoClient)
     }
     return PaymentRepository.instance
+  }
+
+  async findAll(): Promise<Payment[]> {
+    const command = new ScanCommand({
+      TableName: this.tableName,
+      FilterExpression: 'begins_with(sk, :sk)',
+      ExpressionAttributeValues: {
+        ':sk': 'PAYMENT#',
+      },
+    })
+
+    try {
+      const result = await this.dynamoClient.send(command)
+      if (!result.Items) {
+        return []
+      }
+      return result.Items.map((item) => this.mapToEntity(item))
+    } catch (error) {
+      console.error('Error finding all payments:', error)
+      throw error
+    }
   }
 
   async findById(paymentId: string): Promise<Payment | null> {

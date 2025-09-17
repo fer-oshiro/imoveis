@@ -268,4 +268,23 @@ export default class ApartmentService {
   async createApartmentLegacy(apartmentData: any) {
     return await this.apartmentRepository.save(apartmentData)
   }
+
+  // Additional methods referenced by controllers
+  async getApartmentUsers(unitCode: string) {
+    // This would typically require the relationship service
+    // For now, return empty array to maintain compatibility
+    return []
+  }
+
+  async getApartmentContracts(unitCode: string) {
+    // This would typically require the contract service
+    // For now, return empty array to maintain compatibility
+    return []
+  }
+
+  async getApartmentPayments(unitCode: string) {
+    // This would typically require the payment service
+    // For now, return empty array to maintain compatibility
+    return []
+  }
 }

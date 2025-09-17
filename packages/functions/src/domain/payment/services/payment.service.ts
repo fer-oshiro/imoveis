@@ -263,6 +263,52 @@ export class PaymentService {
     }
   }
 
+  // Legacy methods for backward compatibility
+  async getAllPaymentProofs(): Promise<any[]> {
+    // Get all payments that have proof documents (legacy comprovantes)
+    const allPayments = await this.paymentRepository.findAll()
+    return allPayments
+      .filter((payment) => payment.hasProof())
+      .map((payment) => payment.toLegacyFormat())
+  }
+
+  async submitLegacyPaymentProof(body: any): Promise<any> {
+    // Convert legacy format to new payment proof format
+    const dto: SubmitPaymentProofDto = {
+      paymentId: body.PK || `LEGACY-${Date.now()}`,
+      proofDocumentKey: body.chaveDocumento || body.documentKey,
+      paymentDate: body.dataDeposito,
+      updatedBy: 'legacy-system',
+    }
+
+    // If this is a new payment (no existing paymentId), create it first
+    if (body.PK && !body.PK.startsWith('LEGACY-')) {
+      return await this.submitPaymentProof(dto)
+    } else {
+      // Create new payment from legacy data
+      const createDto: CreatePaymentDto = {
+        apartmentUnitCode: body.unidade || body.apartmentUnitCode,
+        userPhoneNumber: body.telefone || body.phoneNumber,
+        amount: body.valor || body.amount || 0,
+        dueDate: body.dataVencimento || body.dueDate || body.dataDeposito,
+        contractId: body.contratoId || body.contractId || 'LEGACY',
+        type: 'rent' as any,
+        description: body.descricao || body.description || 'Legacy payment',
+        createdBy: 'legacy-system',
+      }
+
+      const payment = await this.createPayment(createDto)
+
+      // Then submit the proof
+      return await this.submitPaymentProof({
+        paymentId: payment.paymentId,
+        proofDocumentKey: dto.proofDocumentKey,
+        paymentDate: dto.paymentDate,
+        updatedBy: dto.updatedBy,
+      })
+    }
+  }
+
   private generatePaymentId(apartmentUnitCode: string): string {
     const timestamp = Date.now()
     const random = Math.random().toString(36).substring(2, 8)

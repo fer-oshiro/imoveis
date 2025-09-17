@@ -1,56 +1,60 @@
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
-import { DynamoDBDocumentClient, PutCommand, ScanCommand } from '@aws-sdk/lib-dynamodb'
-import { th } from 'date-fns/locale'
-import { Resource } from 'sst'
+import { PaymentService } from './domain/payment/services/payment.service'
+import { PaymentRepository } from './domain/payment/repositories/payment.repository'
 
-const client = new DynamoDBClient()
-const docClient = DynamoDBDocumentClient.from(client)
+// Initialize services
+const paymentRepository = PaymentRepository.getInstance()
+const paymentService = new PaymentService(paymentRepository)
 
 export const comprovantes = async (event: any) => {
-  if (event.requestContext.http.method === 'POST') {
-    const body = JSON.parse(event.body || '{}')
-    console.log('Received body:', body)
-    const dataDeposito = body.dataDeposito
-    if (dataDeposito.startsWith('T')) throw new Error('Invalid date format')
-    if (dataDeposito.split('T')[1].length !== 13) throw new Error('Invalid time format')
-    const aaa = new Date(dataDeposito)
-    if (isNaN(aaa.getTime())) throw new Error('Invalid date')
-    const response = await docClient.send(
-      new PutCommand({
-        TableName: Resource.table.name,
-        Item: body,
-      }),
-    )
+  try {
+    if (event.requestContext.http.method === 'POST') {
+      const body = JSON.parse(event.body || '{}')
+      console.log('Received body:', body)
 
-    if (response.$metadata.httpStatusCode !== 200) {
-      console.error('Failed to put item:', response)
+      // Validate date format using domain service
+      const dataDeposito = body.dataDeposito
+      if (!dataDeposito) {
+        throw new Error('dataDeposito is required')
+      }
+      if (dataDeposito.startsWith('T')) {
+        throw new Error('Invalid date format')
+      }
+      if (dataDeposito.split('T')[1]?.length !== 13) {
+        throw new Error('Invalid time format')
+      }
+
+      const date = new Date(dataDeposito)
+      if (isNaN(date.getTime())) {
+        throw new Error('Invalid date')
+      }
+
+      // Submit payment proof using domain service
+      await paymentService.submitLegacyPaymentProof(body)
+
       return {
-        statusCode: 500,
-        body: 'Failed to put item',
+        statusCode: 200,
+        body: 'success',
       }
     }
+
+    // GET request - get all payment proofs using domain service
+    const paymentProofs = await paymentService.getAllPaymentProofs()
+
     return {
       statusCode: 200,
-      body: 'success',
+      body: JSON.stringify({
+        items: paymentProofs.sort((a, b) => a.unidade.localeCompare(b.unidade)),
+        total: paymentProofs.length,
+      }),
     }
-  }
-
-  const response = await docClient.send(
-    new ScanCommand({
-      TableName: Resource.table.name,
-      FilterExpression: 'begins_with(SK, :sk) AND tipo = :tipo',
-      ExpressionAttributeValues: {
-        ':sk': 'COMPROVANTE#',
-        ':tipo': 'comprovante',
-      },
-    }),
-  )
-
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
-      items: response.Items?.sort((a, b) => a.unidade.localeCompare(b.unidade)) || [],
-      total: response.Count,
-    }),
+  } catch (error) {
+    console.error('Error in comprovantes handler:', error)
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        error: 'Internal server error',
+        message: error instanceof Error ? error.message : 'Unknown error',
+      }),
+    }
   }
 }

@@ -292,4 +292,25 @@ export class Payment {
       metadata,
     )
   }
+
+  // Legacy format conversion for backward compatibility
+  public toLegacyFormat(): Record<string, any> {
+    return {
+      PK: this.pk,
+      SK: this.sk,
+      unidade: this.apartmentUnitCode,
+      telefone: this.userPhoneNumber,
+      valor: this.amount,
+      dataDeposito: this.paymentDate?.toISOString(),
+      dataVencimento: this.dueDate.toISOString(),
+      chaveDocumento: this.proofDocumentKey,
+      tipo: 'comprovante',
+      status: this.status,
+      validadoPor: this.validatedBy,
+      validadoEm: this.validatedAt?.toISOString(),
+      descricao: this.description,
+      criadoEm: this.metadata.createdAt.toISOString(),
+      atualizadoEm: this.metadata.updatedAt.toISOString(),
+    }
+  }
 }
