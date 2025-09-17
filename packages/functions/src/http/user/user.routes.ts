@@ -1,6 +1,5 @@
 import { FastifyInstance } from 'fastify'
 import { UserController } from './user.controller'
-import { CreateUserDtoSchema, UpdateUserDtoSchema } from '../../domain/user/dto'
 import { UserStatus } from '../../domain/user/entities/user.entity'
 
 export async function userRoutes(app: FastifyInstance) {
@@ -41,6 +40,24 @@ export async function userRoutes(app: FastifyInstance) {
     return controller.getUsersByApartment(params.unitCode)
   })
 
+  // Get user apartments (relationships)
+  app.get('/:phoneNumber/apartments', async (request) => {
+    const params = request.params as { phoneNumber: string }
+    return controller.getUserApartments(params.phoneNumber)
+  })
+
+  // Get user contracts
+  app.get('/:phoneNumber/contracts', async (request) => {
+    const params = request.params as { phoneNumber: string }
+    return controller.getUserContracts(params.phoneNumber)
+  })
+
+  // Get user payments
+  app.get('/:phoneNumber/payments', async (request) => {
+    const params = request.params as { phoneNumber: string }
+    return controller.getUserPayments(params.phoneNumber)
+  })
+
   // Search users
   app.get('/search', async (request) => {
     const query = request.query as { name?: string; status?: UserStatus }
@@ -49,7 +66,7 @@ export async function userRoutes(app: FastifyInstance) {
 
   // Create new user
   app.post('/', async (request) => {
-    const body = CreateUserDtoSchema.parse(request.body)
+    const body = request.body as any // Will be validated by the controller
     const createdBy = (request as any).user?.phoneNumber // Assuming auth middleware sets user
     return controller.createUser(body, createdBy)
   })
@@ -57,7 +74,7 @@ export async function userRoutes(app: FastifyInstance) {
   // Update user
   app.put('/:phoneNumber', async (request) => {
     const params = request.params as { phoneNumber: string }
-    const body = UpdateUserDtoSchema.parse(request.body)
+    const body = request.body as any // Will be validated by the controller
     const updatedBy = (request as any).user?.phoneNumber // Assuming auth middleware sets user
     return controller.updateUser(params.phoneNumber, body, updatedBy)
   })

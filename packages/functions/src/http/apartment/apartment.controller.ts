@@ -183,4 +183,40 @@ export class ApartmentController {
     // Legacy method - redirect to getApartmentByUnitCode
     return this.getApartmentByUnitCode(id)
   }
+
+  // Get apartment users (relationships)
+  async getApartmentUsers(unitCode: string) {
+    try {
+      return await this.apartmentService.getApartmentUsers(unitCode)
+    } catch (error) {
+      if (error instanceof DomainError) {
+        throw error
+      }
+      throw new DomainError('Failed to get apartment users', 'APARTMENT_QUERY_ERROR')
+    }
+  }
+
+  // Get apartment contracts
+  async getApartmentContracts(unitCode: string) {
+    try {
+      return await this.apartmentService.getApartmentContracts(unitCode)
+    } catch (error) {
+      if (error instanceof DomainError) {
+        throw error
+      }
+      throw new DomainError('Failed to get apartment contracts', 'APARTMENT_QUERY_ERROR')
+    }
+  }
+
+  // Get apartment payments
+  async getApartmentPayments(unitCode: string) {
+    try {
+      return await this.apartmentService.getApartmentPayments(unitCode)
+    } catch (error) {
+      if (error instanceof DomainError) {
+        throw error
+      }
+      throw new DomainError('Failed to get apartment payments', 'APARTMENT_QUERY_ERROR')
+    }
+  }
 }

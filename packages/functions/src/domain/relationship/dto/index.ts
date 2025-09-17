@@ -1,2 +1,2 @@
-export * from './create-relationship.dto'
-export * from './update-relationship.dto'
+export * from './create-user-apartment-relation.dto'
+export * from './update-user-apartment-relation.dto'

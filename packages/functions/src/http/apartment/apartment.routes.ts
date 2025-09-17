@@ -1,9 +1,9 @@
 import { FastifyInstance } from 'fastify'
 import { ApartmentController } from './apartment.controller'
 import {
-  createApartmentDto,
-  updateApartmentDto,
-  apartmentQueryDto,
+  CreateApartmentDto,
+  UpdateApartmentDto,
+  ApartmentQueryDto,
 } from '../../domain/apartment/dto'
 import { ApartmentStatus, RentalType } from '../../domain/apartment/vo/apartment-enums.vo'
 
@@ -39,7 +39,7 @@ export async function apartmentRoutes(app: FastifyInstance) {
 
   // Query apartments with filters
   app.post('/query', async (request) => {
-    const body = apartmentQueryDto.parse(request.body)
+    const body = request.body as ApartmentQueryDto
     return controller.queryApartments(body)
   })
 
@@ -55,6 +55,24 @@ export async function apartmentRoutes(app: FastifyInstance) {
     return controller.getApartmentLog(params.unitCode)
   })
 
+  // Get apartment users (relationships)
+  app.get('/:unitCode/users', async (request) => {
+    const params = request.params as { unitCode: string }
+    return controller.getApartmentUsers(params.unitCode)
+  })
+
+  // Get apartment contracts
+  app.get('/:unitCode/contracts', async (request) => {
+    const params = request.params as { unitCode: string }
+    return controller.getApartmentContracts(params.unitCode)
+  })
+
+  // Get apartment payments
+  app.get('/:unitCode/payments', async (request) => {
+    const params = request.params as { unitCode: string }
+    return controller.getApartmentPayments(params.unitCode)
+  })
+
   // Get single apartment by unit code
   app.get('/:unitCode', async (request) => {
     const params = request.params as { unitCode: string }
@@ -63,7 +81,7 @@ export async function apartmentRoutes(app: FastifyInstance) {
 
   // Create new apartment
   app.post('/', async (request) => {
-    const body = createApartmentDto.parse(request.body)
+    const body = request.body as CreateApartmentDto
     const createdBy = (request as any).user?.phoneNumber // Assuming auth middleware sets user
     return controller.createApartment(body, createdBy)
   })
@@ -71,7 +89,7 @@ export async function apartmentRoutes(app: FastifyInstance) {
   // Update apartment
   app.put('/:unitCode', async (request) => {
     const params = request.params as { unitCode: string }
-    const body = updateApartmentDto.parse(request.body)
+    const body = request.body as UpdateApartmentDto
     const updatedBy = (request as any).user?.phoneNumber // Assuming auth middleware sets user
     return controller.updateApartment(params.unitCode, body, updatedBy)
   })
@@ -84,12 +102,8 @@ export async function apartmentRoutes(app: FastifyInstance) {
   })
 
   // Legacy routes for backward compatibility
+  // This maintains the original /apartamentos API contract
   app.get('/', async () => {
-    return controller.getApartments()
-  })
-
-  app.get('/:id', async (request) => {
-    const params = request.params as { id: string }
-    return controller.getApartmentById(params.id)
+    return controller.getApartmentsWithLastPayment()
   })
 }

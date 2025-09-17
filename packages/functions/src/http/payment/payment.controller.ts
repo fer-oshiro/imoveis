@@ -270,4 +270,57 @@ export class PaymentController {
       throw new DomainError('Failed to get payment statistics by user', 'PAYMENT_QUERY_ERROR')
     }
   }
+
+  // Legacy methods for backward compatibility
+  // Get all payment proofs (legacy comprovantes endpoint)
+  async getAllPaymentProofs() {
+    try {
+      const payments = await this.paymentService.getAllPaymentProofs()
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          items: payments.sort((a, b) => a.apartmentUnitCode.localeCompare(b.apartmentUnitCode)),
+          total: payments.length,
+        }),
+      }
+    } catch (error) {
+      if (error instanceof DomainError) {
+        throw error
+      }
+      throw new DomainError('Failed to get all payment proofs', 'PAYMENT_QUERY_ERROR')
+    }
+  }
+
+  // Submit legacy payment proof (legacy comprovantes POST endpoint)
+  async submitLegacyPaymentProof(body: any) {
+    try {
+      // Validate legacy format
+      const dataDeposito = body.dataDeposito
+      if (!dataDeposito) {
+        throw new DomainError('dataDeposito is required', 'PAYMENT_VALIDATION_ERROR', 400)
+      }
+      if (dataDeposito.startsWith('T')) {
+        throw new DomainError('Invalid date format', 'PAYMENT_VALIDATION_ERROR', 400)
+      }
+      if (dataDeposito.split('T')[1]?.length !== 13) {
+        throw new DomainError('Invalid time format', 'PAYMENT_VALIDATION_ERROR', 400)
+      }
+
+      const date = new Date(dataDeposito)
+      if (isNaN(date.getTime())) {
+        throw new DomainError('Invalid date', 'PAYMENT_VALIDATION_ERROR', 400)
+      }
+
+      const result = await this.paymentService.submitLegacyPaymentProof(body)
+      return {
+        statusCode: 200,
+        body: 'success',
+      }
+    } catch (error) {
+      if (error instanceof DomainError) {
+        throw error
+      }
+      throw new DomainError('Failed to submit legacy payment proof', 'PAYMENT_CREATE_ERROR')
+    }
+  }
 }

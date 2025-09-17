@@ -171,4 +171,40 @@ export class ContractController {
       throw new DomainError('Failed to delete contract', 'CONTRACT_DELETE_ERROR')
     }
   }
+
+  // Get all contracts (admin view)
+  async getAllContracts(query: { status?: ContractStatus; limit?: string; offset?: string }) {
+    try {
+      return await this.contractService.getAllContracts(query)
+    } catch (error) {
+      if (error instanceof DomainError) {
+        throw error
+      }
+      throw new DomainError('Failed to get all contracts', 'CONTRACT_QUERY_ERROR')
+    }
+  }
+
+  // Get contract payments
+  async getContractPayments(contractId: string) {
+    try {
+      return await this.contractService.getContractPayments(contractId)
+    } catch (error) {
+      if (error instanceof DomainError) {
+        throw error
+      }
+      throw new DomainError('Failed to get contract payments', 'CONTRACT_QUERY_ERROR')
+    }
+  }
+
+  // Get contract history
+  async getContractHistory(contractId: string) {
+    try {
+      return await this.contractService.getContractHistory(contractId)
+    } catch (error) {
+      if (error instanceof DomainError) {
+        throw error
+      }
+      throw new DomainError('Failed to get contract history', 'CONTRACT_QUERY_ERROR')
+    }
+  }
 }

@@ -43,6 +43,24 @@ export async function contractRoutes(app: FastifyInstance) {
     return controller.getExpiringContracts(daysFromNow)
   })
 
+  // Get all contracts (admin view)
+  app.get('/', async (request) => {
+    const query = request.query as { status?: ContractStatus; limit?: string; offset?: string }
+    return controller.getAllContracts(query)
+  })
+
+  // Get contract payments
+  app.get('/:contractId/payments', async (request) => {
+    const params = request.params as { contractId: string }
+    return controller.getContractPayments(params.contractId)
+  })
+
+  // Get contract history
+  app.get('/:contractId/history', async (request) => {
+    const params = request.params as { contractId: string }
+    return controller.getContractHistory(params.contractId)
+  })
+
   // Create new contract
   app.post('/', async (request) => {
     const body = request.body as CreateContractDto

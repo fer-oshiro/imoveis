@@ -121,4 +121,15 @@ export async function paymentRoutes(app: FastifyInstance) {
     const params = request.params as { paymentId: string }
     return controller.deletePayment(params.paymentId)
   })
+
+  // Legacy routes for backward compatibility
+  // This maintains the original /comprovantes API contract
+  app.get('/legacy/all', async () => {
+    return controller.getAllPaymentProofs()
+  })
+
+  app.post('/legacy/proof', async (request) => {
+    const body = request.body as any
+    return controller.submitLegacyPaymentProof(body)
+  })
 }

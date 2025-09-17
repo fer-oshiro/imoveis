@@ -270,4 +270,61 @@ export class UserController {
       throw new DomainError('Failed to validate document uniqueness', 'USER_VALIDATION_ERROR')
     }
   }
+
+  // Get user apartments (relationships)
+  async getUserApartments(phoneNumber: string) {
+    try {
+      return await this.userService.getUserApartments(phoneNumber)
+    } catch (error) {
+      if (error instanceof EntityNotFoundError) {
+        throw new DomainError(
+          `User with phone number ${phoneNumber} not found`,
+          'USER_NOT_FOUND',
+          404,
+        )
+      }
+      if (error instanceof DomainError) {
+        throw error
+      }
+      throw new DomainError('Failed to get user apartments', 'USER_QUERY_ERROR')
+    }
+  }
+
+  // Get user contracts
+  async getUserContracts(phoneNumber: string) {
+    try {
+      return await this.userService.getUserContracts(phoneNumber)
+    } catch (error) {
+      if (error instanceof EntityNotFoundError) {
+        throw new DomainError(
+          `User with phone number ${phoneNumber} not found`,
+          'USER_NOT_FOUND',
+          404,
+        )
+      }
+      if (error instanceof DomainError) {
+        throw error
+      }
+      throw new DomainError('Failed to get user contracts', 'USER_QUERY_ERROR')
+    }
+  }
+
+  // Get user payments
+  async getUserPayments(phoneNumber: string) {
+    try {
+      return await this.userService.getUserPayments(phoneNumber)
+    } catch (error) {
+      if (error instanceof EntityNotFoundError) {
+        throw new DomainError(
+          `User with phone number ${phoneNumber} not found`,
+          'USER_NOT_FOUND',
+          404,
+        )
+      }
+      if (error instanceof DomainError) {
+        throw error
+      }
+      throw new DomainError('Failed to get user payments', 'USER_QUERY_ERROR')
+    }
+  }
 }
