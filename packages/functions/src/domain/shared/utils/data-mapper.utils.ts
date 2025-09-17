@@ -142,7 +142,7 @@ export class DataMapper {
         description: `Contract started with ${contract.tenantPhoneNumberValue}`,
         details: {
           contractId: contract.contractIdValue,
-          monthlyRent: contract.monthlyRentValue,
+          monthlyRent: contract.termsValue.monthlyRent,
           endDate: contract.endDateValue,
         },
         relatedEntityId: contract.contractIdValue,

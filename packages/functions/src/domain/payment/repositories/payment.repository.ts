@@ -30,8 +30,20 @@ export class PaymentRepository
   extends BaseRepository<Payment, string>
   implements IPaymentRepository
 {
+  private static instance: PaymentRepository
+
   constructor(tableName: string, dynamoClient: DynamoDBDocumentClient) {
     super(tableName, dynamoClient)
+  }
+
+  public static getInstance(): PaymentRepository {
+    if (!PaymentRepository.instance) {
+      // Import dynamoClient from infra
+      const { dynamoClient } = require('../../../infra/database')
+      const tableName = process.env.TABLE_NAME || 'imovel-oshiro-table'
+      PaymentRepository.instance = new PaymentRepository(tableName, dynamoClient)
+    }
+    return PaymentRepository.instance
   }
 
   async findById(paymentId: string): Promise<Payment | null> {

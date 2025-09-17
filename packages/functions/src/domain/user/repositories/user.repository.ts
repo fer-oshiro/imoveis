@@ -12,8 +12,20 @@ import { User, UserStatus } from '../entities/user.entity'
 import { IUserRepository } from './user-repository.interface'
 
 export class UserRepository extends BaseRepository<User, string> implements IUserRepository {
+  private static instance: UserRepository
+
   constructor(tableName: string, dynamoClient: DynamoDBDocumentClient) {
     super(tableName, dynamoClient)
+  }
+
+  public static getInstance(): UserRepository {
+    if (!UserRepository.instance) {
+      // Import dynamoClient from infra
+      const { dynamoClient } = require('../../../infra/database')
+      const tableName = process.env.TABLE_NAME || 'imovel-oshiro-table'
+      UserRepository.instance = new UserRepository(tableName, dynamoClient)
+    }
+    return UserRepository.instance
   }
 
   async findById(phoneNumber: string): Promise<User | null> {

@@ -21,8 +21,20 @@ export class ContractRepository
   extends BaseRepository<Contract, string>
   implements IContractRepository
 {
+  private static instance: ContractRepository
+
   constructor(tableName: string, dynamoClient: DynamoDBDocumentClient) {
     super(tableName, dynamoClient)
+  }
+
+  public static getInstance(): ContractRepository {
+    if (!ContractRepository.instance) {
+      // Import dynamoClient from infra
+      const { dynamoClient } = require('../../../infra/database')
+      const tableName = process.env.TABLE_NAME || 'imovel-oshiro-table'
+      ContractRepository.instance = new ContractRepository(tableName, dynamoClient)
+    }
+    return ContractRepository.instance
   }
 
   async findById(contractId: string): Promise<Contract | null> {
