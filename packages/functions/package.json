@@ -13,6 +13,7 @@
     "@imovel/core": "*",
     "date-fns": "^4.1.0",
     "fastify": "^5.5.0",
+    "libphonenumber-js": "^1.12.17",
     "sst": "*",
     "winston": "^3.17.0",
     "zod": "^3.25.67",

@@ -8,13 +8,21 @@
     "dev": "sst dev",
     "deploy:stg": "npx sst deploy --stage stg",
     "deploy:prod": "npx sst deploy --stage prod",
-    "remove:stg": "npx sst remove --stage stg"
+    "remove:stg": "npx sst remove --stage stg",
+    "test": "npm run test:unit",
+    "test:unit": "vitest run",
+    "test:sst": "sst shell vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui"
   },
   "devDependencies": {
     "@tsconfig/node22": "~22.0.2",
+    "@types/jest": "^30.0.0",
+    "@vitest/ui": "^3.2.4",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
-    "typescript": "~5.9.2"
+    "typescript": "~5.9.2",
+    "vitest": "^3.2.4"
   },
   "dependencies": {
     "sst": "~3.17.10"
