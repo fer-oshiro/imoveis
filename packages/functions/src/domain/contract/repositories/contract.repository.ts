@@ -1,10 +1,10 @@
 import {
+  DeleteCommand,
   DynamoDBDocumentClient,
-  GetCommand,
   PutCommand,
   QueryCommand,
-  DeleteCommand,
 } from '@aws-sdk/lib-dynamodb'
+import { Resource } from 'sst'
 import { BaseRepository, IBaseRepository } from '../../shared'
 import { Contract } from '../entities/contract.entity'
 import { ContractStatus } from '../vo/contract-enums.vo'
@@ -31,7 +31,7 @@ export class ContractRepository
     if (!ContractRepository.instance) {
       // Import dynamoClient from infra
       const { dynamoClient } = require('../../../infra/database')
-      const tableName = process.env.TABLE_NAME || 'imovel-oshiro-table'
+      const tableName = Resource.table.name || 'imovel-oshiro-table'
       ContractRepository.instance = new ContractRepository(tableName, dynamoClient)
     }
     return ContractRepository.instance

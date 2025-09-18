@@ -1,13 +1,14 @@
 import {
+  DeleteCommand,
   DynamoDBDocumentClient,
   GetCommand,
   PutCommand,
-  DeleteCommand,
   QueryCommand,
   ScanCommand,
 } from '@aws-sdk/lib-dynamodb'
+import { Resource } from 'sst'
 import { BaseRepository, PhoneNumberVO } from '../../shared'
-import { DatabaseError, EntityNotFoundError } from '../../shared/errors/domain-error'
+import { DatabaseError } from '../../shared/errors/domain-error'
 import { User, UserStatus } from '../entities/user.entity'
 import { IUserRepository } from './user-repository.interface'
 
@@ -22,7 +23,7 @@ export class UserRepository extends BaseRepository<User, string> implements IUse
     if (!UserRepository.instance) {
       // Import dynamoClient from infra
       const { dynamoClient } = require('../../../infra/database')
-      const tableName = process.env.TABLE_NAME || 'imovel-oshiro-table'
+      const tableName = Resource.table.name || 'imovel-oshiro-table'
       UserRepository.instance = new UserRepository(tableName, dynamoClient)
     }
     return UserRepository.instance

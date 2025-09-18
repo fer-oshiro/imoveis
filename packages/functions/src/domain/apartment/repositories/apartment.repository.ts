@@ -3,7 +3,7 @@ import { Resource } from 'sst'
 
 import { docClient } from '../../../infra/database'
 
-const TABLE_NAME = process.env.TABLE_NAME || 'imovel-oshiro-table'
+const TABLE_NAME = Resource.table.name || 'imovel-oshiro-table'
 import { DomainError } from '../../shared'
 import { Apartment } from '../entities/apartment.entity'
 import { ApartmentStatus, RentalType } from '../vo/apartment-enums.vo'

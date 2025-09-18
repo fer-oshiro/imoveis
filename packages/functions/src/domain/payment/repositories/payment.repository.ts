@@ -1,14 +1,14 @@
 import {
+  DeleteCommand,
   DynamoDBDocumentClient,
-  GetCommand,
   PutCommand,
   QueryCommand,
-  DeleteCommand,
   ScanCommand,
 } from '@aws-sdk/lib-dynamodb'
+import { Resource } from 'sst'
 import { BaseRepository, IBaseRepository } from '../../shared'
 import { Payment } from '../entities/payment.entity'
-import { PaymentStatus, PaymentType } from '../vo/payment-enums.vo'
+import { PaymentStatus } from '../vo/payment-enums.vo'
 
 export interface IPaymentRepository extends IBaseRepository<Payment, string> {
   findByApartment(apartmentUnitCode: string): Promise<Payment[]>
@@ -40,7 +40,7 @@ export class PaymentRepository
     if (!PaymentRepository.instance) {
       // Import dynamoClient from infra
       const { dynamoClient } = require('../../../infra/database')
-      const tableName = process.env.TABLE_NAME || 'imovel-oshiro-table'
+      const tableName = Resource.table.name || 'imovel-oshiro-table'
       PaymentRepository.instance = new PaymentRepository(tableName, dynamoClient)
     }
     return PaymentRepository.instance

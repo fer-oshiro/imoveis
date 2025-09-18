@@ -1,11 +1,10 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { DynamoDBDocumentClient, PutCommand, ScanCommand } from '@aws-sdk/lib-dynamodb'
-import { th } from 'date-fns/locale'
 import { Resource } from 'sst'
 
 const client = new DynamoDBClient()
 const docClient = DynamoDBDocumentClient.from(client)
-const TABLE_NAME = process.env.TABLE_NAME || 'imovel-oshiro-table'
+const TABLE_NAME = Resource.table.name || 'imovel-oshiro-table'
 
 export const comprovantes = async (event: any) => {
   if (event.requestContext.http.method === 'POST') {

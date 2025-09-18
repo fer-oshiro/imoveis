@@ -4,7 +4,7 @@ import { Resource } from 'sst'
 
 const client = new DynamoDBClient()
 const docClient = DynamoDBDocumentClient.from(client)
-const TABLE_NAME = process.env.TABLE_NAME || 'imovel-oshiro-table'
+const TABLE_NAME = Resource.table.name || 'imovel-oshiro-table'
 
 export const apartamentos = async (event: any) => {
   const response = await docClient.send(

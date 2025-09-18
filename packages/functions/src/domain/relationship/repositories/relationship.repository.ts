@@ -5,6 +5,7 @@ import {
   PutCommand,
   QueryCommand,
 } from '@aws-sdk/lib-dynamodb'
+import { Resource } from 'sst'
 import { PhoneNumberVO } from '../../shared'
 import { DatabaseError } from '../../shared/errors/domain-error'
 import { BaseRepository } from '../../shared/repositories/base-repository.abstract'
@@ -25,7 +26,7 @@ export class RelationshipRepository
   public static getInstance(): RelationshipRepository {
     if (!RelationshipRepository.instance) {
       const { dynamoClient } = require('../../../infra/database')
-      const tableName = process.env.TABLE_NAME || 'imovel-oshiro-table'
+      const tableName = Resource.table.name || 'imovel-oshiro-table'
       RelationshipRepository.instance = new RelationshipRepository(tableName, dynamoClient)
     }
     return RelationshipRepository.instance
