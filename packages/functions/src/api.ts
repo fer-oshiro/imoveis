@@ -18,12 +18,12 @@ import { img } from './img'
 //   if (event.rawPath.startsWith("/test")) return test();
 
 //   const asd = await client.send(new ScanCommand({
-//     TableName: Resource.table.name,
+//     TableName: Resource.UserTable.name,
 //   }));
 
 //   return {
 //     statusCode: 200,
-//     body: `${Example.hello()} Linked to ${Resource.bucket.name}. ${Resource.table.name} \n JSON: ${JSON.stringify(asd)}`,
+//     body: `${Example.hello()} Linked to ${Resource.bucket.name}. ${Resource.UserTable.name} \n JSON: ${JSON.stringify(asd)}`,
 //   };
 // };
 

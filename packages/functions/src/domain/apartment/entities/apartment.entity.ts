@@ -68,12 +68,6 @@ export class Apartment {
   }
 
   // Getters
-  get pkValue(): string {
-    return this.pk
-  }
-  get skValue(): string {
-    return this.sk
-  }
   get unitCodeValue(): string {
     return this.unitCode
   }

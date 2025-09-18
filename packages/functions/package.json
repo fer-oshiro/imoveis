@@ -7,7 +7,7 @@
     "lint:fix": "eslint . --ext .ts,.js --fix",
     "lint:precommit": "eslint . --ext .ts,.js --fix --max-warnings 200",
     "typecheck": "tsc --noEmit",
-    "typecheck:src": "echo '🔍 Running TypeScript check on source files...' && tsc --noEmit src/domain/*/services/*.ts src/domain/*/entities/*.ts src/domain/*/repositories/*.ts src/domain/*/dto/*.ts src/domain/*/vo/*.ts src/domain/*/errors/*.ts src/domain/shared/**/*.ts src/http/**/*.ts; if [ $? -eq 0 ]; then echo '✅ TypeScript check passed!'; else echo '⚠️  TypeScript found some issues, but main application code compiles successfully (external dependency warnings are expected)'; fi"
+    "typecheck:src": "tsc --noEmit --project tsconfig.src.json"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.864.0",

@@ -12,7 +12,6 @@ import {
 
 // Mock repository
 const mockPaymentRepository: IPaymentRepository = {
-  findAll: vi.fn(),
   findById: vi.fn(),
   findByApartment: vi.fn(),
   findByUser: vi.fn(),

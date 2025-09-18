@@ -1,58 +1,56 @@
-import ApartmentService from './domain/apartment/services/apartment.service'
-import { PaymentService } from './domain/payment/services/payment.service'
-import { PaymentRepository } from './domain/payment/repositories/payment.repository'
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
+import { DynamoDBDocumentClient, QueryCommand, ScanCommand } from '@aws-sdk/lib-dynamodb'
+import { Resource } from 'sst'
 
-// Initialize services
-const apartmentService = new ApartmentService()
-const paymentRepository = PaymentRepository.getInstance()
-const paymentService = new PaymentService(paymentRepository)
+const client = new DynamoDBClient()
+const docClient = DynamoDBDocumentClient.from(client)
+const TABLE_NAME = process.env.TABLE_NAME || 'imovel-oshiro-table'
 
 export const apartamentos = async (event: any) => {
-  try {
-    // Get all apartments with last payment info using domain services
-    const apartmentsWithPaymentInfo = await apartmentService.getApartmentsWithLastPayment()
+  const response = await docClient.send(
+    new ScanCommand({
+      TableName: TABLE_NAME,
+      FilterExpression: 'begins_with(PK, :pk) AND SK = :sk',
+      ExpressionAttributeValues: {
+        ':pk': 'APARTAMENTO#',
+        ':sk': 'INFO',
+      },
+    }),
+  )
 
-    // Transform to legacy format for backward compatibility
-    const legacyItems = apartmentsWithPaymentInfo.map((item) => {
-      const apartment = item.apartment
-      const lastPayment = item.lastPayment
-
-      return {
-        PK: apartment.pkValue,
-        SK: apartment.skValue,
-        unidade: apartment.unitCodeValue,
-        unitLabel: apartment.unitLabelValue,
-        endereco: apartment.addressValue,
-        status: apartment.statusValue,
-        tipoAluguel: apartment.rentalTypeValue,
-        aluguelBase: apartment.baseRentValue,
-        taxaLimpeza: apartment.cleaningFeeValue,
-        imagens: apartment.imagesValue,
-        telefone: apartment.contactInfoValue?.phoneNumber,
-        linkAirbnb: apartment.airbnbLinkValue,
-        disponivel: apartment.isAvailableValue,
-        disponivelAPartirDe: apartment.availableFromValue?.toISOString(),
-        ultimo_pagamento: lastPayment?.paymentDateValue?.toISOString()?.split('T')?.[0] || null,
-        criadoEm: apartment.metadataValue.createdAt.toISOString(),
-        atualizadoEm: apartment.metadataValue.updatedAt.toISOString(),
+  const ultimoComprovante =
+    response.Items?.map(async (item) => {
+      if (!item.telefone) return null
+      const pk = 'USER#' + item.telefone.match(/\d+/g)?.join('')
+      const response = await docClient.send(
+        new QueryCommand({
+          TableName: TABLE_NAME,
+          KeyConditionExpression: 'PK = :pk AND begins_with(SK, :skPrefix)',
+          ExpressionAttributeValues: {
+            ':pk': pk,
+            ':skPrefix': 'COMPROVANTE#',
+          },
+          ScanIndexForward: false,
+          Limit: 1,
+        }),
+      )
+      if (response.Items && response.Items.length > 0) {
+        return response.Items[0]
       }
-    })
+      return null
+    }) || []
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        items: legacyItems.sort((a, b) => a.unidade.localeCompare(b.unidade)),
-        total: legacyItems.length,
-      }),
-    }
-  } catch (error) {
-    console.error('Error in apartamentos handler:', error)
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        error: 'Internal server error',
-        message: error instanceof Error ? error.message : 'Unknown error',
-      }),
-    }
+  const comprovante = await Promise.all(ultimoComprovante)
+
+  response.Items?.forEach((item, index) => {
+    item.ultimo_pagamento = (comprovante[index] as any)?.dataDeposito?.split('T')?.[0] || null
+  })
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify({
+      items: response.Items?.sort((a, b) => a.unidade.localeCompare(b.unidade)) || [],
+      total: response.Count,
+    }),
   }
 }

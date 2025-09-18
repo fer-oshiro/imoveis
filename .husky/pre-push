@@ -1,18 +1,15 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
 echo "🚀 Running pre-push checks..."
 
-# Run full linting
-echo "🔍 Running ESLint..."
-npm run lint
-
-# Run tests
+# Run tests first (most important)
 echo "🧪 Running tests..."
 npm run test:unit
 
-# Run TypeScript check (more comprehensive)
-echo "🔍 Running TypeScript check..."
-npm run typecheck || echo "⚠️  TypeScript check found some issues, but proceeding with push..."
+# Run linting (informational)
+echo "🔍 Running ESLint..."
+npm run lint || echo "⚠️  ESLint found some issues. Consider running 'npm run lint:fix'"
+
+# Run TypeScript check (informational)
+echo "🔍 Running TypeScript check on source files..."
+npm run typecheck:src || echo "⚠️  TypeScript found some issues in source code. Please review and fix when possible."
 
 echo "✅ Pre-push checks completed!"

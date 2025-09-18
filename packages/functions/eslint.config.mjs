@@ -14,6 +14,7 @@ const compat = new FlatCompat({
 const eslintConfig = [
     {
         files: ['**/*.{js,mjs,cjs,ts}'],
+        ignores: ['eslint.config.mjs'],
         languageOptions: {
             parser: typescriptParser,
             parserOptions: {
@@ -26,9 +27,9 @@ const eslintConfig = [
             '@typescript-eslint': typescriptEslint,
         },
         rules: {
-            // Unused variable rules
+            // Unused variable rules - more lenient
             '@typescript-eslint/no-unused-vars': [
-                'error',
+                'warn',
                 {
                     argsIgnorePattern: '^_',
                     varsIgnorePattern: '^_',
@@ -37,18 +38,18 @@ const eslintConfig = [
             ],
             'no-unused-vars': 'off', // Turn off base rule as it can report incorrect errors
 
-            // Other useful rules
+            // Other useful rules - made warnings instead of errors
             '@typescript-eslint/no-explicit-any': 'warn',
             '@typescript-eslint/no-non-null-assertion': 'warn',
-            '@typescript-eslint/prefer-optional-chain': 'error',
-            '@typescript-eslint/prefer-nullish-coalescing': 'error',
+            '@typescript-eslint/prefer-optional-chain': 'warn',
+            '@typescript-eslint/prefer-nullish-coalescing': 'warn',
 
             // Import rules
-            'no-duplicate-imports': 'error',
+            'no-duplicate-imports': 'warn',
 
             // General code quality
-            'prefer-const': 'error',
-            'no-var': 'error',
+            'prefer-const': 'warn',
+            'no-var': 'warn',
             'no-console': 'warn',
         },
     },

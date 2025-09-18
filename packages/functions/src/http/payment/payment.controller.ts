@@ -279,7 +279,9 @@ export class PaymentController {
       return {
         statusCode: 200,
         body: JSON.stringify({
-          items: payments.sort((a, b) => a.apartmentUnitCode.localeCompare(b.apartmentUnitCode)),
+          items: payments.sort((a: any, b: any) =>
+            a.apartmentUnitCode.localeCompare(b.apartmentUnitCode),
+          ),
           total: payments.length,
         }),
       }
@@ -311,7 +313,7 @@ export class PaymentController {
         throw new DomainError('Invalid date', 'PAYMENT_VALIDATION_ERROR', 400)
       }
 
-      const result = await this.paymentService.submitLegacyPaymentProof(body)
+      await this.paymentService.submitLegacyPaymentProof(body)
       return {
         statusCode: 200,
         body: 'success',

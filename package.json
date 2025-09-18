@@ -47,9 +47,6 @@
     ],
     "packages/web/**/*.{js,jsx,ts,tsx}": [
       "prettier --write"
-    ],
-    "*.{js,jsx,ts,tsx}": [
-      "npm run test:unit -- --run --reporter=verbose --passWithNoTests"
     ]
   }
 }

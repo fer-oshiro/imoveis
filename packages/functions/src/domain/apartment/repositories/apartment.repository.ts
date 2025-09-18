@@ -2,6 +2,8 @@ import { PutCommand, ScanCommand, GetCommand, DeleteCommand } from '@aws-sdk/lib
 import { Resource } from 'sst'
 
 import { docClient } from '../../../infra/database'
+
+const TABLE_NAME = process.env.TABLE_NAME || 'imovel-oshiro-table'
 import { DomainError } from '../../shared'
 import { Apartment } from '../entities/apartment.entity'
 import { ApartmentStatus, RentalType } from '../vo/apartment-enums.vo'
@@ -32,16 +34,11 @@ export default class ApartmentRepository implements IApartmentRepository {
     return ApartmentRepository.instance
   }
 
-  private getTableName(): string {
-    // Use environment variable for consistency with other repositories
-    return process.env.TABLE_NAME || 'imovel-oshiro-table'
-  }
-
   public async findAll(): Promise<Apartment[]> {
     try {
       const response = await docClient.send(
         new ScanCommand({
-          TableName: this.getTableName(),
+          TableName: TABLE_NAME,
           FilterExpression: 'begins_with(PK, :pk) AND SK = :sk',
           ExpressionAttributeValues: {
             ':pk': 'APARTMENT#',
@@ -61,7 +58,7 @@ export default class ApartmentRepository implements IApartmentRepository {
     try {
       const response = await docClient.send(
         new GetCommand({
-          TableName: this.getTableName(),
+          TableName: TABLE_NAME,
           Key: {
             PK: `APARTMENT#${unitCode}`,
             SK: 'INFO',
@@ -80,7 +77,7 @@ export default class ApartmentRepository implements IApartmentRepository {
     try {
       const response = await docClient.send(
         new ScanCommand({
-          TableName: this.getTableName(),
+          TableName: TABLE_NAME,
           FilterExpression: 'begins_with(PK, :pk) AND SK = :sk AND #status = :status',
           ExpressionAttributeNames: {
             '#status': 'status',
@@ -104,7 +101,7 @@ export default class ApartmentRepository implements IApartmentRepository {
     try {
       const response = await docClient.send(
         new ScanCommand({
-          TableName: this.getTableName(),
+          TableName: TABLE_NAME,
           FilterExpression:
             'begins_with(PK, :pk) AND SK = :sk AND (rentalType = :rentalType OR rentalType = :both)',
           ExpressionAttributeValues: {
@@ -130,7 +127,7 @@ export default class ApartmentRepository implements IApartmentRepository {
     try {
       const response = await docClient.send(
         new ScanCommand({
-          TableName: this.getTableName(),
+          TableName: TABLE_NAME,
           FilterExpression: 'begins_with(PK, :pk) AND SK = :sk AND isAvailable = :available',
           ExpressionAttributeValues: {
             ':pk': 'APARTMENT#',
@@ -151,7 +148,7 @@ export default class ApartmentRepository implements IApartmentRepository {
     try {
       const response = await docClient.send(
         new ScanCommand({
-          TableName: this.getTableName(),
+          TableName: TABLE_NAME,
           FilterExpression:
             'begins_with(PK, :pk) AND SK = :sk AND (rentalType = :airbnb OR rentalType = :both) AND attribute_exists(airbnbLink)',
           ExpressionAttributeValues: {
@@ -208,7 +205,7 @@ export default class ApartmentRepository implements IApartmentRepository {
 
       const response = await docClient.send(
         new ScanCommand({
-          TableName: this.getTableName(),
+          TableName: TABLE_NAME,
           FilterExpression: filterExpression,
           ExpressionAttributeValues: expressionAttributeValues,
           ...(Object.keys(expressionAttributeNames).length > 0 && {
@@ -271,7 +268,7 @@ export default class ApartmentRepository implements IApartmentRepository {
     try {
       await docClient.send(
         new PutCommand({
-          TableName: this.getTableName(),
+          TableName: TABLE_NAME,
           Item: apartment.toJSON(),
         }),
       )
@@ -287,7 +284,7 @@ export default class ApartmentRepository implements IApartmentRepository {
     try {
       await docClient.send(
         new PutCommand({
-          TableName: this.getTableName(),
+          TableName: TABLE_NAME,
           Item: apartment.toJSON(),
           ConditionExpression: 'attribute_exists(PK)',
         }),
@@ -304,7 +301,7 @@ export default class ApartmentRepository implements IApartmentRepository {
     try {
       await docClient.send(
         new DeleteCommand({
-          TableName: this.getTableName(),
+          TableName: TABLE_NAME,
           Key: {
             PK: `APARTMENT#${unitCode}`,
             SK: 'INFO',
