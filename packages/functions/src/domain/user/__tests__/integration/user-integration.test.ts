@@ -6,7 +6,7 @@ import { User, UserStatus } from '../../entities/user.entity'
 // Mock DynamoDB client for integration tests
 const mockDynamoClient = {
   send: async (command: any) => {
-    // Mock implementation for basic operations
+    // Mock implementation for   operations
     if (command.constructor.name === 'GetCommand') {
       return { Item: null } // User not found
     }

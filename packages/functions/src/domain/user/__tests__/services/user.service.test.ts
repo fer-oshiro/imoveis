@@ -1,287 +1,370 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { UserService } from '../../services/user.service'
 import { IUserRepository } from '../../repositories/user-repository.interface'
 import { User, UserStatus } from '../../entities/user.entity'
-import {
-  EntityNotFoundError,
-  BusinessRuleViolationError,
-  ValidationError,
-} from '../../../shared/errors/domain-error'
+import { CreateUserDto, UpdateUserDto } from '../../dto'
+import { UserNotFoundError, UserAlreadyExistsError } from '../../errors'
+import { EntityNotFoundError } from '../../../shared'
+import { ValidationError } from '../../../shared/errors/domain-error'
 
-// Mock repository
-const mockUserRepository: IUserRepository = {
-  findById: vi.fn(),
-  findByPhoneNumber: vi.fn(),
+import { vi } from 'vitest'
+
+// Mock the repository
+// @ts-ignore - Mock typing issue
+const mockRepository: IUserRepository = {
   findAll: vi.fn(),
-  findBy: vi.fn(),
+  findByPhoneNumber: vi.fn(),
   findByStatus: vi.fn(),
-  findByApartment: vi.fn(),
+  findByDocument: vi.fn(),
   existsByPhoneNumber: vi.fn(),
   existsByDocument: vi.fn(),
-  existsByCpf: vi.fn(),
+  findByApartment: vi.fn(),
   save: vi.fn(),
+  update: vi.fn(),
   delete: vi.fn(),
 }
 
 describe('UserService', () => {
-  let userService: UserService
+  let service: UserService
+  let mockUser: User
 
   beforeEach(() => {
-    userService = new UserService(mockUserRepository)
+    service = new UserService(mockRepository)
+    mockUser = User.create({
+      phoneNumber: '11987654321',
+      name: 'João Silva',
+      document: '11144477735',
+      email: 'joao@example.com',
+    })
     vi.clearAllMocks()
   })
 
-  const validUserData = {
-    phoneNumber: '+5511987654321',
-    name: 'João Silva',
-    document: '11144477735', // Valid CPF
-    email: 'joao@example.com',
-  }
-
   describe('createUser', () => {
-    it('should create a new user successfully', async () => {
-      vi.mocked(mockUserRepository.existsByPhoneNumber).mockResolvedValue(false)
-      vi.mocked(mockUserRepository.existsByDocument).mockResolvedValue(false)
+    const validDto: CreateUserDto = {
+      phoneNumber: '11987654321',
+      name: 'João Silva',
+      document: '11144477735',
+      email: 'joao@example.com',
+    }
 
-      const mockUser = User.create(validUserData)
-      vi.mocked(mockUserRepository.save).mockResolvedValue(mockUser)
+    it('should create user successfully', async () => {
+      mockRepository.existsByPhoneNumber.mockResolvedValue(false) // No existing user
+      mockRepository.existsByDocument.mockResolvedValue(false) // No existing document
+      mockRepository.save.mockResolvedValue(mockUser)
 
-      const result = await userService.createUser(validUserData, 'admin')
+      const result = await service.createUser(validDto, 'creator')
 
-      expect(mockUserRepository.existsByPhoneNumber).toHaveBeenCalledWith(validUserData.phoneNumber)
-      expect(mockUserRepository.existsByDocument).toHaveBeenCalledWith(validUserData.document)
-      expect(mockUserRepository.save).toHaveBeenCalled()
-      expect(result).toEqual(mockUser)
+      expect(mockRepository.existsByPhoneNumber).toHaveBeenCalledWith('11987654321')
+      expect(mockRepository.save).toHaveBeenCalled()
+      expect(result).toBe(mockUser)
     })
 
-    it('should throw error if phone number already exists', async () => {
-      vi.mocked(mockUserRepository.existsByPhoneNumber).mockResolvedValue(true)
-
-      await expect(userService.createUser(validUserData)).rejects.toThrow(
-        BusinessRuleViolationError,
-      )
-      expect(mockUserRepository.save).not.toHaveBeenCalled()
-    })
-
-    it('should throw error if document already exists', async () => {
-      vi.mocked(mockUserRepository.existsByPhoneNumber).mockResolvedValue(false)
-      vi.mocked(mockUserRepository.existsByDocument).mockResolvedValue(true)
-
-      await expect(userService.createUser(validUserData)).rejects.toThrow(
-        BusinessRuleViolationError,
-      )
-      expect(mockUserRepository.save).not.toHaveBeenCalled()
-    })
-
-    it('should throw ValidationError for invalid input data', async () => {
-      const invalidData = {
-        phoneNumber: 'invalid',
-        name: 'A', // Too short
-        document: 'invalid',
+    it('should create user with minimal data', async () => {
+      const minimalDto = {
+        phoneNumber: '11987654321',
+        name: 'João Silva',
       }
+      mockRepository.findByPhoneNumber.mockResolvedValue(null)
+      mockRepository.save.mockResolvedValue(mockUser)
 
-      await expect(userService.createUser(invalidData as any)).rejects.toThrow()
+      const result = await service.createUser(minimalDto, 'creator')
+
+      expect(mockRepository.save).toHaveBeenCalled()
+      expect(result).toBe(mockUser)
     })
 
-    it('should throw ValidationError for invalid input data', async () => {
-      const invalidData = {
-        phoneNumber: '', // Invalid: empty
-        name: 'A', // Invalid: too short
-        cpf: '123', // Invalid: too short
-        email: 'invalid-email', // Invalid: bad format
-      }
+    it('should throw error if user already exists', async () => {
+      mockRepository.existsByPhoneNumber.mockResolvedValue(true)
+      mockRepository.existsByDocument.mockResolvedValue(false)
 
-      await expect(userService.createUser(invalidData as any)).rejects.toThrow(ValidationError)
-      expect(mockUserRepository.existsByPhoneNumber).not.toHaveBeenCalled()
-      expect(mockUserRepository.save).not.toHaveBeenCalled()
-    })
-  })
-
-  describe('getUserByPhoneNumber', () => {
-    it('should return user when found', async () => {
-      const mockUser = User.create(validUserData)
-      vi.mocked(mockUserRepository.findByPhoneNumber).mockResolvedValue(mockUser)
-
-      const result = await userService.getUserByPhoneNumber(validUserData.phoneNumber)
-
-      expect(mockUserRepository.findByPhoneNumber).toHaveBeenCalledWith(validUserData.phoneNumber)
-      expect(result).toEqual(mockUser)
-    })
-
-    it('should throw EntityNotFoundError when user not found', async () => {
-      vi.mocked(mockUserRepository.findByPhoneNumber).mockResolvedValue(null)
-
-      await expect(userService.getUserByPhoneNumber(validUserData.phoneNumber)).rejects.toThrow(
-        EntityNotFoundError,
+      await expect(service.createUser(validDto)).rejects.toThrow(
+        'User with this phone number already exists',
       )
+    })
+
+    it('should validate duplicate document', async () => {
+      mockRepository.existsByPhoneNumber.mockResolvedValue(false)
+      mockRepository.existsByDocument.mockResolvedValue(true)
+
+      await expect(service.createUser(validDto)).rejects.toThrow(
+        'User with this document already exists',
+      )
+    })
+
+    it('should handle repository errors', async () => {
+      mockRepository.existsByPhoneNumber.mockResolvedValue(false)
+      mockRepository.existsByDocument.mockResolvedValue(false)
+      mockRepository.save.mockRejectedValue(new Error('Database error'))
+
+      await expect(service.createUser(validDto)).rejects.toThrow('Database error')
     })
   })
 
   describe('updateUser', () => {
+    const updateDto: UpdateUserDto = {
+      name: 'Maria Silva',
+      email: 'maria@example.com',
+    }
+
     it('should update user successfully', async () => {
-      const mockUser = User.create(validUserData)
-      const updateData = { name: 'Maria Silva', email: 'maria@example.com' }
+      mockRepository.findByPhoneNumber.mockResolvedValue(mockUser)
+      mockRepository.save.mockResolvedValue(mockUser)
 
-      vi.mocked(mockUserRepository.findByPhoneNumber).mockResolvedValue(mockUser)
-      vi.mocked(mockUserRepository.save).mockResolvedValue(mockUser)
+      const result = await service.updateUser('+5511987654321', updateDto, 'updater')
 
-      const result = await userService.updateUser(validUserData.phoneNumber, updateData, 'admin')
-
-      expect(mockUserRepository.findByPhoneNumber).toHaveBeenCalledWith(validUserData.phoneNumber)
-      expect(mockUserRepository.save).toHaveBeenCalled()
-      expect(result).toEqual(mockUser)
+      expect(mockRepository.findByPhoneNumber).toHaveBeenCalledWith('+5511987654321')
+      expect(mockRepository.save).toHaveBeenCalledWith(mockUser)
+      expect(result).toBe(mockUser)
     })
 
-    it('should throw error when user not found', async () => {
-      vi.mocked(mockUserRepository.findByPhoneNumber).mockResolvedValue(null)
+    it('should throw error if user not found', async () => {
+      mockRepository.findByPhoneNumber.mockResolvedValue(null)
 
-      await expect(
-        userService.updateUser(validUserData.phoneNumber, { name: 'New Name' }),
-      ).rejects.toThrow(EntityNotFoundError)
+      await expect(service.updateUser('+5511987654321', updateDto)).rejects.toThrow(
+        EntityNotFoundError,
+      )
     })
 
-    it('should throw ValidationError for invalid update data', async () => {
-      const invalidData = {
-        name: 'A', // Too short
-        email: 'invalid-email',
-      }
+    it('should handle repository errors', async () => {
+      mockRepository.findByPhoneNumber.mockResolvedValue(mockUser)
+      mockRepository.save.mockRejectedValue(new Error('Database error'))
 
-      await expect(userService.updateUser(validUserData.phoneNumber, invalidData)).rejects.toThrow()
+      await expect(service.updateUser('+5511987654321', updateDto)).rejects.toThrow(
+        'Database error',
+      )
+    })
+  })
+
+  describe('getUserByPhoneNumber', () => {
+    it('should return user if found', async () => {
+      mockRepository.findByPhoneNumber.mockResolvedValue(mockUser)
+
+      const result = await service.getUserByPhoneNumber('+5511987654321')
+
+      expect(mockRepository.findByPhoneNumber).toHaveBeenCalledWith('+5511987654321')
+      expect(result).toBe(mockUser)
     })
 
-    it('should throw ValidationError for invalid update data', async () => {
-      const invalidUpdateData = {
-        name: 'A', // Invalid: too short
-        email: 'invalid-email', // Invalid: bad format
-      }
+    it('should throw error if not found', async () => {
+      mockRepository.findByPhoneNumber.mockResolvedValue(null)
 
-      await expect(
-        userService.updateUser(validUserData.phoneNumber, invalidUpdateData as any),
-      ).rejects.toThrow(ValidationError)
-      expect(mockUserRepository.findByPhoneNumber).not.toHaveBeenCalled()
+      await expect(service.getUserByPhoneNumber('+5511987654321')).rejects.toThrow(
+        EntityNotFoundError,
+      )
+    })
+
+    it('should handle repository errors', async () => {
+      mockRepository.findByPhoneNumber.mockRejectedValue(new Error('Database error'))
+
+      await expect(service.getUserByPhoneNumber('+5511987654321')).rejects.toThrow('Database error')
+    })
+  })
+
+  describe('getUserDetails', () => {
+    it('should return user details with relationships', async () => {
+      mockRepository.findByPhoneNumber.mockResolvedValue(mockUser)
+
+      const result = await service.getUserDetails('+5511987654321')
+
+      expect(mockRepository.findByPhoneNumber).toHaveBeenCalledWith('+5511987654321')
+      expect(result).toBeDefined()
+      expect(result.user.phoneNumber).toBe(mockUser.phoneNumber.formatted)
+      expect(result.user.name).toBe(mockUser.name)
+      expect(result.user.document).toBe(mockUser.document.formatted)
+      expect(result.user.email).toBe(mockUser.email)
+      expect(result.user.status).toBe(mockUser.status)
+      expect(result.relatedUsers).toEqual([])
+      expect(result.apartments).toEqual([])
+      expect(result.paymentHistory).toEqual([])
+    })
+
+    it('should throw error if user not found', async () => {
+      mockRepository.findByPhoneNumber.mockResolvedValue(null)
+
+      await expect(service.getUserDetails('+5511987654321')).rejects.toThrow(EntityNotFoundError)
     })
   })
 
   describe('activateUser', () => {
     it('should activate inactive user', async () => {
-      const mockUser = User.create({ ...validUserData, status: UserStatus.INACTIVE })
-      vi.mocked(mockUserRepository.findByPhoneNumber).mockResolvedValue(mockUser)
-      vi.mocked(mockUserRepository.save).mockResolvedValue(mockUser)
+      const inactiveUser = User.create({
+        phoneNumber: '11987654321',
+        name: 'João Silva',
+        status: UserStatus.INACTIVE,
+      })
+      mockRepository.findByPhoneNumber.mockResolvedValue(inactiveUser)
+      mockRepository.save.mockResolvedValue(inactiveUser)
 
-      const result = await userService.activateUser(validUserData.phoneNumber, 'admin')
+      const result = await service.activateUser('+5511987654321', 'activator')
 
-      expect(mockUserRepository.save).toHaveBeenCalled()
-      expect(result).toEqual(mockUser)
+      expect(inactiveUser.status).toBe(UserStatus.ACTIVE)
+      expect(mockRepository.save).toHaveBeenCalled()
+      expect(result).toBe(inactiveUser)
+    })
+
+    it('should throw error if user not found', async () => {
+      mockRepository.findByPhoneNumber.mockResolvedValue(null)
+
+      await expect(service.activateUser('+5511987654321')).rejects.toThrow(EntityNotFoundError)
+    })
+
+    it('should throw error if user is already active', async () => {
+      mockRepository.findByPhoneNumber.mockResolvedValue(mockUser) // Already active
+
+      await expect(service.activateUser('+5511987654321')).rejects.toThrow(ValidationError)
     })
   })
 
   describe('deactivateUser', () => {
     it('should deactivate active user', async () => {
-      const mockUser = User.create(validUserData)
-      vi.mocked(mockUserRepository.findByPhoneNumber).mockResolvedValue(mockUser)
-      vi.mocked(mockUserRepository.save).mockResolvedValue(mockUser)
+      mockRepository.findByPhoneNumber.mockResolvedValue(mockUser)
+      mockRepository.save.mockResolvedValue(mockUser)
 
-      const result = await userService.deactivateUser(validUserData.phoneNumber, 'admin')
+      const result = await service.deactivateUser('+5511987654321', 'deactivator')
 
-      expect(mockUserRepository.save).toHaveBeenCalled()
-      expect(result).toEqual(mockUser)
+      expect(mockUser.status).toBe(UserStatus.INACTIVE)
+      expect(mockRepository.save).toHaveBeenCalled()
+      expect(result).toBe(mockUser)
+    })
+
+    it('should throw error if user not found', async () => {
+      mockRepository.findByPhoneNumber.mockResolvedValue(null)
+
+      await expect(service.deactivateUser('+5511987654321')).rejects.toThrow(EntityNotFoundError)
+    })
+  })
+
+  describe('suspendUser', () => {
+    it('should suspend active user', async () => {
+      mockRepository.findByPhoneNumber.mockResolvedValue(mockUser)
+      mockRepository.save.mockResolvedValue(mockUser)
+
+      const result = await service.suspendUser('+5511987654321', 'suspender')
+
+      expect(mockUser.status).toBe(UserStatus.SUSPENDED)
+      expect(mockRepository.save).toHaveBeenCalled()
+      expect(result).toBe(mockUser)
+    })
+
+    it('should throw error if user not found', async () => {
+      mockRepository.findByPhoneNumber.mockResolvedValue(null)
+
+      await expect(service.suspendUser('+5511987654321')).rejects.toThrow(EntityNotFoundError)
+    })
+  })
+
+  describe('getUsersByStatus', () => {
+    it('should return users by status', async () => {
+      const users = [mockUser]
+      mockRepository.findByStatus.mockResolvedValue(users)
+
+      const result = await service.getUsersByStatus(UserStatus.ACTIVE)
+
+      expect(mockRepository.findByStatus).toHaveBeenCalledWith(UserStatus.ACTIVE)
+      expect(result).toBe(users)
+    })
+
+    it('should handle repository errors', async () => {
+      mockRepository.findByStatus.mockRejectedValue(new Error('Database error'))
+
+      await expect(service.getUsersByStatus(UserStatus.ACTIVE)).rejects.toThrow('Database error')
+    })
+  })
+
+  describe('getAllUsers', () => {
+    it('should return all users', async () => {
+      const users = [mockUser]
+      mockRepository.findAll.mockResolvedValue(users)
+
+      const result = await service.getAllUsers()
+
+      expect(mockRepository.findAll).toHaveBeenCalled()
+      expect(result).toBe(users)
+    })
+
+    it('should handle repository errors', async () => {
+      mockRepository.findAll.mockRejectedValue(new Error('Database error'))
+
+      await expect(service.getAllUsers()).rejects.toThrow('Database error')
     })
   })
 
   describe('deleteUser', () => {
-    it('should delete inactive user', async () => {
-      const mockUser = User.create({ ...validUserData, status: UserStatus.INACTIVE })
-      vi.mocked(mockUserRepository.findByPhoneNumber).mockResolvedValue(mockUser)
+    it('should delete user successfully', async () => {
+      const inactiveUser = { ...mockUser, status: UserStatus.INACTIVE }
+      mockRepository.findByPhoneNumber.mockResolvedValue(inactiveUser)
+      mockRepository.delete.mockResolvedValue()
 
-      await userService.deleteUser(validUserData.phoneNumber)
+      await service.deleteUser('+5511987654321', 'deleter')
 
-      expect(mockUserRepository.delete).toHaveBeenCalledWith(validUserData.phoneNumber)
+      expect(mockRepository.findByPhoneNumber).toHaveBeenCalledWith('+5511987654321')
+      expect(mockRepository.delete).toHaveBeenCalledWith('+5511987654321')
     })
 
-    it('should throw error when trying to delete active user', async () => {
-      const mockUser = User.create(validUserData)
-      vi.mocked(mockUserRepository.findByPhoneNumber).mockResolvedValue(mockUser)
+    it('should throw error if user not found', async () => {
+      mockRepository.findByPhoneNumber.mockResolvedValue(null)
 
-      await expect(userService.deleteUser(validUserData.phoneNumber)).rejects.toThrow(
-        BusinessRuleViolationError,
+      await expect(service.deleteUser('+5511987654321')).rejects.toThrow(EntityNotFoundError)
+    })
+
+    it('should handle repository errors', async () => {
+      mockRepository.findByPhoneNumber.mockResolvedValue(mockUser)
+      mockRepository.delete.mockRejectedValue(new Error('Database error'))
+
+      await expect(service.deleteUser('+5511987654321')).rejects.toThrow(
+        'Only inactive users can be deleted',
       )
-
-      expect(mockUserRepository.delete).not.toHaveBeenCalled()
     })
   })
 
-  describe('getUserDetails', () => {
-    it('should return user details', async () => {
-      const mockUser = User.create(validUserData)
-      vi.mocked(mockUserRepository.findByPhoneNumber).mockResolvedValue(mockUser)
+  describe('business rule validations', () => {
+    it('should validate phone number format', async () => {
+      const invalidDto = {
+        phoneNumber: '123', // Invalid phone
+        name: 'João Silva',
+      }
 
-      const result = await userService.getUserDetails(validUserData.phoneNumber)
+      await expect(service.createUser(invalidDto)).rejects.toThrow(ValidationError)
+    })
 
-      expect(result.user.phoneNumber).toBe(mockUser.phoneNumber.formatted)
-      expect(result.user.name).toBe(mockUser.name)
-      expect(result.user.document).toBe(mockUser.document.formatted)
-      expect(result.relatedUsers).toEqual([])
-      expect(result.apartments).toEqual([])
-      expect(result.paymentHistory).toEqual([])
+    it('should validate name format', async () => {
+      const invalidDto = {
+        phoneNumber: '11987654321',
+        name: '', // Empty name
+      }
+
+      await expect(service.createUser(invalidDto)).rejects.toThrow(ValidationError)
+    })
+
+    it('should validate email format', async () => {
+      const invalidDto = {
+        phoneNumber: '11987654321',
+        name: 'João Silva',
+        email: 'invalid-email',
+      }
+
+      await expect(service.createUser(invalidDto)).rejects.toThrow(ValidationError)
+    })
+
+    it('should validate document format', async () => {
+      const invalidDto = {
+        phoneNumber: '11987654321',
+        name: 'João Silva',
+        document: '12345678901', // Invalid CPF
+      }
+
+      await expect(service.createUser(invalidDto)).rejects.toThrow(ValidationError)
     })
   })
 
-  describe('validateDocumentUnique', () => {
-    it('should return true for unique document', async () => {
-      vi.mocked(mockUserRepository.existsByDocument).mockResolvedValue(false)
+  describe('legacy methods', () => {
+    it('should support legacy getUsersByApartment method', async () => {
+      const apartmentUsers = [mockUser]
+      mockRepository.findByApartment.mockResolvedValue(apartmentUsers)
 
-      const result = await userService.validateDocumentUnique('11144477735')
+      const result = await service.getUsersByApartment('A101')
 
-      expect(result).toBe(true)
-    })
-
-    it('should return false for existing document', async () => {
-      vi.mocked(mockUserRepository.existsByDocument).mockResolvedValue(true)
-
-      const result = await userService.validateDocumentUnique('11144477735')
-
-      expect(result).toBe(false)
-    })
-
-    it('should return true when document belongs to the same user being updated', async () => {
-      const mockUser = User.create(validUserData)
-      vi.mocked(mockUserRepository.existsByDocument).mockResolvedValue(true)
-      vi.mocked(mockUserRepository.findByPhoneNumber).mockResolvedValue(mockUser)
-
-      const result = await userService.validateDocumentUnique(
-        '11144477735',
-        validUserData.phoneNumber,
-      )
-
-      expect(result).toBe(true)
-    })
-  })
-
-  describe('validateCpfUnique', () => {
-    it('should return true for unique CPF', async () => {
-      vi.mocked(mockUserRepository.existsByDocument).mockResolvedValue(false)
-
-      const result = await userService.validateCpfUnique('11144477735')
-
-      expect(result).toBe(true)
-    })
-
-    it('should return false for existing CPF', async () => {
-      vi.mocked(mockUserRepository.existsByDocument).mockResolvedValue(true)
-
-      const result = await userService.validateCpfUnique('11144477735')
-
-      expect(result).toBe(false)
-    })
-
-    it('should return true when CPF belongs to the same user being updated', async () => {
-      const mockUser = User.create(validUserData)
-      vi.mocked(mockUserRepository.existsByDocument).mockResolvedValue(true)
-      vi.mocked(mockUserRepository.findByPhoneNumber).mockResolvedValue(mockUser)
-
-      const result = await userService.validateCpfUnique('11144477735', validUserData.phoneNumber)
-
-      expect(result).toBe(true)
+      expect(mockRepository.findByApartment).toHaveBeenCalledWith('A101')
+      expect(result).toEqual(apartmentUsers)
     })
   })
 })

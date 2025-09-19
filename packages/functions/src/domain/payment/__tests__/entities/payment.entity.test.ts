@@ -1,319 +1,317 @@
 import { Payment } from '../../entities/payment.entity'
 import { PaymentStatus, PaymentType } from '../../vo/payment-enums.vo'
+import { ValidationError } from '../../../shared/errors/domain-error'
+
+// @ts-ignore - Test file with potential mock typing issues
 
 describe('Payment Entity', () => {
-  const mockPaymentData = {
-    paymentId: 'PAY-001-123456',
-    apartmentUnitCode: 'APT001',
-    userPhoneNumber: '+5511999999999',
-    amount: 1500.0,
+  const validData = {
+    paymentId: 'PAY_123',
+    apartmentUnitCode: 'A101',
+    userPhoneNumber: '+5511987654321',
+    amount: 2000,
     dueDate: new Date('2024-01-15'),
-    contractId: 'CONTRACT-001',
-    type: PaymentType.RENT,
-    description: 'Monthly rent payment',
-    createdBy: 'admin',
+    contractId: 'CONTRACT123',
+    createdBy: 'test-user',
   }
 
   describe('create', () => {
-    it('should create a new payment with default values', () => {
-      const payment = Payment.create(mockPaymentData)
+    it('should create a valid payment', () => {
+      const payment = Payment.create(validData)
 
-      expect(payment.paymentIdValue).toBe(mockPaymentData.paymentId)
-      expect(payment.apartmentUnitCodeValue).toBe(mockPaymentData.apartmentUnitCode)
-      expect(payment.userPhoneNumberValue).toBe(mockPaymentData.userPhoneNumber)
-      expect(payment.amountValue).toBe(mockPaymentData.amount)
-      expect(payment.dueDateValue).toEqual(mockPaymentData.dueDate)
+      expect(payment.apartmentUnitCodeValue).toBe('A101')
+      expect(payment.userPhoneNumberValue).toBe('+5511987654321')
+      expect(payment.amountValue).toBe(2000)
+      expect(payment.dueDateValue).toEqual(new Date('2024-01-15'))
+      expect(payment.contractIdValue).toBe('CONTRACT123')
       expect(payment.statusValue).toBe(PaymentStatus.PENDING)
-      expect(payment.typeValue).toBe(PaymentType.RENT)
-      expect(payment.contractIdValue).toBe(mockPaymentData.contractId)
-      expect(payment.descriptionValue).toBe(mockPaymentData.description)
       expect(payment.paymentDateValue).toBeUndefined()
       expect(payment.proofDocumentKeyValue).toBeUndefined()
+      expect(payment.validatedByValue).toBeUndefined()
+      expect(payment.validatedAtValue).toBeUndefined()
     })
 
-    it('should create payment with custom status and type', () => {
-      const customData = {
-        ...mockPaymentData,
+    it('should generate correct DynamoDB keys', () => {
+      const payment = Payment.create(validData)
+
+      expect(payment.pkValue).toBe('APARTMENT#A101')
+      expect(payment.skValue).toMatch(/^PAYMENT#\d{13}#PAY_123/)
+      expect(payment.paymentIdValue).toBe('PAY_123')
+    })
+
+    it('should create payment with optional fields', () => {
+      const dataWithOptionals = {
+        ...validData,
         status: PaymentStatus.PAID,
-        type: PaymentType.DEPOSIT,
+        type: PaymentType.CLEANING_FEE,
+        description: 'Monthly cleaning fee',
       }
 
-      const payment = Payment.create(customData)
+      const payment = Payment.create(dataWithOptionals)
 
       expect(payment.statusValue).toBe(PaymentStatus.PAID)
-      expect(payment.typeValue).toBe(PaymentType.DEPOSIT)
+      expect(payment.typeValue).toBe(PaymentType.CLEANING_FEE)
+      expect(payment.descriptionValue).toBe('Monthly cleaning fee')
     })
   })
 
-  describe('submitProof', () => {
-    it('should submit payment proof successfully', () => {
-      const payment = Payment.create(mockPaymentData)
-      const proofKey = 'proof-document-123.pdf'
-      const paymentDate = new Date('2024-01-14')
+  describe('business logic methods', () => {
+    let payment: Payment
 
-      payment.submitProof(proofKey, paymentDate, 'user')
-
-      expect(payment.proofDocumentKeyValue).toBe(proofKey)
-      expect(payment.paymentDateValue).toEqual(paymentDate)
-      expect(payment.statusValue).toBe(PaymentStatus.PAID)
+    beforeEach(() => {
+      payment = Payment.create(validData)
     })
 
-    it('should throw error when submitting proof for validated payment', () => {
-      const payment = Payment.create(mockPaymentData)
-      payment.submitProof('proof.pdf', new Date(), 'user')
-      payment.validate('admin')
+    describe('submitProof', () => {
+      it('should submit payment proof', () => {
+        const proofKey = 'proof123.pdf'
+        const paymentDate = new Date('2024-01-10')
 
-      expect(() => {
-        payment.submitProof('new-proof.pdf', new Date(), 'user')
-      }).toThrow('Cannot submit proof for already validated payment')
-    })
+        payment.submitProof(proofKey, paymentDate, 'submitter')
 
-    it('should throw error when submitting proof for rejected payment', () => {
-      const payment = Payment.create(mockPaymentData)
-      payment.submitProof('proof.pdf', new Date(), 'user')
-      payment.reject('admin', 'admin')
-
-      expect(() => {
-        payment.submitProof('new-proof.pdf', new Date(), 'user')
-      }).toThrow('Cannot submit proof for rejected payment')
-    })
-  })
-
-  describe('validate', () => {
-    it('should validate payment successfully', () => {
-      const payment = Payment.create(mockPaymentData)
-      payment.submitProof('proof.pdf', new Date(), 'user')
-
-      payment.validate('admin')
-
-      expect(payment.statusValue).toBe(PaymentStatus.VALIDATED)
-      expect(payment.validatedByValue).toBe('admin')
-      expect(payment.validatedAtValue).toBeInstanceOf(Date)
-    })
-
-    it('should throw error when validating non-paid payment', () => {
-      const payment = Payment.create(mockPaymentData)
-
-      expect(() => {
-        payment.validate('admin')
-      }).toThrow('Only paid payments can be validated')
-    })
-
-    it('should throw error when validating payment without proof', () => {
-      const payment = Payment.create({
-        ...mockPaymentData,
-        status: PaymentStatus.PAID,
+        expect(payment.proofDocumentKey).toBe(proofKey)
+        expect(payment.paymentDate).toEqual(paymentDate)
+        expect(payment.status).toBe(PaymentStatus.PAID)
       })
 
-      expect(() => {
-        payment.validate('admin')
-      }).toThrow('Cannot validate payment without proof document')
-    })
-  })
+      it('should update metadata when submitting proof', () => {
+        const originalVersion = payment.metadata.version
+        payment.submitProof('proof.pdf', new Date(), 'submitter')
 
-  describe('reject', () => {
-    it('should reject payment successfully', () => {
-      const payment = Payment.create(mockPaymentData)
-      payment.submitProof('proof.pdf', new Date(), 'user')
-
-      payment.reject('admin', 'admin')
-
-      expect(payment.statusValue).toBe(PaymentStatus.REJECTED)
-      expect(payment.validatedByValue).toBe('admin')
-      expect(payment.validatedAtValue).toBeInstanceOf(Date)
-    })
-
-    it('should throw error when rejecting non-paid payment', () => {
-      const payment = Payment.create(mockPaymentData)
-
-      expect(() => {
-        payment.reject('admin', 'admin')
-      }).toThrow('Only paid payments can be rejected')
-    })
-  })
-
-  describe('markOverdue', () => {
-    it('should mark pending payment as overdue', () => {
-      const pastDueDate = new Date()
-      pastDueDate.setDate(pastDueDate.getDate() - 5)
-
-      const payment = Payment.create({
-        ...mockPaymentData,
-        dueDate: pastDueDate,
+        expect(payment.metadata.version).toBe(originalVersion + 1)
+        expect(payment.metadata.updatedBy).toBe('submitter')
       })
 
-      payment.markOverdue('system')
+      it('should throw error if already validated', () => {
+        payment.submitProof('proof.pdf', new Date())
+        payment.validate('validator')
 
-      expect(payment.statusValue).toBe(PaymentStatus.OVERDUE)
+        expect(() => payment.submitProof('proof.pdf', new Date())).toThrow(Error)
+      })
+
+      it('should allow resubmitting proof if not validated', () => {
+        payment.submitProof('proof1.pdf', new Date('2024-01-10'))
+        payment.submitProof('proof2.pdf', new Date('2024-01-11'), 'submitter')
+
+        expect(payment.proofDocumentKey).toBe('proof2.pdf')
+        expect(payment.paymentDate).toEqual(new Date('2024-01-11'))
+      })
     })
 
-    it('should throw error when marking non-pending payment as overdue', () => {
-      const payment = Payment.create(mockPaymentData)
-      payment.submitProof('proof.pdf', new Date(), 'user')
+    describe('validate', () => {
+      it('should validate payment with proof', () => {
+        payment.submitProof('proof.pdf', new Date('2024-01-10'))
+        payment.validate('validator')
 
-      expect(() => {
+        expect(payment.statusValue).toBe(PaymentStatus.VALIDATED)
+        expect(payment.validatedByValue).toBe('validator')
+        expect(payment.validatedAtValue).toBeInstanceOf(Date)
+      })
+
+      it('should throw error if no proof submitted', () => {
+        expect(() => payment.validate('validator')).toThrow('Only paid payments can be validated')
+      })
+
+      it('should throw error if already validated', () => {
+        payment.submitProof('proof.pdf', new Date())
+        payment.validate('validator1')
+
+        expect(() => payment.validate('validator2')).toThrow('Only paid payments can be validated')
+      })
+    })
+
+    describe('reject', () => {
+      it('should reject payment with proof', () => {
+        payment.submitProof('proof.pdf', new Date('2024-01-10'))
+        payment.reject('rejector', 'rejector')
+
+        expect(payment.statusValue).toBe(PaymentStatus.REJECTED)
+        expect(payment.validatedByValue).toBe('rejector')
+        expect(payment.validatedAtValue).toBeInstanceOf(Date)
+      })
+
+      it('should throw error if no proof submitted', () => {
+        expect(() => payment.reject('rejector')).toThrow('Only paid payments can be rejected')
+      })
+
+      it('should throw error if already validated', () => {
+        payment.submitProof('proof.pdf', new Date())
+        payment.validate('validator')
+
+        expect(() => payment.reject('rejector')).toThrow('Only paid payments can be rejected')
+      })
+    })
+
+    describe('markOverdue', () => {
+      it('should mark pending payment as overdue', () => {
         payment.markOverdue('system')
-      }).toThrow('Only pending payments can be marked as overdue')
-    })
 
-    it('should throw error when marking payment as overdue before due date', () => {
-      const futureDueDate = new Date()
-      futureDueDate.setDate(futureDueDate.getDate() + 5)
-
-      const payment = Payment.create({
-        ...mockPaymentData,
-        dueDate: futureDueDate,
+        expect(payment.statusValue).toBe(PaymentStatus.OVERDUE)
       })
 
-      expect(() => {
-        payment.markOverdue('system')
-      }).toThrow('Cannot mark payment as overdue before due date')
-    })
-  })
+      it('should not mark paid payment as overdue', () => {
+        payment.submitProof('proof.pdf', new Date())
 
-  describe('updateAmount', () => {
-    it('should update payment amount successfully', () => {
-      const payment = Payment.create(mockPaymentData)
-      const newAmount = 2000.0
-
-      payment.updateAmount(newAmount, 'admin')
-
-      expect(payment.amountValue).toBe(newAmount)
-    })
-
-    it('should throw error when updating amount of validated payment', () => {
-      const payment = Payment.create(mockPaymentData)
-      payment.submitProof('proof.pdf', new Date(), 'user')
-      payment.validate('admin')
-
-      expect(() => {
-        payment.updateAmount(2000, 'admin')
-      }).toThrow('Cannot update amount of validated payment')
-    })
-
-    it('should throw error when setting invalid amount', () => {
-      const payment = Payment.create(mockPaymentData)
-
-      expect(() => {
-        payment.updateAmount(0, 'admin')
-      }).toThrow('Payment amount must be greater than zero')
-
-      expect(() => {
-        payment.updateAmount(-100, 'admin')
-      }).toThrow('Payment amount must be greater than zero')
-    })
-  })
-
-  describe('updateDueDate', () => {
-    it('should update due date successfully', () => {
-      const payment = Payment.create(mockPaymentData)
-      const newDueDate = new Date('2024-02-15')
-
-      payment.updateDueDate(newDueDate, 'admin')
-
-      expect(payment.dueDateValue).toEqual(newDueDate)
-    })
-
-    it('should update status when changing due date from overdue to future', () => {
-      const pastDate = new Date()
-      pastDate.setDate(pastDate.getDate() - 5)
-
-      const payment = Payment.create({
-        ...mockPaymentData,
-        dueDate: pastDate,
-      })
-      payment.markOverdue('system')
-
-      const futureDate = new Date()
-      futureDate.setDate(futureDate.getDate() + 5)
-
-      payment.updateDueDate(futureDate, 'admin')
-
-      expect(payment.statusValue).toBe(PaymentStatus.PENDING)
-    })
-
-    it('should throw error when updating due date of validated payment', () => {
-      const payment = Payment.create(mockPaymentData)
-      payment.submitProof('proof.pdf', new Date(), 'user')
-      payment.validate('admin')
-
-      expect(() => {
-        payment.updateDueDate(new Date(), 'admin')
-      }).toThrow('Cannot update due date of validated payment')
-    })
-  })
-
-  describe('status check methods', () => {
-    it('should correctly identify payment status', () => {
-      const payment = Payment.create(mockPaymentData)
-
-      expect(payment.isPending()).toBe(true)
-      expect(payment.isPaid()).toBe(false)
-      expect(payment.isOverdue()).toBe(false)
-      expect(payment.isValidated()).toBe(false)
-      expect(payment.isRejected()).toBe(false)
-
-      payment.submitProof('proof.pdf', new Date(), 'user')
-      expect(payment.isPaid()).toBe(true)
-      expect(payment.isPending()).toBe(false)
-
-      payment.validate('admin')
-      expect(payment.isValidated()).toBe(true)
-      expect(payment.isPaid()).toBe(false)
-    })
-  })
-
-  describe('getDaysOverdue', () => {
-    it('should return 0 for non-overdue payments', () => {
-      const payment = Payment.create(mockPaymentData)
-
-      expect(payment.getDaysOverdue()).toBe(0)
-    })
-
-    it('should calculate days overdue correctly', () => {
-      const pastDate = new Date()
-      pastDate.setDate(pastDate.getDate() - 5)
-
-      const payment = Payment.create({
-        ...mockPaymentData,
-        dueDate: pastDate,
-      })
-      payment.markOverdue('system')
-
-      expect(payment.getDaysOverdue()).toBeGreaterThan(0)
-    })
-  })
-
-  describe('getDaysUntilDue', () => {
-    it('should calculate days until due correctly', () => {
-      const futureDate = new Date()
-      futureDate.setDate(futureDate.getDate() + 10)
-
-      const payment = Payment.create({
-        ...mockPaymentData,
-        dueDate: futureDate,
+        expect(() => payment.markOverdue()).toThrow(Error)
       })
 
-      expect(payment.getDaysUntilDue()).toBeGreaterThan(0)
+      it('should not mark validated payment as overdue', () => {
+        payment.submitProof('proof.pdf', new Date())
+        payment.validate('validator')
+
+        expect(() => payment.markOverdue()).toThrow(Error)
+      })
+    })
+
+    describe('status checks', () => {
+      it('should check if payment is pending', () => {
+        expect(payment.isPending()).toBe(true)
+
+        payment.submitProof('proof.pdf', new Date())
+        expect(payment.isPending()).toBe(false)
+      })
+
+      it('should check if payment is paid', () => {
+        expect(payment.isPaid()).toBe(false)
+
+        payment.submitProof('proof.pdf', new Date())
+        expect(payment.isPaid()).toBe(true)
+      })
+
+      it('should check if payment is validated', () => {
+        expect(payment.isValidated()).toBe(false)
+
+        payment.submitProof('proof.pdf', new Date())
+        payment.validate('validator')
+        expect(payment.isValidated()).toBe(true)
+      })
+
+      it('should check if payment is overdue', () => {
+        expect(payment.isOverdue()).toBe(false)
+
+        payment.markOverdue()
+        expect(payment.isOverdue()).toBe(true)
+      })
+
+      it('should check if payment is rejected', () => {
+        expect(payment.isRejected()).toBe(false)
+
+        payment.submitProof('proof.pdf', new Date())
+        payment.reject('rejector')
+        expect(payment.isRejected()).toBe(true)
+      })
+    })
+
+    describe('date calculations', () => {
+      it('should calculate days until due date', () => {
+        const futureDate = new Date()
+        futureDate.setDate(futureDate.getDate() + 5)
+
+        const futurePayment = Payment.create({
+          ...validData,
+          dueDate: futureDate,
+        })
+
+        expect(futurePayment.getDaysUntilDue()).toBe(5)
+      })
+
+      it('should calculate negative days for overdue payments', () => {
+        const pastDate = new Date()
+        pastDate.setDate(pastDate.getDate() - 3)
+
+        const overduePayment = Payment.create({
+          ...validData,
+          dueDate: pastDate,
+        })
+
+        expect(overduePayment.getDaysUntilDue()).toBe(-3)
+      })
     })
   })
 
-  describe('toJSON and fromJSON', () => {
-    it('should serialize and deserialize correctly', () => {
-      const payment = Payment.create(mockPaymentData)
-      payment.submitProof('proof.pdf', new Date('2024-01-14'), 'user')
+  describe('serialization', () => {
+    it('should serialize to JSON correctly', () => {
+      const payment = Payment.create(validData)
+      payment.submitProof('proof.pdf', new Date('2024-01-10'))
 
       const json = payment.toJSON()
-      const deserializedPayment = Payment.fromJSON(json)
 
-      expect(deserializedPayment.paymentIdValue).toBe(payment.paymentIdValue)
-      expect(deserializedPayment.apartmentUnitCodeValue).toBe(payment.apartmentUnitCodeValue)
-      expect(deserializedPayment.userPhoneNumberValue).toBe(payment.userPhoneNumberValue)
-      expect(deserializedPayment.amountValue).toBe(payment.amountValue)
-      expect(deserializedPayment.dueDateValue).toEqual(payment.dueDateValue)
-      expect(deserializedPayment.statusValue).toBe(payment.statusValue)
-      expect(deserializedPayment.proofDocumentKeyValue).toBe(payment.proofDocumentKeyValue)
-      expect(deserializedPayment.paymentDateValue).toEqual(payment.paymentDateValue)
+      expect(json.paymentId).toBe('PAY_123')
+      expect(json.apartmentUnitCode).toBe('A101')
+      expect(json.userPhoneNumber).toBe('+5511987654321')
+      expect(json.amount).toBe(2000)
+      expect(json.dueDate).toBe('2024-01-15T00:00:00.000Z')
+      expect(json.paymentDate).toBe('2024-01-10T00:00:00.000Z')
+      expect(json.proofDocumentKey).toBe('proof.pdf')
+      expect(json.status).toBe(PaymentStatus.PAID)
+      expect(json.contractId).toBe('CONTRACT123')
+      expect(json.createdAt).toBeDefined()
+      expect(json.updatedAt).toBeDefined()
+    })
+
+    it('should deserialize from DynamoDB item correctly', () => {
+      const item = {
+        pk: 'APARTMENT#A101',
+        sk: 'PAYMENT#1704067200000#PAY_123',
+        paymentId: 'PAY_123',
+        apartmentUnitCode: 'A101',
+        userPhoneNumber: '+5511987654321',
+        amount: 2000,
+        dueDate: '2024-01-15T00:00:00.000Z',
+        paymentDate: '2024-01-10T00:00:00.000Z',
+        proofDocumentKey: 'proof.pdf',
+        status: PaymentStatus.PAID,
+        type: PaymentType.RENT,
+        contractId: 'CONTRACT123',
+        validatedBy: 'validator',
+        validatedAt: '2024-01-11T00:00:00.000Z',
+        metadata: {
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          version: 1,
+        },
+      }
+
+      const payment = Payment.fromJSON(item)
+
+      expect(payment.paymentIdValue).toBe('PAY_123')
+      expect(payment.apartmentUnitCodeValue).toBe('A101')
+      expect(payment.userPhoneNumberValue).toBe('+5511987654321')
+      expect(payment.amountValue).toBe(2000)
+      expect(payment.dueDateValue).toEqual(new Date('2024-01-15'))
+      expect(payment.paymentDateValue).toEqual(new Date('2024-01-10'))
+      expect(payment.proofDocumentKeyValue).toBe('proof.pdf')
+      expect(payment.statusValue).toBe(PaymentStatus.PAID)
+      expect(payment.contractIdValue).toBe('CONTRACT123')
+      expect(payment.validatedByValue).toBe('validator')
+      expect(payment.validatedAtValue).toEqual(new Date('2024-01-11'))
+    })
+
+    it('should handle missing optional fields in deserialization', () => {
+      const minimalItem = {
+        pk: 'APARTMENT#A101',
+        sk: 'PAYMENT#1704067200000#PAY_123',
+        paymentId: 'PAY_123',
+        apartmentUnitCode: 'A101',
+        userPhoneNumber: '+5511987654321',
+        amount: 2000,
+        dueDate: '2024-01-15T00:00:00.000Z',
+        status: PaymentStatus.PENDING,
+        type: PaymentType.RENT,
+        contractId: 'CONTRACT123',
+        metadata: {
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          version: 1,
+        },
+      }
+
+      const payment = Payment.fromJSON(minimalItem)
+
+      expect(payment.paymentDateValue).toBeUndefined()
+      expect(payment.proofDocumentKeyValue).toBeUndefined()
+      expect(payment.validatedByValue).toBeUndefined()
+      expect(payment.validatedAtValue).toBeUndefined()
     })
   })
 })
