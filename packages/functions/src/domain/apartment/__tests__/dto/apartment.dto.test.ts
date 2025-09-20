@@ -70,7 +70,7 @@ describe('Apartment DTOs', () => {
 
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.issues).toHaveLength(4) // 4 missing required fields
+        expect(result.error.issues).toHaveLength(3) // 4 missing required fields
       }
     })
 

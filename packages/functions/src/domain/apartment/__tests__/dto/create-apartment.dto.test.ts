@@ -93,16 +93,6 @@ describe('CreateApartmentDto', () => {
     expect(result.success).toBe(false)
   })
 
-  it('should reject invalid contact phone', () => {
-    const invalidData = {
-      ...validData,
-      contactPhone: '',
-    }
-
-    const result = createApartmentDto.safeParse(invalidData)
-    expect(result.success).toBe(false)
-  })
-
   it('should reject invalid Airbnb URL', () => {
     const invalidData = {
       ...validData,

@@ -56,7 +56,7 @@ describe('ApartmentRepository', () => {
             FilterExpression: 'begins_with(PK, :pk) AND SK = :sk',
             ExpressionAttributeValues: {
               ':pk': 'APARTMENT#',
-              ':sk': 'INFO',
+              ':sk': 'METADATA',
             },
           }),
         }),
@@ -101,7 +101,7 @@ describe('ApartmentRepository', () => {
             TableName: 'test-table',
             Key: {
               PK: 'APARTMENT#A101',
-              SK: 'INFO',
+              SK: 'METADATA',
             },
           }),
         }),
@@ -145,7 +145,7 @@ describe('ApartmentRepository', () => {
             },
             ExpressionAttributeValues: {
               ':pk': 'APARTMENT#',
-              ':sk': 'INFO',
+              ':sk': 'METADATA',
               ':status': ApartmentStatus.AVAILABLE,
             },
           }),
@@ -176,7 +176,7 @@ describe('ApartmentRepository', () => {
               'begins_with(PK, :pk) AND SK = :sk AND (rentalType = :rentalType OR rentalType = :both)',
             ExpressionAttributeValues: {
               ':pk': 'APARTMENT#',
-              ':sk': 'INFO',
+              ':sk': 'METADATA',
               ':rentalType': RentalType.LONG_TERM,
               ':both': RentalType.BOTH,
             },
@@ -201,7 +201,7 @@ describe('ApartmentRepository', () => {
             FilterExpression: 'begins_with(PK, :pk) AND SK = :sk AND isAvailable = :available',
             ExpressionAttributeValues: {
               ':pk': 'APARTMENT#',
-              ':sk': 'INFO',
+              ':sk': 'METADATA',
               ':available': true,
             },
           }),
@@ -226,7 +226,7 @@ describe('ApartmentRepository', () => {
               'begins_with(PK, :pk) AND SK = :sk AND (rentalType = :airbnb OR rentalType = :both) AND attribute_exists(airbnbLink)',
             ExpressionAttributeValues: {
               ':pk': 'APARTMENT#',
-              ':sk': 'INFO',
+              ':sk': 'METADATA',
               ':airbnb': RentalType.AIRBNB,
               ':both': RentalType.BOTH,
             },
@@ -263,7 +263,7 @@ describe('ApartmentRepository', () => {
             FilterExpression: expect.stringContaining('begins_with(PK, :pk) AND SK = :sk'),
             ExpressionAttributeValues: expect.objectContaining({
               ':pk': 'APARTMENT#',
-              ':sk': 'INFO',
+              ':sk': 'METADATA',
               ':status': ApartmentStatus.AVAILABLE,
               ':rentalType': RentalType.LONG_TERM,
               ':both': RentalType.BOTH,
@@ -368,7 +368,7 @@ describe('ApartmentRepository', () => {
             TableName: 'test-table',
             Key: {
               PK: 'APARTMENT#A101',
-              SK: 'INFO',
+              SK: 'METADATA',
             },
           }),
         }),
