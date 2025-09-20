@@ -5,7 +5,7 @@ import { bucket } from './storage'
 export const myApi = new sst.aws.Function('MyApi', {
   url: true,
   link: [bucket, UserTable],
-  handler: 'packages/functions/src/api.handler',
+  handler: 'packages/api/src/api.handler',
 })
 
 export const backend = new sst.aws.ApiGatewayV2('Backend')
@@ -21,7 +21,7 @@ backend.route(
   {
     url: true,
     link: [bucket, UserTable],
-    handler: 'packages/functions/src/api.handler',
+    handler: 'packages/api/src/api.handler',
   },
   {
     auth: {
@@ -37,7 +37,7 @@ backend.route(
   {
     url: true,
     link: [bucket, UserTable],
-    handler: 'packages/functions/src/api.handler',
+    handler: 'packages/api/src/api.handler',
   },
   {
     auth: {

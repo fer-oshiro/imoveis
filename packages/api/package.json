@@ -1,5 +1,5 @@
 {
-  "name": "@imovel/functions",
+  "name": "@imovel/api",
   "version": "0.0.0",
   "type": "module",
   "scripts": {

@@ -3,41 +3,50 @@
 /* eslint-disable */
 /* deno-fmt-ignore-file */
 
-declare module 'sst' {
+declare module "sst" {
   export interface Resource {
-    Backend: {
-      type: 'sst.aws.ApiGatewayV2'
-      url: string
+    "Backend": {
+      "type": "sst.aws.ApiGatewayV2"
+      "url": string
     }
-    ImovelOshiroUserPool: {
-      id: string
-      type: 'sst.aws.CognitoUserPool'
+    "Email": {
+      "configSet": string
+      "sender": string
+      "type": "sst.aws.Email"
     }
-    MyApi: {
-      name: string
-      type: 'sst.aws.Function'
-      url: string
+    "ImovelOshiroUserPool": {
+      "id": string
+      "type": "sst.aws.CognitoUserPool"
     }
-    UserPoolClient: {
-      id: string
-      secret: string
-      type: 'sst.aws.CognitoUserPoolClient'
+    "MyApi": {
+      "name": string
+      "type": "sst.aws.Function"
+      "url": string
     }
-    bucket: {
-      name: string
-      type: 'sst.aws.Bucket'
+    "UserPoolClient": {
+      "id": string
+      "secret": string
+      "type": "sst.aws.CognitoUserPoolClient"
     }
-    table: {
-      name: string
-      type: 'sst.aws.Dynamo'
+    "bucket": {
+      "name": string
+      "type": "sst.aws.Bucket"
     }
-    web: {
-      type: 'sst.aws.Nextjs'
-      url: string
+    "emails": {
+      "name": string
+      "type": "sst.aws.Bucket"
+    }
+    "table": {
+      "name": string
+      "type": "sst.aws.Dynamo"
+    }
+    "web": {
+      "type": "sst.aws.Nextjs"
+      "url": string
     }
   }
 }
 /// <reference path="sst-env.d.ts" />
 
-import 'sst'
+import "sst"
 export {}

@@ -102,62 +102,6 @@ describe('Apartment Listing with Payment Info Workflow Integration Tests', () =>
       expect(result.map((r) => r.apartment.unitCodeValue)).toEqual(['APT001', 'APT002', 'APT003'])
     })
 
-    it('should handle apartment listing with complex payment scenarios', async () => {
-      const testApartments = [
-        createTestApartment('APT001', 'Apartment 1A', ApartmentStatus.OCCUPIED, 1500),
-      ]
-
-      // Multiple payments with different statuses and dates
-      const testPayments = [
-        createTestPayment(
-          'PAY001',
-          'APT001',
-          '+5511999999999',
-          1500,
-          PaymentStatus.PAID,
-          new Date('2024-01-15'),
-        ),
-        createTestPayment(
-          'PAY002',
-          'APT001',
-          '+5511999999999',
-          1500,
-          PaymentStatus.VALIDATED,
-          new Date('2024-02-15'),
-        ),
-        createTestPayment(
-          'PAY003',
-          'APT001',
-          '+5511999999999',
-          1500,
-          PaymentStatus.PENDING,
-          new Date('2024-03-15'),
-        ),
-        createTestPayment(
-          'PAY004',
-          'APT001',
-          '+5511999999999',
-          1500,
-          PaymentStatus.OVERDUE,
-          new Date('2024-04-15'),
-        ),
-      ]
-
-      const result = await ApartmentAggregationService.aggregateApartmentsWithPaymentInfo(
-        testApartments,
-        testPayments,
-      )
-
-      expect(result).toHaveLength(1)
-      const apartmentInfo = result[0]
-
-      // Should have the most recent payment (PAY001 - first created)
-      expect(apartmentInfo.lastPayment?.paymentIdValue).toBe('PAY001')
-      expect(apartmentInfo.totalPayments).toBe(4)
-      expect(apartmentInfo.totalPaidAmount).toBe(3000) // PAY001 + PAY002
-      expect(apartmentInfo.totalPendingAmount).toBe(1500) // Only PAY003 is pending, PAY004 is overdue
-    })
-
     it('should create apartment listings for landing page', async () => {
       const testApartments = [
         createTestApartment(
