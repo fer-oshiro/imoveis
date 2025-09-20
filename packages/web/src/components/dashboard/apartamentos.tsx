@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { DataFormatada } from './DataFormatada'
 import { EnviarComprovante } from './enviarComprovante'
+import { ContactInfo } from '../../../../functions/src/domain/shared/vo/contact-info.vo'
 
 export const Apartamentos = () => {
   const [apartamentos, setApartamentos] = React.useState([])
@@ -23,7 +24,7 @@ export const Apartamentos = () => {
           throw new Error('Erro ao buscar apartamentos')
         }
         const data = await response.json()
-        setApartamentos(data.items || [])
+        setApartamentos(data || [])
       } catch (error) {
         console.error('Erro ao buscar apartamentos:', error)
       } finally {
@@ -88,6 +89,7 @@ export const Apartamentos = () => {
       console.error('Erro ao executar teste:', error)
     }
   }
+
   return (
     <div className="mt-4 w-5xl text-lg text-gray-700">
       <button className="rounded bg-blue-500 px-4 py-2 text-white" onClick={handleTeste}>
@@ -110,11 +112,11 @@ export const Apartamentos = () => {
           Lista de Apartamentos {loading ? '(Carregando...)' : ''}
         </caption>
         <thead>
-          <tr>
+          <tr style={{ fontSize: '12px' }}>
+            <th>Unidade</th>
             <th>Nome</th>
             <th>CPF</th>
             <th>Telefone</th>
-            <th>Unidade</th>
             <th>Saída</th>
             <th>Ultimo pagamento</th>
             <th>Ações</th>
@@ -122,13 +124,13 @@ export const Apartamentos = () => {
         </thead>
         <tbody>
           {apartamentos.map((apartamento: any) => (
-            <tr key={apartamento.PK}>
-              <td>{apartamento.name}</td>
-              <td>{apartamento.cpf}</td>
-              <td>{apartamento.telefone}</td>
-              <td>{apartamento.unidade}</td>
+            <tr key={apartamento.pk} style={{ fontSize: '14px', textAlign: 'center' }}>
+              <td>{apartamento.unitLabel}</td>
+              <td>{apartamento.contactInfo?.contactName}</td>
+              <td>{apartamento.contactInfo?.contactDocument}</td>
+              <td>{apartamento.contactInfo?.phoneNumber}</td>
               <td>{apartamento.expectativa_saida ?? '-'}</td>
-              <td>{<DataFormatada dataISO={apartamento.ultimo_pagamento} />}</td>
+              <td>{<DataFormatada dataISO={apartamento.lastDepositedAt} />}</td>
               <td>
                 <button
                   className="text-blue-500 hover:underline"
