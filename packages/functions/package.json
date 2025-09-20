@@ -3,11 +3,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "lint": "eslint . --ext .ts,.js",
-    "lint:fix": "eslint . --ext .ts,.js --fix",
-    "lint:precommit": "eslint . --ext .ts,.js --fix --max-warnings 200",
-    "typecheck": "tsc --noEmit",
-    "typecheck:src": "tsc --noEmit --project tsconfig.src.json"
+    "test": "vitest",
+    "test:ci": "vitest run --coverage",
+    "typecheck": "tsc -b --pretty false",
+    "lint": "eslint .",
+    "format": "prettier -w .",
+    "format:check": "prettier -c ."
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.864.0",
@@ -21,8 +22,8 @@
     "date-fns": "^4.1.0",
     "fastify": "^5.5.0",
     "libphonenumber-js": "^1.12.17",
+    "pino": "^9.9.4",
     "sst": "*",
-    "winston": "^3.17.0",
     "zod": "^3.25.67",
     "zod-to-json-schema": "^3.24.6"
   },
@@ -31,6 +32,7 @@
     "@types/aws-lambda": "^8",
     "@typescript-eslint/eslint-plugin": "^8.44.0",
     "@typescript-eslint/parser": "^8.44.0",
-    "eslint": "^9.35.0"
+    "eslint": "^9.35.0",
+    "aws-sdk-client-mock": "^4.1.0"
   }
 }

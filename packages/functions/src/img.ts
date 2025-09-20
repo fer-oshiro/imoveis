@@ -1,11 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { Resource } from 'sst'
 
+import { logger } from './infra/logger'
+
 export const img = async (event: any) => {
   const bucket = Resource.bucket.name
   const { key, expiresIn, ContentType } = JSON.parse(event.body || '{}')
-  console.log({ bucket, key, expiresIn, ContentType })
+  logger.debug({ bucket, key, expiresIn, ContentType })
   try {
     const signedUrl = await generatePresignedUrl({
       bucket,
@@ -18,7 +22,10 @@ export const img = async (event: any) => {
       body: JSON.stringify({ signedUrl }),
     }
   } catch (error) {
-    console.error('Error generating presigned URL:', error)
+    logger.error({
+      message: 'Error generating presigned URL',
+      error: (error as Error).message,
+    })
     return {
       statusCode: 500,
       body: JSON.stringify({ error: 'Failed to generate presigned URL' }),

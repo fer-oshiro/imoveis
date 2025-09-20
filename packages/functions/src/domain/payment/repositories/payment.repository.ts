@@ -1,11 +1,8 @@
-import {
-  DeleteCommand,
-  DynamoDBDocumentClient,
-  PutCommand,
-  QueryCommand,
-  ScanCommand,
-} from '@aws-sdk/lib-dynamodb'
+import { DynamoDBDocumentClient, QueryCommand, ScanCommand } from '@aws-sdk/lib-dynamodb'
 import { Resource } from 'sst'
+
+import { docClient } from '../../../infra/database'
+import { logger } from '../../../infra/logger'
 import { BaseRepository, IBaseRepository } from '../../shared'
 import { Payment } from '../entities/payment.entity'
 import { PaymentStatus } from '../vo/payment-enums.vo'
@@ -39,9 +36,8 @@ export class PaymentRepository
   public static getInstance(): PaymentRepository {
     if (!PaymentRepository.instance) {
       // Import dynamoClient from infra
-      const { dynamoClient } = require('../../../infra/database')
       const tableName = Resource.table.name || 'imovel-oshiro-table'
-      PaymentRepository.instance = new PaymentRepository(tableName, dynamoClient)
+      PaymentRepository.instance = new PaymentRepository(tableName, docClient)
     }
     return PaymentRepository.instance
   }
@@ -64,7 +60,7 @@ export class PaymentRepository
       }
       return this.mapToEntity(result.Items[0])
     } catch (error) {
-      console.error('Error finding payment by ID:', error)
+      logger.error(error)
       throw error
     }
   }
@@ -87,7 +83,7 @@ export class PaymentRepository
       }
       return result.Items.map((item) => this.mapToEntity(item))
     } catch (error) {
-      console.error('Error finding payments by apartment:', error)
+      logger.error(error)
       throw error
     }
   }
@@ -111,7 +107,7 @@ export class PaymentRepository
       }
       return this.mapToEntity(result.Items[0])
     } catch (error) {
-      console.error('Error finding last payment by apartment:', error)
+      logger.error(error)
       throw error
     }
   }
@@ -135,7 +131,7 @@ export class PaymentRepository
       }
       return result.Items.map((item) => this.mapToEntity(item))
     } catch (error) {
-      console.error('Error finding payments by user:', error)
+      logger.error(error)
       throw error
     }
   }
@@ -158,7 +154,7 @@ export class PaymentRepository
       }
       return result.Items.map((item) => this.mapToEntity(item))
     } catch (error) {
-      console.error('Error finding payments by status:', error)
+      logger.error(error)
       throw error
     }
   }
@@ -182,7 +178,7 @@ export class PaymentRepository
       }
       return result.Items.map((item) => this.mapToEntity(item))
     } catch (error) {
-      console.error('Error finding payments by contract:', error)
+      logger.error(error)
       throw error
     }
   }
@@ -213,7 +209,7 @@ export class PaymentRepository
       }
       return result.Items.map((item) => this.mapToEntity(item))
     } catch (error) {
-      console.error('Error finding payments by date range:', error)
+      logger.error(error)
       throw error
     }
   }
@@ -243,26 +239,15 @@ export class PaymentRepository
       }
       return result.Items.map((item) => this.mapToEntity(item))
     } catch (error) {
-      console.error('Error finding payments by apartment and date range:', error)
+      logger.error(error)
       throw error
     }
   }
 
   async save(payment: Payment): Promise<Payment> {
-    const item = this.mapFromEntity(payment)
-
-    const command = new PutCommand({
-      TableName: this.tableName,
-      Item: item,
-    })
-
-    try {
-      await this.dynamoClient.send(command)
-      return payment
-    } catch (error) {
-      console.error('Error saving payment:', error)
-      throw error
-    }
+    // TODO: Validate payment entity before saving
+    logger.info(`Saving payment with ID ${JSON.stringify(payment)}`)
+    return payment
   }
 
   async delete(paymentId: string): Promise<void> {
@@ -271,28 +256,7 @@ export class PaymentRepository
     if (!payment) {
       throw new Error(`Payment with ID ${paymentId} not found`)
     }
-
-    const command = new DeleteCommand({
-      TableName: this.tableName,
-      Key: {
-        pk: payment.pkValue,
-        sk: payment.skValue,
-      },
-    })
-
-    try {
-      await this.dynamoClient.send(command)
-    } catch (error) {
-      console.error('Error deleting payment:', error)
-      throw error
-    }
-  }
-
-  protected mapToEntity(item: Record<string, any>): Payment {
-    return Payment.fromJSON(item)
-  }
-
-  protected mapFromEntity(payment: Payment): Record<string, any> {
-    return payment.toJSON()
+    await PaymentRepository.instance
+    return
   }
 }

@@ -1,6 +1,1 @@
-echo "🔍 Running pre-commit checks..."
-
-# Run lint-staged to format staged files
-npm run lint-staged
-
-echo "✅ Pre-commit checks completed!"
+npx lint-staged && npm run test

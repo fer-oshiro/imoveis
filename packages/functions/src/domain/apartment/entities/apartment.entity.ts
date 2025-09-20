@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { EntityMetadataVO, ContactInfoVO, ContactMethod } from '../../shared'
-import { ApartmentStatus, RentalType } from '../vo/apartment-enums.vo'
 import { ApartmentAmenities, ApartmentAmenitiesVO } from '../vo/apartment-amenities.vo'
+import { ApartmentStatus, RentalType } from '../vo/apartment-enums.vo'
 
 export class Apartment {
   constructor(
@@ -190,7 +192,7 @@ export class Apartment {
     return this.rentalType === RentalType.LONG_TERM || this.rentalType === RentalType.BOTH
   }
 
-  public toJSON(): Record<string, any> {
+  public toJSON() {
     return {
       pk: this.pk,
       sk: this.sk,

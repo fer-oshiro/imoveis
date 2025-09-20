@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import React, { useEffect } from 'react'
 import { DataFormatada } from './DataFormatada'
 import { EnviarComprovante } from './enviarComprovante'
-import { ContactInfo } from '../../../../functions/src/domain/shared/vo/contact-info.vo'
 
 export const Apartamentos = () => {
   const [apartamentos, setApartamentos] = React.useState([])
@@ -13,7 +14,7 @@ export const Apartamentos = () => {
       try {
         const url = process.env.NEXT_PUBLIC_API_URL || '/apartamentos'
         const idToken = localStorage.getItem('idToken')
-        const response = await fetch(url + '/apartamentos', {
+        const response = await fetch(url + '/apartments', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -89,7 +90,6 @@ export const Apartamentos = () => {
       console.error('Erro ao executar teste:', error)
     }
   }
-
   return (
     <div className="mt-4 w-5xl text-lg text-gray-700">
       <button className="rounded bg-blue-500 px-4 py-2 text-white" onClick={handleTeste}>

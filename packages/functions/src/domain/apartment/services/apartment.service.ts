@@ -1,26 +1,28 @@
-import { DomainError, ApartmentAggregationService, BusinessRuleViolationError } from '../../shared'
-import { Apartment } from '../entities/apartment.entity'
-import ApartmentRepository, { IApartmentRepository } from '../repositories/apartment.repository'
-import { CreateApartmentDto, UpdateApartmentDto, ApartmentQueryDto } from '../dto'
-import {
-  ApartmentWithPaymentInfo,
-  ApartmentDetails,
-  ApartmentLog,
-  ApartmentListing,
-} from '../../shared/models/query-result.models'
-import { ApartmentStatus, RentalType } from '../vo/apartment-enums.vo'
-import { Payment } from '../../payment/entities/payment.entity'
-import { User } from '../../user/entities/user.entity'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { logger } from '../../../infra/logger'
 import { Contract } from '../../contract/entities/contract.entity'
+import { Payment } from '../../payment/entities/payment.entity'
 import { UserApartmentRelation } from '../../relationship/entities/user-apartment-relation.entity'
+import { ApartmentAggregationService, BusinessRuleViolationError, DomainError } from '../../shared'
 import {
-  ApartmentNotFoundError,
+  ApartmentDetails,
+  ApartmentListing,
+  ApartmentLog,
+} from '../../shared/models/query-result.models'
+import { User } from '../../user/entities/user.entity'
+import { ApartmentQueryDto, CreateApartmentDto, UpdateApartmentDto } from '../dto'
+import { Apartment } from '../entities/apartment.entity'
+import {
   ApartmentAlreadyExistsError,
-  ApartmentOccupiedError,
-  InvalidApartmentStatusTransitionError,
   ApartmentCreateError,
+  ApartmentNotFoundError,
+  ApartmentOccupiedError,
   ApartmentUpdateError,
+  InvalidApartmentStatusTransitionError,
 } from '../errors'
+import ApartmentRepository, { IApartmentRepository } from '../repositories/apartment.repository'
+import { ApartmentStatus, RentalType } from '../vo/apartment-enums.vo'
 
 export default class ApartmentService {
   private apartmentRepository: IApartmentRepository
@@ -36,7 +38,8 @@ export default class ApartmentService {
         a.unitCodeValue.localeCompare(b.unitCodeValue),
       )
       return apartments
-    } catch (_error) {
+    } catch (error) {
+      logger.error(error)
       throw new DomainError('Failed to get apartments with payment info', 'APARTMENT_QUERY_ERROR')
     }
   }
@@ -52,7 +55,8 @@ export default class ApartmentService {
           ApartmentAggregationService.aggregateApartmentListing(apartment),
         ),
       )
-    } catch (_error) {
+    } catch (error) {
+      logger.error(error)
       throw new DomainError('Failed to get available apartments', 'APARTMENT_QUERY_ERROR')
     }
   }
@@ -67,7 +71,8 @@ export default class ApartmentService {
           ApartmentAggregationService.aggregateApartmentListing(apartment),
         ),
       )
-    } catch (_error) {
+    } catch (error) {
+      logger.error(error)
       throw new DomainError('Failed to get Airbnb apartments', 'APARTMENT_QUERY_ERROR')
     }
   }
@@ -265,7 +270,8 @@ export default class ApartmentService {
   async getApartmentByUnitCode(unitCode: string): Promise<Apartment | null> {
     try {
       return await this.apartmentRepository.findByUnitCode(unitCode)
-    } catch (_error) {
+    } catch (error) {
+      logger.error(error)
       throw new DomainError('Failed to get apartment', 'APARTMENT_QUERY_ERROR')
     }
   }
@@ -273,7 +279,8 @@ export default class ApartmentService {
   async getApartmentsByStatus(status: ApartmentStatus): Promise<Apartment[]> {
     try {
       return await this.apartmentRepository.findByStatus(status)
-    } catch (_error) {
+    } catch (error) {
+      logger.error(error)
       throw new DomainError('Failed to get apartments by status', 'APARTMENT_QUERY_ERROR')
     }
   }
@@ -281,7 +288,8 @@ export default class ApartmentService {
   async getApartmentsByRentalType(rentalType: RentalType): Promise<Apartment[]> {
     try {
       return await this.apartmentRepository.findByRentalType(rentalType)
-    } catch (_error) {
+    } catch (error) {
+      logger.error(error)
       throw new DomainError('Failed to get apartments by rental type', 'APARTMENT_QUERY_ERROR')
     }
   }
@@ -289,7 +297,8 @@ export default class ApartmentService {
   async queryApartments(query: ApartmentQueryDto): Promise<Apartment[]> {
     try {
       return await this.apartmentRepository.findWithQuery(query)
-    } catch (_error) {
+    } catch (error) {
+      logger.error(error)
       throw new DomainError('Failed to query apartments', 'APARTMENT_QUERY_ERROR')
     }
   }
@@ -305,19 +314,22 @@ export default class ApartmentService {
   }
 
   // Additional methods referenced by controllers
-  async getApartmentUsers(_unitCode: string) {
+  async getApartmentUsers(unitCode: string) {
+    logger.info(unitCode)
     // This would typically require the relationship service
     // For now, return empty array to maintain compatibility
     return []
   }
 
-  async getApartmentContracts(_unitCode: string) {
+  async getApartmentContracts(unitCode: string) {
+    logger.info(unitCode)
     // This would typically require the contract service
     // For now, return empty array to maintain compatibility
     return []
   }
 
-  async getApartmentPayments(_unitCode: string) {
+  async getApartmentPayments(unitCode: string) {
+    logger.info(unitCode)
     // This would typically require the payment service
     // For now, return empty array to maintain compatibility
     return []

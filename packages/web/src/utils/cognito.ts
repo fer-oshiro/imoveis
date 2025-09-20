@@ -4,6 +4,8 @@ import {
   RespondToAuthChallengeCommand,
 } from '@aws-sdk/client-cognito-identity-provider'
 
+import { logger } from '@/infra/logger'
+
 const client = new CognitoIdentityProviderClient({ region: 'us-east-1' })
 
 export async function sendSMS(phone: string) {
@@ -35,9 +37,7 @@ export async function confirmCode(phone: string, code: string, session: string) 
 }
 
 export function isLoggedIn(): boolean {
-  console.log('Verificando se o usuário está logado...')
   const token = localStorage.getItem('token')
-  console.log('Token encontrado:', token)
   if (!token) return false
 
   try {
@@ -46,11 +46,9 @@ export function isLoggedIn(): boolean {
     const exp = payload.exp
 
     const now = Math.floor(Date.now() / 1000)
-    console.log('Token exp:', exp, 'Now:', now)
     return exp && now < exp
   } catch (err) {
-    console.warn('Token inválido', err)
-    console.error('Erro ao verificar o token:', err)
+    logger.error('Erro ao verificar o token:', err)
     return false
   }
 }

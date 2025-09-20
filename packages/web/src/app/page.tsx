@@ -1,7 +1,6 @@
-import { Title } from '@/components/ui/title'
-import Image from 'next/image'
-import { LOCATIONS } from '@/constants/location'
 import { Card } from '@/components/lading-page/card'
+import { Title } from '@/components/ui/title'
+import { LOCATIONS } from '@/constants/location'
 
 export default function Home() {
   return (

@@ -1,13 +1,25 @@
 # Dependencies
 node_modules/
-.sst/
 
-# Build outputs
+# Build / outputs
 dist/
 build/
 .next/
+out/
 .nuxt/
 .output/
+.out/
+.outdir/
+.tmp/
+.temp/
+
+# Infra / IaC / frameworks
+.sst/
+.cdk/
+cdk.out/
+.serverless/
+.open-next/
+.artifacts/
 
 # Logs
 *.log
@@ -18,21 +30,15 @@ yarn-error.log*
 # Coverage
 coverage/
 
-# Environment files
+# Env (mantenha fora do git)
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+# Se tiver um exemplo versionado:
+!.env.example
 
-# Package manager files
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
 
-# Generated files
+# Gerados
 *.generated.*
-*.d.ts
-
-# Markdown files (optional - remove if you want to format markdown)
-# *.md

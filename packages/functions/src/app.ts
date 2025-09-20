@@ -3,7 +3,7 @@ import { ZodError } from 'zod'
 
 import { envConfig } from './config/env'
 import { Routes } from './http/routes'
-import logger from './infra/logger'
+import { logger } from './infra/logger'
 
 export const app = fastify()
 
@@ -15,7 +15,7 @@ app.setErrorHandler(async (error, _, reply) => {
     return reply.status(400).send({ message: 'Validation error.', issues: error.format() })
   }
   if (env.NODE_ENV !== 'production') {
-    console.error(error)
+    logger.error(error)
   } else {
     logger.error(error)
   }
