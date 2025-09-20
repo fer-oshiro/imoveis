@@ -30,16 +30,12 @@ export default class ApartmentService {
   }
 
   // Main usage: list apartments with last payment info (admin view)
-  async getApartmentsWithLastPayment(
-    payments: Payment[] = [],
-  ): Promise<ApartmentWithPaymentInfo[]> {
+  async getApartmentsWithLastPayment(): Promise<Apartment[]> {
     try {
-      const apartments = await this.apartmentRepository.findAll()
-      const result = await ApartmentAggregationService.aggregateApartmentsWithPaymentInfo(
-        apartments,
-        payments,
+      const apartments = (await this.apartmentRepository.findAll()).sort((a, b) =>
+        a.unitCodeValue.localeCompare(b.unitCodeValue),
       )
-      return result
+      return apartments
     } catch (_error) {
       throw new DomainError('Failed to get apartments with payment info', 'APARTMENT_QUERY_ERROR')
     }

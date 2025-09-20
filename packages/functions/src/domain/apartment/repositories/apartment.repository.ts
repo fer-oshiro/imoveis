@@ -42,7 +42,7 @@ export default class ApartmentRepository implements IApartmentRepository {
           FilterExpression: 'begins_with(PK, :pk) AND SK = :sk',
           ExpressionAttributeValues: {
             ':pk': 'APARTMENT#',
-            ':sk': 'INFO',
+            ':sk': 'METADATA',
           },
         }),
       )
@@ -59,7 +59,7 @@ export default class ApartmentRepository implements IApartmentRepository {
           TableName: TABLE_NAME,
           Key: {
             PK: `APARTMENT#${unitCode}`,
-            SK: 'INFO',
+            SK: 'METADATA',
           },
         }),
       )
@@ -82,7 +82,7 @@ export default class ApartmentRepository implements IApartmentRepository {
           },
           ExpressionAttributeValues: {
             ':pk': 'APARTMENT#',
-            ':sk': 'INFO',
+            ':sk': 'METADATA',
             ':status': status,
           },
         }),
@@ -104,7 +104,7 @@ export default class ApartmentRepository implements IApartmentRepository {
             'begins_with(PK, :pk) AND SK = :sk AND (rentalType = :rentalType OR rentalType = :both)',
           ExpressionAttributeValues: {
             ':pk': 'APARTMENT#',
-            ':sk': 'INFO',
+            ':sk': 'METADATA',
             ':rentalType': rentalType,
             ':both': RentalType.BOTH,
           },
@@ -129,7 +129,7 @@ export default class ApartmentRepository implements IApartmentRepository {
           FilterExpression: 'begins_with(PK, :pk) AND SK = :sk AND isAvailable = :available',
           ExpressionAttributeValues: {
             ':pk': 'APARTMENT#',
-            ':sk': 'INFO',
+            ':sk': 'METADATA',
             ':available': true,
           },
         }),
@@ -151,7 +151,7 @@ export default class ApartmentRepository implements IApartmentRepository {
             'begins_with(PK, :pk) AND SK = :sk AND (rentalType = :airbnb OR rentalType = :both) AND attribute_exists(airbnbLink)',
           ExpressionAttributeValues: {
             ':pk': 'APARTMENT#',
-            ':sk': 'INFO',
+            ':sk': 'METADATA',
             ':airbnb': RentalType.AIRBNB,
             ':both': RentalType.BOTH,
           },
@@ -170,7 +170,7 @@ export default class ApartmentRepository implements IApartmentRepository {
       let filterExpression = 'begins_with(PK, :pk) AND SK = :sk'
       const expressionAttributeValues: Record<string, any> = {
         ':pk': 'APARTMENT#',
-        ':sk': 'INFO',
+        ':sk': 'METADATA',
       }
       const expressionAttributeNames: Record<string, string> = {}
 
@@ -302,7 +302,7 @@ export default class ApartmentRepository implements IApartmentRepository {
           TableName: TABLE_NAME,
           Key: {
             PK: `APARTMENT#${unitCode}`,
-            SK: 'INFO',
+            SK: 'METADATA',
           },
         }),
       )

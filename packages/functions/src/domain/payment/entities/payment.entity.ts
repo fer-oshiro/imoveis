@@ -37,7 +37,7 @@ export class Payment {
     const metadata = EntityMetadataVO.create(data.createdBy)
 
     return new Payment(
-      `APARTMENT#${data.apartmentUnitCode}`,
+      `USER#${data.userPhoneNumber}`,
       `PAYMENT#${timestamp}#${data.paymentId}`,
       data.paymentId,
       data.apartmentUnitCode,

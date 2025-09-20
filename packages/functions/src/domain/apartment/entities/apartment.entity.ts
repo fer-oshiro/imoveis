@@ -19,6 +19,10 @@ export class Apartment {
     private airbnbLink?: string,
     private isAvailable: boolean = false,
     private availableFrom?: Date,
+    private lastDepositedAt?: Date,
+    private lastPaymentAmount?: number,
+    private lastBillingMonth?: number,
+    private dueDayOfMonth?: number,
     private metadata: EntityMetadataVO = EntityMetadataVO.create(),
   ) {}
 
@@ -39,6 +43,10 @@ export class Apartment {
     airbnbLink?: string
     isAvailable?: boolean
     availableFrom?: Date
+    lastDepositedAt?: Date
+    lastPaymentAmount?: number
+    lastBillingMonth?: number
+    dueDayOfMonth?: number
     createdBy?: string
   }): Apartment {
     const contactInfo = ContactInfoVO.create(
@@ -67,6 +75,10 @@ export class Apartment {
       data.airbnbLink,
       data.isAvailable ?? false,
       data.availableFrom,
+      data.lastDepositedAt,
+      data.lastPaymentAmount,
+      data.lastBillingMonth,
+      data.dueDayOfMonth,
       metadata,
     )
   }
@@ -196,6 +208,10 @@ export class Apartment {
       airbnbLink: this.airbnbLink,
       isAvailable: this.isAvailable,
       availableFrom: this.availableFrom?.toISOString(),
+      lastDepositedAt: this.lastDepositedAt?.toISOString(),
+      lastPaymentAmount: this.lastPaymentAmount,
+      lastBillingMonth: this.lastBillingMonth,
+      dueDayOfMonth: this.dueDayOfMonth,
       ...this.metadata.toJSON(),
     }
   }
@@ -239,6 +255,10 @@ export class Apartment {
       data.airbnbLink,
       data.isAvailable ?? false,
       data.availableFrom ? new Date(data.availableFrom) : undefined,
+      data.lastDepositedAt ? new Date(data.lastDepositedAt) : undefined,
+      data.lastPaymentAmount ? Number(data.lastPaymentAmount) : undefined,
+      data.lastBillingMonth ? Number(data.lastBillingMonth) : undefined,
+      data.dueDayOfMonth ? Number(data.dueDayOfMonth) : undefined,
       metadata,
     )
   }

@@ -1,137 +1,130 @@
 // npm i @aws-sdk/client-dynamodb @aws-sdk/lib-dynamodb
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb')
-const { DynamoDBDocumentClient, ScanCommand, UpdateCommand } = require('@aws-sdk/lib-dynamodb')
+const {
+  DynamoDBDocumentClient,
+  ScanCommand,
+  TransactWriteCommand,
+} = require('@aws-sdk/lib-dynamodb')
 
 // ===== Config =====
 const TABLE_NAME = process.env.TABLE_NAME || 'imovel-fer-tableTable-onmvxzza'
 const REGION = process.env.AWS_REGION || 'us-east-1'
+
+// Nomes dos atributos de chave
 const PK_ATTR = process.env.PK_ATTR || 'PK'
 const SK_ATTR = process.env.SK_ATTR || 'SK'
 
-// Só mexe em itens cujo PK começa com este prefixo
-const PK_PREFIX = process.env.PK_PREFIX || 'APARTMENT#'
+// Valor antigo e novo do SK
+const OLD_SK_VALUE = process.env.OLD_SK_VALUE || 'INFO'
+const NEW_SK_VALUE = process.env.NEW_SK_VALUE || 'METADATA'
 
-// Paginação do Scan
+// Opcional: filtrar apenas partições que começam com este prefixo (ex.: APARTMENT#)
+// Para migrar TUDO que tiver SK=INFO, defina PK_PREFIX="" (string vazia)
+const PK_PREFIX = process.env.PK_PREFIX ?? 'APARTMENT#'
+
+// Paginação e modo
 const PAGE_LIMIT = Number(process.env.PAGE_LIMIT || '1000')
-
-// Segurança: começa em DRY-RUN
 const DRY_RUN = String(process.env.DRY_RUN || 'true').toLowerCase() === 'true'
-
-// Mapeamento de renome
-const RENAME_MAP = [
-  { old: 'unidade', neu: 'unitLabel' },
-  { old: 'tipoDeContrato', neu: 'rentalType' },
-  { old: 'valorBase', neu: 'baseRent' },
-  { old: 'valorFaxina', neu: 'cleaningFee' },
-  { old: 'faxina', neu: 'hasCleaningService' },
-  { old: 'telefone', neu: 'contactPhone' },
-  { old: 'agua', neu: 'waterIncluded' },
-  { old: 'name', neu: 'contactName' },
-  { old: 'luz', neu: 'electricityIncluded' },
-  { old: 'cpf', neu: 'contactDocument' },
-]
 
 // ===== Clients =====
 const ddb = new DynamoDBClient({ region: REGION })
-const doc = DynamoDBDocumentClient.from(ddb, {
-  marshallOptions: { removeUndefinedValues: true },
-})
+const doc = DynamoDBDocumentClient.from(ddb, { marshallOptions: { removeUndefinedValues: true } })
 
-// ===== Helpers =====
-function extractUnitCode(pk, prefix) {
-  if (typeof pk !== 'string' || !pk.startsWith(prefix)) return undefined
-  const after = pk.slice(prefix.length) // tudo após 'APARTMENT#'
-  // se houver outro '#', corta antes dele
-  const hash = after.indexOf('#')
-  return hash === -1 ? after : after.slice(0, hash)
-}
+// ===== Scan: encontra itens a migrar =====
+async function* scanItems() {
+  let lastKey
 
-async function* scanByPrefix() {
-  let ExclusiveStartKey
+  // Monta FilterExpression dinamicamente
+  const usePrefix = PK_PREFIX !== ''
+  const FilterExpression = usePrefix ? 'begins_with(#pk, :prefix) AND #sk = :old' : '#sk = :old'
+
+  const ExpressionAttributeNames = { '#pk': PK_ATTR, '#sk': SK_ATTR }
+  const ExpressionAttributeValues = usePrefix
+    ? { ':prefix': PK_PREFIX, ':old': OLD_SK_VALUE }
+    : { ':old': OLD_SK_VALUE }
+
   do {
     const res = await doc.send(
       new ScanCommand({
         TableName: TABLE_NAME,
         Limit: PAGE_LIMIT,
-        FilterExpression: 'begins_with(#pk, :prefix)',
-        ExpressionAttributeNames: { '#pk': PK_ATTR },
-        ExpressionAttributeValues: { ':prefix': PK_PREFIX },
-        ExclusiveStartKey,
+        FilterExpression,
+        ExpressionAttributeNames,
+        ExpressionAttributeValues,
+        ExclusiveStartKey: lastKey,
       }),
     )
-    for (const item of res.Items ?? []) yield item
-    ExclusiveStartKey = res.LastEvaluatedKey
-  } while (ExclusiveStartKey)
+    for (const it of res.Items ?? []) yield it
+    lastKey = res.LastEvaluatedKey
+  } while (lastKey)
 }
 
-function buildUpdateForItem(item) {
-  const ean = {}
-  const eav = {}
-  const setParts = []
-  const removeParts = []
+// ===== Migra UM item (Put novo + Delete antigo) =====
+async function migrateOne(item) {
+  const oldPk = item[PK_ATTR]
+  const oldSk = item[SK_ATTR]
 
-  const pk = item[PK_ATTR]
-  const sk = item[SK_ATTR]
+  if (typeof oldPk !== 'string' || typeof oldSk !== 'string')
+    return { skipped: true, reason: 'invalid key' }
+  if (oldSk !== OLD_SK_VALUE) return { skipped: true, reason: 'sk not match' }
 
-  if (!pk || !sk) return null
+  const newItem = JSON.parse(JSON.stringify(item))
+  newItem[SK_ATTR] = NEW_SK_VALUE
 
-  // unitCode
-  const unitCode = extractUnitCode(pk, PK_PREFIX)
-  if (unitCode) {
-    ean['#unitCode'] = 'unitCode'
-    eav[':unitCode'] = unitCode
-    setParts.push('#unitCode = if_not_exists(#unitCode, :unitCode)')
+  if (DRY_RUN) {
+    console.log(`[dry-run] PUT ${oldPk} | ${NEW_SK_VALUE}  ;  DEL ${oldPk} | ${oldSk}`)
+    return { applied: false }
   }
 
-  // renomes
-  for (const { old, neu } of RENAME_MAP) {
-    if (Object.prototype.hasOwnProperty.call(item, old)) {
-      // set novo se ainda não existir
-      const newAlias = `#${neu}`
-      const oldAlias = `#${old}`
-      const valAlias = `:${neu}`
-
-      ean[newAlias] = neu
-      ean[oldAlias] = old
-      eav[valAlias] = item[old]
-
-      setParts.push(`${newAlias} = if_not_exists(${newAlias}, ${valAlias})`)
-      removeParts.push(oldAlias)
-    }
+  const tx = {
+    TransactItems: [
+      {
+        Put: {
+          TableName: TABLE_NAME,
+          Item: newItem,
+          ConditionExpression: 'attribute_not_exists(#pk) AND attribute_not_exists(#sk)',
+          ExpressionAttributeNames: { '#pk': PK_ATTR, '#sk': SK_ATTR },
+        },
+      },
+      {
+        Delete: {
+          TableName: TABLE_NAME,
+          Key: { [PK_ATTR]: oldPk, [SK_ATTR]: oldSk },
+          ConditionExpression: 'attribute_exists(#pk) AND attribute_exists(#sk)',
+          ExpressionAttributeNames: { '#pk': PK_ATTR, '#sk': SK_ATTR },
+        },
+      },
+    ],
   }
 
-  if (!setParts.length && !removeParts.length) return null
-
-  const UpdateExpression =
-    `SET ${setParts.join(', ')}` + (removeParts.length ? ` REMOVE ${removeParts.join(', ')}` : '')
-
-  return {
-    Key: { [PK_ATTR]: pk, [SK_ATTR]: sk },
-    UpdateExpression,
-    ExpressionAttributeNames: ean,
-    ExpressionAttributeValues: eav,
-  }
-}
-
-async function updateWithRetry(params) {
+  // Retry simples
   let attempts = 0
   while (true) {
     try {
-      await doc.send(new UpdateCommand({ TableName: TABLE_NAME, ...params }))
-      return
+      await doc.send(new TransactWriteCommand(tx))
+      return { applied: true }
     } catch (err) {
       attempts++
       const status = err?.$metadata?.httpStatusCode || 0
       const retryable =
+        err?.name === 'TransactionCanceledException' ||
         err?.name === 'ProvisionedThroughputExceededException' ||
         err?.name === 'ThrottlingException' ||
         status >= 500
+
+      // Se já existe o novo item, pulamos este registro
+      if (err?.name === 'ConditionalCheckFailedException') {
+        console.warn(`[skip] Já existe ${oldPk} | ${NEW_SK_VALUE} (ConditionCheckFailed)`)
+        return { skipped: true, reason: 'exists-new' }
+      }
+
       if (retryable && attempts < 6) {
         const backoff = Math.min(200 * 2 ** (attempts - 1), 2000)
         await new Promise((r) => setTimeout(r, backoff))
         continue
       }
-      throw err
+      console.error(`[error] Falha ao migrar ${oldPk} | ${oldSk}:`, err)
+      return { skipped: true, reason: 'error' }
     }
   }
 }
@@ -139,47 +132,26 @@ async function updateWithRetry(params) {
 // ===== Main =====
 ;(async () => {
   console.log(`[start] table=${TABLE_NAME} region=${REGION} dryRun=${DRY_RUN}`)
-  console.log(`[filter] PK begins_with "${PK_PREFIX}"`)
+  console.log(
+    `[filter] PK_PREFIX=${PK_PREFIX === '' ? '(TODOS)' : PK_PREFIX} ; FROM SK="${OLD_SK_VALUE}" TO SK="${NEW_SK_VALUE}"`,
+  )
 
-  let scanned = 0
-  let matched = 0
-  let planned = 0
-  let applied = 0
+  let scanned = 0,
+    matched = 0,
+    applied = 0,
+    skipped = 0
 
-  for await (const item of scanByPrefix()) {
+  for await (const item of scanItems()) {
     scanned++
-
-    const params = buildUpdateForItem(item)
-    if (!params) continue
     matched++
-    planned++
-
-    if (DRY_RUN) {
-      console.log(
-        `[dry-run] Key(${PK_ATTR}=${params.Key[PK_ATTR]}, ${SK_ATTR}=${params.Key[SK_ATTR]}) ` +
-          `UpdateExpression="${params.UpdateExpression}"`,
-      )
-      continue
-    }
-
-    try {
-      await updateWithRetry(params)
-      applied++
-    } catch (err) {
-      console.error(
-        `[error] Failed to update Key(${PK_ATTR}=${params.Key[PK_ATTR]}, ${SK_ATTR}=${params.Key[SK_ATTR]}):`,
-        err,
-      )
-      // segue para o próximo item
-    }
+    const res = await migrateOne(item)
+    if (res?.applied) applied++
+    else skipped++
   }
 
   console.log(
-    `[done] scanned=${scanned} items | matchedForUpdate=${matched} | planned=${planned} | applied=${applied}`,
+    `[done] scanned=${scanned} matched=${matched} applied=${applied} skipped=${skipped} dryRun=${DRY_RUN}`,
   )
-  if (DRY_RUN) {
-    console.log('DRY_RUN=true → nenhuma modificação foi feita.')
-  }
 })().catch((e) => {
   console.error(e)
   process.exit(1)
