@@ -27,6 +27,7 @@ export const updateApartmentDto = z.object({
     })
     .optional(),
   contactPhone: z.string().min(1, 'Contact phone is required').optional(),
+  contactName: z.string().min(1, 'Contact name is required').optional(),
   contactMethod: z.nativeEnum(ContactMethod).optional(),
   airbnbLink: z.string().url('Invalid Airbnb URL').optional().or(z.literal('')),
   isAvailable: z.boolean().optional(),

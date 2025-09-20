@@ -18,11 +18,11 @@
     "format:check": "prettier --check .",
     "lint": "npm run lint --workspace=packages/functions",
     "lint:fix": "npm run lint:fix --workspace=packages/functions",
-    "typecheck": "npm run typecheck --workspace=packages/functions",
-    "typecheck:src": "npm run typecheck:src --workspace=packages/functions",
+    "typecheck": "tsc --noEmit --project packages/functions/tsconfig.json",
+    "typecheck:src": "tsc --noEmit --project packages/functions/tsconfig.src.json",
     "lint-staged": "lint-staged",
     "prepare": "husky",
-    "check-commit": "npm run lint-staged && npm run typecheck --workspace=packages/functions"
+    "check-commit": "npm run lint-staged && npm run typecheck:src"
   },
   "devDependencies": {
     "@tsconfig/node22": "~22.0.2",

@@ -10,7 +10,7 @@ import {
 } from '../../dto/create-payment.dto'
 import { PaymentType } from '../../vo/payment-enums.vo'
 
-describe.skip('Payment DTOs', () => {
+describe('Payment DTOs', () => {
   describe('CreatePaymentDtoValidator', () => {
     const validInputDto = {
       apartmentUnitCode: 'APT001',

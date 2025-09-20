@@ -22,12 +22,11 @@ export class ApartmentAggregationService {
    */
   static async aggregateApartmentWithPaymentInfo(
     apartment: Apartment,
-    payments: Payment[],
+    payments?: Payment[],
   ): Promise<ApartmentWithPaymentInfo> {
     try {
-      const apartmentPayments = payments.filter(
-        (p) => p.apartmentUnitCodeValue === apartment.unitCodeValue,
-      )
+      const apartmentPayments =
+        payments?.filter((p) => p.apartmentUnitCodeValue === apartment.unitCodeValue) || []
 
       const sortedPayments = apartmentPayments.sort(
         (a, b) => b.metadataValue.createdAt.getTime() - a.metadataValue.createdAt.getTime(),
@@ -43,7 +42,6 @@ export class ApartmentAggregationService {
 
       const totalPaidAmount = paidPayments.reduce((sum, p) => sum + p.amountValue, 0)
       const totalPendingAmount = pendingPayments.reduce((sum, p) => sum + p.amountValue, 0)
-
       return {
         apartment,
         lastPayment,
@@ -204,11 +202,10 @@ export class ApartmentAggregationService {
           this.aggregateApartmentWithPaymentInfo(apartment, allPayments),
         ),
       )
-
-      // Sort by unit code for consistent ordering
-      return results.sort((a, b) =>
+      const aaa = results.sort((a, b) =>
         a.apartment.unitCodeValue.localeCompare(b.apartment.unitCodeValue),
       )
+      return aaa
     } catch (error) {
       throw new DomainError(
         'Failed to aggregate apartments with payment info',

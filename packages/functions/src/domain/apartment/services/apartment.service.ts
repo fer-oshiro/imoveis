@@ -35,10 +35,11 @@ export default class ApartmentService {
   ): Promise<ApartmentWithPaymentInfo[]> {
     try {
       const apartments = await this.apartmentRepository.findAll()
-      return await ApartmentAggregationService.aggregateApartmentsWithPaymentInfo(
+      const result = await ApartmentAggregationService.aggregateApartmentsWithPaymentInfo(
         apartments,
         payments,
       )
+      return result
     } catch (_error) {
       throw new DomainError('Failed to get apartments with payment info', 'APARTMENT_QUERY_ERROR')
     }

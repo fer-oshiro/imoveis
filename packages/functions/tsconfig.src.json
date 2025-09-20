@@ -11,7 +11,8 @@
     "src/domain/*/vo/*.ts",
     "src/domain/*/errors/*.ts",
     "src/domain/shared/**/*.ts",
-    "src/http/**/*.ts"
+    "src/http/**/*.ts",
+    "../../sst-env.d.ts"
   ],
   "exclude": ["**/__tests__/**", "**/*.test.ts", "**/*.spec.ts", "node_modules"]
 }

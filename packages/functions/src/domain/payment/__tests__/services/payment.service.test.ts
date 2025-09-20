@@ -26,7 +26,7 @@ const mockPaymentRepository: IPaymentRepository = {
   delete: vi.fn(),
 }
 
-describe.skip('PaymentService', () => {
+describe('PaymentService', () => {
   let paymentService: PaymentService
 
   beforeEach(() => {

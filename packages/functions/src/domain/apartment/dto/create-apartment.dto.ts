@@ -27,7 +27,8 @@ export const createApartmentDto = z.object({
       petFriendly: z.boolean().optional(),
     })
     .optional(),
-  contactPhone: z.string().min(1, 'Contact phone is required'),
+  contactPhone: z.string().optional(),
+  contactName: z.string().optional(),
   contactMethod: z.nativeEnum(ContactMethod).optional(),
   airbnbLink: z.string().url('Invalid Airbnb URL').optional(),
   isAvailable: z.boolean().optional(),

@@ -1,12 +1,12 @@
-import ApartmentService from '../../domain/apartment/services/apartment.service'
 import {
   ApartmentQueryDto,
   createApartmentDto,
   updateApartmentDto,
 } from '../../domain/apartment/dto'
-import { ApartmentStatus, RentalType } from '../../domain/apartment/vo/apartment-enums.vo'
-import { BaseController, safeParseWithValidationError } from '../../domain/shared'
 import { ApartmentNotFoundError } from '../../domain/apartment/errors'
+import ApartmentService from '../../domain/apartment/services/apartment.service'
+import { ApartmentStatus, RentalType } from '../../domain/apartment/vo/apartment-enums.vo'
+import { BaseController } from '../../domain/shared'
 
 export class ApartmentController extends BaseController {
   private apartmentService: ApartmentService

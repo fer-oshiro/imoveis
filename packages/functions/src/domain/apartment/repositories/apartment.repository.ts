@@ -46,10 +46,8 @@ export default class ApartmentRepository implements IApartmentRepository {
           },
         }),
       )
-
       return response.Items?.map((item) => Apartment.fromJSON(item)) || []
     } catch (error) {
-      console.error('Error in findAll:', error)
       throw new DomainError('Failed to find apartments', 'APARTMENT_REPOSITORY_ERROR')
     }
   }

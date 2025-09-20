@@ -15,7 +15,7 @@ export class Apartment {
     private cleaningFee: number,
     private images: string[], // S3 bucket keys
     private amenities: ApartmentAmenities,
-    private contactInfo: ContactInfoVO,
+    private contactInfo: ContactInfoVO | null,
     private airbnbLink?: string,
     private isAvailable: boolean = false,
     private availableFrom?: Date,
@@ -32,16 +32,20 @@ export class Apartment {
     cleaningFee?: number
     images?: string[]
     amenities?: Partial<ApartmentAmenities>
-    contactPhone: string
+    contactName?: string
+    contactPhone?: string
     contactMethod?: ContactMethod
+    contactDocument?: string
     airbnbLink?: string
     isAvailable?: boolean
     availableFrom?: Date
     createdBy?: string
   }): Apartment {
     const contactInfo = ContactInfoVO.create(
+      data.contactName,
       data.contactPhone,
       data.contactMethod || ContactMethod.WHATSAPP,
+      data.contactDocument,
     )
 
     const amenities = new ApartmentAmenitiesVO(data.amenities)
@@ -95,7 +99,7 @@ export class Apartment {
   get amenitiesValue(): ApartmentAmenities {
     return this.amenities
   }
-  get contactInfoValue(): ContactInfoVO {
+  get contactInfoValue(): ContactInfoVO | null {
     return this.contactInfo
   }
   get airbnbLinkValue(): string | undefined {
@@ -188,7 +192,7 @@ export class Apartment {
       images: this.images,
       amenities:
         this.amenities instanceof ApartmentAmenitiesVO ? this.amenities.toJSON() : this.amenities,
-      contactInfo: this.contactInfo.toJSON(),
+      contactInfo: this.contactInfo?.toJSON(),
       airbnbLink: this.airbnbLink,
       isAvailable: this.isAvailable,
       availableFrom: this.availableFrom?.toISOString(),
@@ -201,6 +205,10 @@ export class Apartment {
       data.contactInfo || {
         phoneNumber: data.contactPhone || '',
         contactMethod: data.contactMethod || ContactMethod.WHATSAPP,
+        contactName: data.contactName,
+        contactDocument: data.contactDocument,
+        preferredLanguage: data.preferredLanguage,
+        defaultCountry: data.defaultCountry,
       },
     )
 
@@ -216,8 +224,8 @@ export class Apartment {
     const metadata = EntityMetadataVO.fromJSON(data)
 
     return new Apartment(
-      data.pk,
-      data.sk,
+      data.PK,
+      data.SK,
       data.unitCode,
       data.unitLabel,
       data.address,

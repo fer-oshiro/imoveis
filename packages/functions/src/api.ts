@@ -1,19 +1,9 @@
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
-import { ScanCommand } from '@aws-sdk/lib-dynamodb'
-import { Handler } from 'aws-lambda'
-import { Resource } from 'sst'
-
-import { Example } from '@imovel/core/example'
-import { apartamentos } from './apartamentos'
-import { comprovantes } from './comprovantes'
 import { img } from './img'
 
 // const client = new DynamoDBClient();
 
 // export const handler: Handler = async (event) => {
 
-//   if (event.rawPath.startsWith("/apartamentos")) return apartamentos(event);
-//   if (event.rawPath.startsWith("/comprovantes")) return comprovantes(event);
 //   if (event.rawPath.startsWith("/img")) return img(event);
 //   if (event.rawPath.startsWith("/test")) return test();
 
@@ -33,8 +23,6 @@ import { awsLambdaFastify } from '@fastify/aws-lambda'
 const proxy = awsLambdaFastify(app)
 
 export const handler = async (event: any, context: any) => {
-  if (event.rawPath.startsWith('/apartamentos')) return apartamentos(event)
-  if (event.rawPath.startsWith('/comprovantes')) return comprovantes(event)
   if (event.rawPath.startsWith('/img')) return img(event)
   return proxy(event, context)
 }
