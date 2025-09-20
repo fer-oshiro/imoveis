@@ -14,7 +14,7 @@ export const Apartamentos = () => {
       try {
         const url = process.env.NEXT_PUBLIC_API_URL || '/apartamentos'
         const idToken = localStorage.getItem('idToken')
-        const response = await fetch(url + '/apartamentos', {
+        const response = await fetch(url + '/apartments', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -25,7 +25,7 @@ export const Apartamentos = () => {
           throw new Error('Erro ao buscar apartamentos')
         }
         const data = await response.json()
-        setApartamentos(data.items || [])
+        setApartamentos(data || [])
       } catch (error) {
         console.error('Erro ao buscar apartamentos:', error)
       } finally {
@@ -112,11 +112,11 @@ export const Apartamentos = () => {
           Lista de Apartamentos {loading ? '(Carregando...)' : ''}
         </caption>
         <thead>
-          <tr>
+          <tr style={{ fontSize: '12px' }}>
+            <th>Unidade</th>
             <th>Nome</th>
             <th>CPF</th>
             <th>Telefone</th>
-            <th>Unidade</th>
             <th>Saída</th>
             <th>Ultimo pagamento</th>
             <th>Ações</th>
@@ -124,13 +124,13 @@ export const Apartamentos = () => {
         </thead>
         <tbody>
           {apartamentos.map((apartamento: any) => (
-            <tr key={apartamento.PK}>
-              <td>{apartamento.name}</td>
-              <td>{apartamento.cpf}</td>
-              <td>{apartamento.telefone}</td>
-              <td>{apartamento.unidade}</td>
+            <tr key={apartamento.pk} style={{ fontSize: '14px', textAlign: 'center' }}>
+              <td>{apartamento.unitLabel}</td>
+              <td>{apartamento.contactInfo?.contactName}</td>
+              <td>{apartamento.contactInfo?.contactDocument}</td>
+              <td>{apartamento.contactInfo?.phoneNumber}</td>
               <td>{apartamento.expectativa_saida ?? '-'}</td>
-              <td>{<DataFormatada dataISO={apartamento.ultimo_pagamento} />}</td>
+              <td>{<DataFormatada dataISO={apartamento.lastDepositedAt} />}</td>
               <td>
                 <button
                   className="text-blue-500 hover:underline"

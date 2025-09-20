@@ -8,7 +8,7 @@ const sns = new SNSClient({ region: 'us-east-1' })
 export const handler = async (event: CreateAuthChallengeTriggerEvent) => {
   const code = Math.floor(100000 + Math.random() * 900000).toString()
 
-  logger.debug({
+  logger.info({
     message: 'Criando desafio de autenticação',
     data: { phone: event.request.userAttributes.phone_number, code },
   })

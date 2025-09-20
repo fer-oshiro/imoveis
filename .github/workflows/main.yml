@@ -25,6 +25,9 @@ jobs:
 
       - run: npm ci --no-audit --no-fund
 
+      - name: Run unit tests
+        run: npm run test:unit
+
       - name: Select stage & role
         id: sel
         run: |

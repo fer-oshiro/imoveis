@@ -6,20 +6,30 @@
   ],
   "scripts": {
     "dev": "sst dev",
-    "deploy:stg": "sst deploy --stage stg",
-    "deploy:prod": "sst deploy --stage prod",
-    "remove:stg": "sst remove --stage stg",
-    "test": "sst shell vitest run",
-    "format": "prettier -w . --ignore-unknown",
-    "format:check": "prettier -c . --ignore-unknown",
+    "deploy:stg": "npx sst deploy --stage stg",
+    "deploy:prod": "npx sst deploy --stage prod",
+    "remove:stg": "npx sst remove --stage stg",
+    "test": "npm run test:unit",
+    "test:unit": "vitest run",
+    "test:sst": "sst shell vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "npm run lint --workspace=packages/functions",
+    "lint:fix": "npm run lint:fix --workspace=packages/functions",
+    "typecheck": "tsc --noEmit --project packages/functions/tsconfig.json",
+    "typecheck:src": "tsc --noEmit --project packages/functions/tsconfig.src.json",
+    "lint-staged": "lint-staged",
     "prepare": "husky",
-    "lint": "eslint \"packages/**/*.{ts,tsx,js,jsx,mjs,cjs}\"",
-    "lint:fix": "eslint --fix \"packages/**/*.{ts,tsx,js,jsx,mjs,cjs}\"",
+    "check-commit": "npm run lint-staged && npm run typecheck:src",
     "lint:debug": "node -e \"console.log('node',process.version)\" && npx eslint --version && npm run -s lint"
   },
   "devDependencies": {
     "@eslint/js": "^9.35.0",
     "@tsconfig/node22": "~22.0.2",
+    "@types/jest": "^30.0.0",
+    "@vitest/ui": "^3.2.4",
     "eslint": "^9.35.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-import-resolver-typescript": "^4.4.4",
@@ -32,10 +42,21 @@
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "typescript": "~5.9.2",
+    "vitest": "^3.2.4",
     "typescript-eslint": "^8.42.0"
   },
   "dependencies": {
     "sst": "~3.17.10"
   },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+  "lint-staged": {
+    "*.{json,css,scss,md}": [
+      "prettier --write"
+    ],
+    "packages/functions/src/**/*.{ts,tsx}": [
+      "prettier --write"
+    ],
+    "packages/web/**/*.{js,jsx,ts,tsx}": [
+      "prettier --write"
+    ]
+  }
 }

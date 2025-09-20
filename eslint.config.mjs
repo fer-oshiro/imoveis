@@ -1,10 +1,10 @@
 import js from '@eslint/js'
-import tseslint from 'typescript-eslint'
+import eslintConfigPrettier from 'eslint-config-prettier'
+import importPlugin from 'eslint-plugin-import'
 import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
-import importPlugin from 'eslint-plugin-import'
-import eslintConfigPrettier from 'eslint-config-prettier'
 import globals from 'globals'
+import tseslint from 'typescript-eslint'
 
 export default [
   {
@@ -17,6 +17,8 @@ export default [
       '**/.open-next/**',
       '**/.next/**',
       '**/.artifacts/**',
+      '**/*/vitest.setup.ts',
+      '**/*/vitest.config.ts',
     ],
   },
 

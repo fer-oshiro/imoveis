@@ -1,15 +1,13 @@
-import { Title } from '@/components/ui/title'
-import Image from 'next/image'
-import { LOCATIONS } from '@/constants/location'
 import { Card } from '@/components/lading-page/card'
+import { Title } from '@/components/ui/title'
+import { LOCATIONS } from '@/constants/location'
 
 export default function Home() {
   return (
     <>
       <div className="flex items-center gap-4 p-8 font-[family-name:var(--font-geist-sans)] sm:p-8">
-        <Image src="/logo.svg" alt="" width={46} height={56} />
-        <h1 className="text-salmon mt-4 text-center text-3xl font-medium">
-          Oshiro <span className="block text-sm">IMÓVEIS</span>
+        <h1 className="text-salmon mt-4 text-center text-2xl font-medium">
+          OSHIRO <span className="block text-sm tracking-widest">IMÓVEIS</span>
         </h1>
       </div>
       <section className="mt-8 px-4 sm:px-8">

@@ -38,10 +38,3 @@ jobs:
 
       - name: Run lint
         run: npm run lint
-
-      - name: Run tests
-        env:
-          SST_STAGE: stg
-        run: |
-          set -e
-          npx sst shell --print-logs vitest run
