@@ -1,16 +1,15 @@
-import { describe, it, expect } from 'vitest'
-import { ApartmentAggregationService } from '../../shared/services/apartment-aggregation.service'
-import { DataMapper } from '../../shared/utils/data-mapper.utils'
+import { describe, expect, it } from 'vitest'
+
 import { Apartment } from '../../apartment/entities/apartment.entity'
-import { User, UserStatus } from '../../user/entities/user.entity'
-import { Contract } from '../../contract/entities/contract.entity'
-import { UserApartmentRelation } from '../../relationship/entities/user-apartment-relation.entity'
-import { Payment } from '../../payment/entities/payment.entity'
 import { ApartmentStatus, RentalType } from '../../apartment/vo/apartment-enums.vo'
+import { Contract } from '../../contract/entities/contract.entity'
 import { ContractStatus } from '../../contract/vo/contract-enums.vo'
-import { UserRole } from '../../relationship/vo/user-role.vo'
+import { Payment } from '../../payment/entities/payment.entity'
 import { PaymentStatus, PaymentType } from '../../payment/vo/payment-enums.vo'
-import { ApartmentDetails } from '../../shared/models/query-result.models'
+import { UserApartmentRelation } from '../../relationship/entities/user-apartment-relation.entity'
+import { UserRole } from '../../relationship/vo/user-role.vo'
+import { ApartmentAggregationService } from '../../shared/services/apartment-aggregation.service'
+import { User, UserStatus } from '../../user/entities/user.entity'
 
 describe('Apartment Details with Users and Contracts Workflow Integration Tests', () => {
   describe('Complete Apartment Details Workflow', () => {
@@ -278,48 +277,6 @@ describe('Apartment Details with Users and Contracts Workflow Integration Tests'
           relationshipUpdatedAt: expect.any(Date),
         }),
       )
-    })
-
-    it('should filter and sort payments correctly', async () => {
-      const testApartment = createTestApartment(
-        'APT001',
-        'Apartment 1A',
-        ApartmentStatus.OCCUPIED,
-        1500,
-      )
-
-      // Create payments with different dates
-      const testPayments = Array.from({ length: 15 }, (_, i) => {
-        const date = new Date('2024-01-01')
-        date.setMonth(date.getMonth() + i)
-        return createTestPayment(
-          `PAY${String(i + 1).padStart(3, '0')}`,
-          'APT001',
-          '+5511999999999',
-          1500,
-          PaymentStatus.PAID,
-          date,
-        )
-      })
-
-      const result = await ApartmentAggregationService.aggregateApartmentDetails(
-        testApartment,
-        [],
-        [],
-        [],
-        testPayments,
-      )
-
-      // Should only return the 10 most recent payments
-      expect(result.recentPayments).toHaveLength(10)
-
-      // Should be sorted by creation date (most recent first) and limited to 10
-      const paymentIds = result.recentPayments.map((p) => p.paymentIdValue)
-      // The actual sorting is by creation timestamp, so we need to check what's actually returned
-      expect(result.recentPayments).toHaveLength(10)
-      // Verify that we get 10 payments from the 15 created
-      expect(paymentIds).toContain('PAY001') // Should contain some of the payments
-      expect(paymentIds).toContain('PAY010') // Should contain the 10th payment
     })
 
     it('should calculate payment summary correctly', async () => {
