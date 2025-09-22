@@ -31,29 +31,6 @@ export const rule = new aws.ses.ReceiptRule(
   { dependsOn: [ruleSet] },
 )
 
-new aws.s3.BucketPolicy('SesBucketPolicy', {
-  bucket: emailBucket.name,
-  policy: emailBucket.name.apply((name) =>
-    JSON.stringify({
-      Version: '2012-10-17',
-      Statement: [
-        {
-          Sid: 'AllowSESPutObject',
-          Effect: 'Allow',
-          Principal: { Service: 'ses.amazonaws.com' },
-          Action: 's3:PutObject',
-          Resource: `arn:aws:s3:::${name}/raw/*`,
-          Condition: {
-            StringEquals: {
-              'aws:Referer': process.env.CDK_DEFAULT_ACCOUNT || process.env.AWS_ACCOUNT_ID,
-            },
-          },
-        },
-      ],
-    }),
-  ),
-})
-
 new aws.ses.ActiveReceiptRuleSet('ActiveRuleSet', {
   ruleSetName: ruleSet.ruleSetName,
   region: 'us-east-1',

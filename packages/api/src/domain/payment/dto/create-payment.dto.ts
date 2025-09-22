@@ -1,21 +1,34 @@
 import { z } from 'zod'
-import { PaymentStatus, PaymentType, PAYMENT_TYPE_VALUES } from '../vo/payment-enums.vo'
-import { phoneNumberValidator } from '../../user/utils/validation.utils'
+import { PAYMENT_TYPE_VALUES, PaymentStatus, PaymentType } from '../vo/payment-enums.vo'
 
 // Zod schemas for validation
-export const createPaymentDtoSchema = z.object({
-  apartmentUnitCode: z.string().min(1, 'Apartment unit code is required').trim().toUpperCase(),
-  userPhoneNumber: phoneNumberValidator,
+const base = {
+  name: z.string().min(1, 'Name is required').trim(),
   amount: z.number().positive('Amount must be greater than zero'),
   dueDate: z
     .string()
     .datetime('Invalid due date format')
-    .transform((val) => new Date(val)),
+    .transform((v) => new Date(v)),
   contractId: z.string().min(1, 'Contract ID is required').trim(),
   type: z.enum(PAYMENT_TYPE_VALUES as [string, ...string[]]).optional(),
   description: z.string().trim().optional(),
-  createdBy: z.string().trim().optional(),
+}
+export const createPaymentDtoByApSchema = z.object({
+  ...base,
+  apartmentUnitCode: z.string().min(1, 'Apartment unit code is required').trim().toUpperCase(),
 })
+const DOC_RE =
+  /^(?:[\dx]{3}\.[\dx]{3}\.[\dx]{3}-[\dx]{2}|[\dx]{2}\.[\dx]{3}\.[\dx]{3}\/[\dx]{4}-[\dx]{2}|[\dx.\-\/]{8,})$/i
+
+export const createPaymentDtoByDocSchema = z.object({
+  ...base,
+  doc: z.string().regex(DOC_RE, 'Invalid CPF/CNPJ'),
+})
+
+export const createPaymentDtoSchema = z.union([
+  createPaymentDtoByApSchema,
+  createPaymentDtoByDocSchema,
+])
 
 export type CreatePaymentDto = z.infer<typeof createPaymentDtoSchema>
 

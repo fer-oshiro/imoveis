@@ -16,6 +16,7 @@ export default $config({
     const api = await import('./infra/api')
     await import('./infra/web')
     await import('./infra/ses')
+    await import('./infra/function')
 
     return {
       MyBucket: storage.bucket.name,

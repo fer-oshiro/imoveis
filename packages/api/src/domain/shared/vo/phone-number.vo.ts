@@ -1,4 +1,4 @@
-import { parsePhoneNumberFromString, isValidPhoneNumber, CountryCode } from 'libphonenumber-js'
+import { parsePhoneNumberFromString, isValidPhoneNumber, type CountryCode } from 'libphonenumber-js'
 import { ValidationError } from '../errors/domain-error'
 
 export class PhoneNumberVO {

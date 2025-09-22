@@ -1,158 +1,141 @@
-// npm i @aws-sdk/client-dynamodb @aws-sdk/lib-dynamodb
-const { DynamoDBClient } = require('@aws-sdk/client-dynamodb')
-const {
-  DynamoDBDocumentClient,
-  ScanCommand,
-  TransactWriteCommand,
-} = require('@aws-sdk/lib-dynamodb')
+#!/usr/bin/env ts-node
 
-// ===== Config =====
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
+import { DynamoDBDocumentClient, ScanCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb'
+
 const TABLE_NAME = process.env.TABLE_NAME || 'imovel-fer-tableTable-onmvxzza'
 const REGION = process.env.AWS_REGION || 'us-east-1'
+const PK_NAME = process.env.PK_NAME || 'PK'
+const SK_NAME = process.env.SK_NAME || 'SK'
+const CONTACT_DOC_PATH = process.env.CONTACT_DOC_PATH || 'contactDocument'
+const DRY_RUN = (process.env.DRY_RUN ?? 'false').toLowerCase() === 'true'
 
-// Nomes dos atributos de chave
-const PK_ATTR = process.env.PK_ATTR || 'PK'
-const SK_ATTR = process.env.SK_ATTR || 'SK'
+// --- Helpers ---------------------------------------------------------------
 
-// Valor antigo e novo do SK
-const OLD_SK_VALUE = process.env.OLD_SK_VALUE || 'INFO'
-const NEW_SK_VALUE = process.env.NEW_SK_VALUE || 'METADATA'
+/** Monta nomes de atributos para UpdateExpression suportando caminho aninhado. */
+function buildPathAttrNames(path) {
+  const parts = path.split('.')
+  const names = {}
+  const tokens = parts.map((p, i) => {
+    const k = `#n${i}`
+    names[k] = p
+    return k
+  })
+  return { names, pathExpr: tokens.join('.') }
+}
 
-// Opcional: filtrar apenas partições que começam com este prefixo (ex.: APARTMENT#)
-// Para migrar TUDO que tiver SK=INFO, defina PK_PREFIX="" (string vazia)
-const PK_PREFIX = process.env.PK_PREFIX ?? 'APARTMENT#'
+/** Normaliza o documento para o formato XXX.123.456-XX */
+export function normalizeMaskedCpfLike(doc) {
+  const s = (doc || '').trim()
 
-// Paginação e modo
-const PAGE_LIMIT = Number(process.env.PAGE_LIMIT || '1000')
-const DRY_RUN = String(process.env.DRY_RUN || 'true').toLowerCase() === 'true'
+  // Caso 1: já vem mascarado com * ou X (***.ddd.ddd-**)
+  const maskedMatch = s.match(/^[*X]{3}\.(\d{3})\.(\d{3})-[*X]{2}$/)
+  if (maskedMatch) {
+    const [, m1, m2] = maskedMatch
+    return `XXX.${m1}.${m2}-XX`
+  }
 
-// ===== Clients =====
-const ddb = new DynamoDBClient({ region: REGION })
-const doc = DynamoDBDocumentClient.from(ddb, { marshallOptions: { removeUndefinedValues: true } })
+  // Caso 2: CPF completo (11 dígitos) -> mascara
+  const digits = s.replace(/\D/g, '')
+  if (digits.length === 11) {
+    return `XXX.${digits.slice(3, 6)}.${digits.slice(6, 9)}-XX`
+  }
 
-// ===== Scan: encontra itens a migrar =====
-async function* scanItems() {
-  let lastKey
+  // Caso 3: fallback — só troca '*' por 'X' (idempotente)
+  return s.replace(/\*/g, 'X')
+}
 
-  // Monta FilterExpression dinamicamente
-  const usePrefix = PK_PREFIX !== ''
-  const FilterExpression = usePrefix ? 'begins_with(#pk, :prefix) AND #sk = :old' : '#sk = :old'
-
-  const ExpressionAttributeNames = { '#pk': PK_ATTR, '#sk': SK_ATTR }
-  const ExpressionAttributeValues = usePrefix
-    ? { ':prefix': PK_PREFIX, ':old': OLD_SK_VALUE }
-    : { ':old': OLD_SK_VALUE }
+/** Pagina um scan com filtro por sk = 'METADATA' e chama o callback por item. */
+async function scanAll(ddb, onItem) {
+  let ExclusiveStartKey = undefined
+  let processed = 0
 
   do {
-    const res = await doc.send(
+    const res = await ddb.send(
       new ScanCommand({
         TableName: TABLE_NAME,
-        Limit: PAGE_LIMIT,
-        FilterExpression,
-        ExpressionAttributeNames,
-        ExpressionAttributeValues,
-        ExclusiveStartKey: lastKey,
+        // Filtra por sk = "METADATA"
+        FilterExpression: '#sk = :sk',
+        ExpressionAttributeNames: { '#sk': SK_NAME },
+        ExpressionAttributeValues: { ':sk': 'METADATA' },
+        ExclusiveStartKey,
       }),
     )
-    for (const it of res.Items ?? []) yield it
-    lastKey = res.LastEvaluatedKey
-  } while (lastKey)
-}
 
-// ===== Migra UM item (Put novo + Delete antigo) =====
-async function migrateOne(item) {
-  const oldPk = item[PK_ATTR]
-  const oldSk = item[SK_ATTR]
-
-  if (typeof oldPk !== 'string' || typeof oldSk !== 'string')
-    return { skipped: true, reason: 'invalid key' }
-  if (oldSk !== OLD_SK_VALUE) return { skipped: true, reason: 'sk not match' }
-
-  const newItem = JSON.parse(JSON.stringify(item))
-  newItem[SK_ATTR] = NEW_SK_VALUE
-
-  if (DRY_RUN) {
-    console.log(`[dry-run] PUT ${oldPk} | ${NEW_SK_VALUE}  ;  DEL ${oldPk} | ${oldSk}`)
-    return { applied: false }
-  }
-
-  const tx = {
-    TransactItems: [
-      {
-        Put: {
-          TableName: TABLE_NAME,
-          Item: newItem,
-          ConditionExpression: 'attribute_not_exists(#pk) AND attribute_not_exists(#sk)',
-          ExpressionAttributeNames: { '#pk': PK_ATTR, '#sk': SK_ATTR },
-        },
-      },
-      {
-        Delete: {
-          TableName: TABLE_NAME,
-          Key: { [PK_ATTR]: oldPk, [SK_ATTR]: oldSk },
-          ConditionExpression: 'attribute_exists(#pk) AND attribute_exists(#sk)',
-          ExpressionAttributeNames: { '#pk': PK_ATTR, '#sk': SK_ATTR },
-        },
-      },
-    ],
-  }
-
-  // Retry simples
-  let attempts = 0
-  while (true) {
-    try {
-      await doc.send(new TransactWriteCommand(tx))
-      return { applied: true }
-    } catch (err) {
-      attempts++
-      const status = err?.$metadata?.httpStatusCode || 0
-      const retryable =
-        err?.name === 'TransactionCanceledException' ||
-        err?.name === 'ProvisionedThroughputExceededException' ||
-        err?.name === 'ThrottlingException' ||
-        status >= 500
-
-      // Se já existe o novo item, pulamos este registro
-      if (err?.name === 'ConditionalCheckFailedException') {
-        console.warn(`[skip] Já existe ${oldPk} | ${NEW_SK_VALUE} (ConditionCheckFailed)`)
-        return { skipped: true, reason: 'exists-new' }
+    for (const item of res.Items ?? []) {
+      await onItem(item)
+      processed++
+      if (processed % 100 === 0) {
+        console.log(`→ Processados ${processed} itens...`)
       }
-
-      if (retryable && attempts < 6) {
-        const backoff = Math.min(200 * 2 ** (attempts - 1), 2000)
-        await new Promise((r) => setTimeout(r, backoff))
-        continue
-      }
-      console.error(`[error] Falha ao migrar ${oldPk} | ${oldSk}:`, err)
-      return { skipped: true, reason: 'error' }
     }
-  }
+
+    ExclusiveStartKey = res.LastEvaluatedKey
+  } while (ExclusiveStartKey)
+
+  console.log(`✓ Concluído. Total processado: ${processed}`)
 }
 
-// ===== Main =====
-;(async () => {
-  console.log(`[start] table=${TABLE_NAME} region=${REGION} dryRun=${DRY_RUN}`)
-  console.log(
-    `[filter] PK_PREFIX=${PK_PREFIX === '' ? '(TODOS)' : PK_PREFIX} ; FROM SK="${OLD_SK_VALUE}" TO SK="${NEW_SK_VALUE}"`,
-  )
+// --- Main ------------------------------------------------------------------
 
-  let scanned = 0,
-    matched = 0,
-    applied = 0,
-    skipped = 0
-
-  for await (const item of scanItems()) {
-    scanned++
-    matched++
-    const res = await migrateOne(item)
-    if (res?.applied) applied++
-    else skipped++
+async function main() {
+  if (!TABLE_NAME) {
+    console.error('Defina TABLE_NAME no ambiente.')
+    process.exit(1)
   }
 
-  console.log(
-    `[done] scanned=${scanned} matched=${matched} applied=${applied} skipped=${skipped} dryRun=${DRY_RUN}`,
-  )
-})().catch((e) => {
-  console.error(e)
+  const ddb = DynamoDBDocumentClient.from(new DynamoDBClient({ region: REGION }), {
+    marshallOptions: { removeUndefinedValues: true },
+  })
+
+  const { names, pathExpr } = buildPathAttrNames(CONTACT_DOC_PATH)
+
+  let updates = 0
+  let skipped = 0
+
+  await scanAll(ddb, async (item) => {
+    const pk = item[PK_NAME]
+    const sk = item[SK_NAME]
+
+    // Obtém o valor atual (suporta caminho aninhado simples)
+    const current = CONTACT_DOC_PATH.split('.').reduce(
+      (acc, part) => (acc ? acc[part] : undefined),
+      item,
+    )
+
+    if (!current || typeof current !== 'string') {
+      skipped++
+      return
+    }
+
+    const next = normalizeMaskedCpfLike(current)
+
+    if (next === current) {
+      skipped++
+      return
+    }
+
+    console.log(`${pk} | ${sk} :: "${current}" -> "${next}"${DRY_RUN ? '  [dry-run]' : ''}`)
+
+    if (DRY_RUN) return
+
+    await ddb.send(
+      new UpdateCommand({
+        TableName: TABLE_NAME,
+        Key: { [PK_NAME]: pk, [SK_NAME]: sk },
+        UpdateExpression: `SET ${pathExpr} = :v`,
+        ExpressionAttributeNames: names,
+        ExpressionAttributeValues: { ':v': next },
+      }),
+    )
+
+    updates++
+  })
+
+  console.log(`Resumo: atualizados=${updates} | sem mudança=${skipped}`)
+}
+
+main().catch((err) => {
+  console.error(err)
   process.exit(1)
 })

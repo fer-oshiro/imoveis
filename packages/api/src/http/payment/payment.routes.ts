@@ -89,7 +89,8 @@ export async function paymentRoutes(app: FastifyInstance) {
   // Create new payment
   app.post('/', async (request) => {
     const body = request.body as CreatePaymentDto
-    return controller.createPayment(body)
+    console.log('CreatePaymentDto body:', body)
+    // return controller.createPayment(body)
   })
 
   // Submit payment proof

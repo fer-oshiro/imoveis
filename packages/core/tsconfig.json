@@ -1,7 +1,14 @@
 {
-  "extends": "@tsconfig/node22/tsconfig.json",
   "compilerOptions": {
+    "verbatimModuleSyntax": true,
+    "preserveValueImports": true,
+    "isolatedModules": true,
+    "declaration": true,
     "module": "ESNext",
-    "moduleResolution": "Bundler"
+    "moduleResolution": "Bundler",
+    "target": "ES2022",
+    "outDir": "dist",
+    "strict": true,
+    "sourceMap": true
   }
 }
