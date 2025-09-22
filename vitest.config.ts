@@ -25,7 +25,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@functions': './packages/functions/src',
+      '@api': './packages/api/src',
       '@core': './packages/core/src',
     },
   },

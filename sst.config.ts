@@ -15,9 +15,12 @@ export default $config({
     const storage = await import('./infra/storage')
     const api = await import('./infra/api')
     await import('./infra/web')
+    await import('./infra/ses')
+    await import('./infra/function')
 
     return {
       MyBucket: storage.bucket.name,
+      MyEmailBucket: storage.emailBucket.name,
       MyCognitoUserPool: cognito.poolClient.id,
       Api: api.myApi.url,
     }

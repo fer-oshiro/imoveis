@@ -12,14 +12,14 @@
     "test": "npm run test:unit",
     "test:unit": "vitest run",
     "test:sst": "sst shell vitest run",
-    "test:watch": "vitest",
+    "test:watch": "sst shell vitest",
     "test:ui": "vitest --ui",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint": "npm run lint --workspace=packages/functions",
-    "lint:fix": "npm run lint:fix --workspace=packages/functions",
-    "typecheck": "tsc --noEmit --project packages/functions/tsconfig.json",
-    "typecheck:src": "tsc --noEmit --project packages/functions/tsconfig.src.json",
+    "lint": "npm run lint --workspace=packages/api",
+    "lint:fix": "npm run lint:fix --workspace=packages/api",
+    "typecheck": "tsc --noEmit --project packages/api/tsconfig.json",
+    "typecheck:src": "tsc --noEmit --project packages/api/tsconfig.src.json",
     "lint-staged": "lint-staged",
     "prepare": "husky",
     "check-commit": "npm run lint-staged && npm run typecheck:src",
@@ -42,17 +42,18 @@
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "typescript": "~5.9.2",
-    "vitest": "^3.2.4",
-    "typescript-eslint": "^8.42.0"
+    "typescript-eslint": "^8.42.0",
+    "vitest": "^3.2.4"
   },
   "dependencies": {
+    "@pulumi/aws": "^7.7.0",
     "sst": "~3.17.10"
   },
   "lint-staged": {
     "*.{json,css,scss,md}": [
       "prettier --write"
     ],
-    "packages/functions/src/**/*.{ts,tsx}": [
+    "packages/api/src/**/*.{ts,tsx}": [
       "prettier --write"
     ],
     "packages/web/**/*.{js,jsx,ts,tsx}": [

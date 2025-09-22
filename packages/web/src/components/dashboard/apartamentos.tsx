@@ -104,9 +104,6 @@ export const Apartamentos = () => {
       <button className="rounded bg-blue-500 px-4 py-2 text-white" onClick={handleClickUser}>
         Usuario
       </button>
-      <div>
-        <EnviarComprovante user={user} />
-      </div>
       <table className="min-w-full border border-gray-200 bg-white p-4">
         <caption className="mb-4 text-lg font-semibold">
           Lista de Apartamentos {loading ? '(Carregando...)' : ''}

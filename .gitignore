@@ -1,5 +1,10 @@
 # dependencies
 node_modules
+dist
+build
+packages/*/node_modules
+packages/*/dist
+packages/*/build
 
 # sst
 .sst
