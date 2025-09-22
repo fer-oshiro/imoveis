@@ -6,7 +6,7 @@ import { PAYMENT_TYPE_VALUES, PaymentStatus, PaymentType } from '../vo/payment-e
 const base = {
   name: z.string().min(1, 'Name is required').trim(),
   amount: z.number().positive('Amount must be greater than zero'),
-  dueDate: z.string().transform((v) => new Date(v)),
+  dueDate: z.string().datetime('Invalid date format'),
   contractId: z.string().min(1, 'Contract ID is required').trim(),
   type: z.enum(PAYMENT_TYPE_VALUES as [string, ...string[]]).optional(),
   description: z.string().trim().optional(),

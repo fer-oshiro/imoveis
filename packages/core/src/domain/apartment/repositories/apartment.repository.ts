@@ -76,7 +76,7 @@ export class ApartmentRepository implements IApartmentRepository {
 
   public async findUserByDocAndName(doc: string, name: string): Promise<any | null> {
     try {
-      console.log('Finding user by doc and name:', { doc, name }) // Debug log
+      logger.info({ doc, name })
       const response = await docClient.send(
         new ScanCommand({
           TableName: TABLE_NAME,
@@ -189,7 +189,7 @@ export class ApartmentRepository implements IApartmentRepository {
 
       return response.Items?.map((item) => Apartment.fromJSON(item)) || []
     } catch (error) {
-      console.error('Error in findAvailable:', error)
+      logger.error(error)
       throw new DomainError('Failed to find available apartments', 'APARTMENT_REPOSITORY_ERROR')
     }
   }
@@ -325,7 +325,7 @@ export class ApartmentRepository implements IApartmentRepository {
 
       return apartment
     } catch (error) {
-      console.error('Error in save:', error)
+      logger.error(error)
       throw new DomainError('Failed to save apartment', 'APARTMENT_REPOSITORY_ERROR')
     }
   }
@@ -342,7 +342,7 @@ export class ApartmentRepository implements IApartmentRepository {
 
       return apartment
     } catch (error) {
-      console.error('Error in update:', error)
+      logger.error(error)
       throw new DomainError('Failed to update apartment', 'APARTMENT_REPOSITORY_ERROR')
     }
   }
@@ -359,7 +359,7 @@ export class ApartmentRepository implements IApartmentRepository {
         }),
       )
     } catch (error) {
-      console.error('Error in delete:', error)
+      logger.error(error)
       throw new DomainError('Failed to delete apartment', 'APARTMENT_REPOSITORY_ERROR')
     }
   }

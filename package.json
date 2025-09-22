@@ -12,7 +12,7 @@
     "test": "npm run test:unit",
     "test:unit": "vitest run",
     "test:sst": "sst shell vitest run",
-    "test:watch": "vitest",
+    "test:watch": "sst shell vitest",
     "test:ui": "vitest --ui",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

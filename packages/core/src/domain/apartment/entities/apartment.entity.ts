@@ -15,8 +15,8 @@ export class Apartment {
     private rentalType: RentalType,
     private baseRent: number,
     private cleaningFee: number,
-    private images: string[], // S3 bucket keys
-    private amenities: ApartmentAmenities,
+    private images: string[],
+    private amenities: ApartmentAmenitiesVO,
     private contactInfo: ContactInfoVO | null,
     private airbnbLink?: string,
     private isAvailable: boolean = false,
@@ -203,7 +203,6 @@ export class Apartment {
   }
 
   public toJSON() {
-    console.log('Serializing apartment:', this.contactInfo?.toJSON())
     return {
       PK: this.pk,
       SK: this.sk,

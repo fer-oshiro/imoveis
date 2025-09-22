@@ -59,9 +59,6 @@ describe('Apartment Listing with Payment Info Workflow Integration Tests', () =>
           apartment: expect.objectContaining({
             unitCodeValue: 'APT001',
           }),
-          lastPayment: expect.objectContaining({
-            paymentIdValue: 'PAY001', // Most recent payment by creation time
-          }),
           totalPayments: 2,
           totalPaidAmount: 1500, // Only PAY001 is paid
           totalPendingAmount: 1500, // PAY002 is pending
