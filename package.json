@@ -59,5 +59,6 @@
     "packages/web/**/*.{js,jsx,ts,tsx}": [
       "prettier --write"
     ]
-  }
+  },
+  "packageManager": "npm@11.3.0"
 }
