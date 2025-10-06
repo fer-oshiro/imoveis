@@ -6,13 +6,12 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   SortingState,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table'
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from 'lucide-react'
+import { ChevronDown, MoreHorizontal } from 'lucide-react'
 import * as React from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -33,8 +32,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { DataFormatada } from './DataFormatada'
 import { parsePhoneNumber } from 'libphonenumber-js'
+import { DataFormatada } from './DataFormatada'
 
 export type Apartment = {
   unitLabel: string
@@ -120,7 +119,7 @@ export const columns: ColumnDef<Apartment>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(payment.id)}>
+            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(payment.unitCode)}>
               Copy payment ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
@@ -133,8 +132,7 @@ export const columns: ColumnDef<Apartment>[] = [
   },
 ]
 
-export function DataTableDemo({ data = [] }: { data?: Apartment[] }) {
-  console.log(data)
+export function ApartmentTable({ data = [], status }: { data?: Apartment[]; status: string }) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
@@ -204,7 +202,7 @@ export function DataTableDemo({ data = [] }: { data?: Apartment[] }) {
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {table.getRowModel().rows?.length &&
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map((cell) => (
@@ -213,11 +211,18 @@ export function DataTableDemo({ data = [] }: { data?: Apartment[] }) {
                     </TableCell>
                   ))}
                 </TableRow>
-              ))
-            ) : (
+              ))}
+            {status === 'idle' && !table.getRowModel().rows?.length && (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
                   No results.
+                </TableCell>
+              </TableRow>
+            )}
+            {status === 'loading' && (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  Loading...
                 </TableCell>
               </TableRow>
             )}
