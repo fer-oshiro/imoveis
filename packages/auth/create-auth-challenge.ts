@@ -18,7 +18,7 @@ export const handler = async (event: CreateAuthChallengeTriggerEvent) => {
       await sns.send(
         new PublishCommand({
           PhoneNumber: event.request.userAttributes.phone_number,
-          Message: `${code} é seu código de login.\n@imoveis.charmbyte.dev #${code}`,
+          Message: `Seu código de login é ${code} para imovel.charmbyte.dev.\n@imovel.charmbyte.dev #${code}`,
         }),
       )
   } catch (err) {

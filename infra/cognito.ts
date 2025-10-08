@@ -9,7 +9,7 @@ export const userPool = new sst.aws.CognitoUserPool('ImovelOshiroUserPool', {
     defineAuthChallenge: 'packages/auth/define-auth-challenge.handler',
     createAuthChallenge: {
       handler: 'packages/auth/create-auth-challenge.handler',
-      permission: [
+      permissions: [
         {
           actions: ['sns:Publish'],
           resources: ['*'],

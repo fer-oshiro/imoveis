@@ -13,6 +13,8 @@ export const FormCode = ({
     <form onSubmit={handleCodeSubmit} className="flex items-center space-x-4">
       <input
         type="text"
+        inputMode="numeric"
+        autoComplete="one-time-code"
         value={code}
         onChange={(e) => setCode(e.target.value)}
         placeholder="Digite o código"
