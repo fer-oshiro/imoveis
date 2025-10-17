@@ -32,6 +32,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useMediaQuery } from '@/hook/useMediaQuery'
 import { parsePhoneNumber } from 'libphonenumber-js'
 import { DataFormatada } from './DataFormatada'
 
@@ -138,6 +139,24 @@ export function ApartmentTable({ data = [], status }: { data?: Apartment[]; stat
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
 
+  console.log(columnVisibility)
+
+  const mdUp = useMediaQuery(`(min-width: 768px)`)
+  const smUp = useMediaQuery(`(min-width: 640px)`)
+
+  React.useEffect(() => {
+    if (mdUp) setColumnVisibility({ code: false })
+    else if (smUp) setColumnVisibility({ unit: false, document: false, depatureAt: false })
+    else
+      setColumnVisibility({
+        unit: false,
+        document: false,
+        status: false,
+        depatureAt: false,
+        phone: false,
+      })
+  }, [mdUp, smUp])
+
   const table = useReactTable({
     data,
     columns,
@@ -157,7 +176,7 @@ export function ApartmentTable({ data = [], status }: { data?: Apartment[]; stat
   })
 
   return (
-    <div className="w-full">
+    <div className="w-full max-w-[90vw]">
       <div className="flex items-center py-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
