@@ -221,7 +221,8 @@ export function ApartmentTable({ data = [], status }: { data?: Apartment[]; stat
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length &&
+            {status === 'idle' &&
+              table.getRowModel().rows?.length &&
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map((cell) => (
