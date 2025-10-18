@@ -65,7 +65,16 @@ export const columns: ColumnDef<Apartment>[] = [
   {
     accessorKey: 'status',
     header: 'Status',
-    cell: ({ row }) => <div className="capitalize">{row.getValue('status')}</div>,
+    cell: ({ row }) => (
+      <div className="capitalize">
+        {row.getValue('status') === 'OCUPADO' && (
+          <div className="mx-auto h-3 w-3 rounded-full bg-red-300" />
+        )}
+        {row.getValue('status') === 'DESOCUPADO' && (
+          <div className="mx-auto h-3 w-3 rounded-full bg-green-300" />
+        )}
+      </div>
+    ),
   },
   {
     id: 'contactName',
@@ -114,18 +123,20 @@ export const columns: ColumnDef<Apartment>[] = [
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
+              <span className="sr-only">Abrir menu</span>
               <MoreHorizontal />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(payment.unitCode)}>
-              Copy payment ID
+            <DropdownMenuLabel>Ações</DropdownMenuLabel>
+            <DropdownMenuItem
+              onClick={() => navigator.clipboard.writeText(payment.contactInfo.phoneNumber)}
+            >
+              Copiar número de telefone
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuItem>Ver Detalhes</DropdownMenuItem>
+            <DropdownMenuItem>Tirar Inquelino</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )
