@@ -1,4 +1,5 @@
 import { z } from 'zod'
+
 import { ContactMethod } from '../../shared'
 import { APARTMENT_STATUS_VALUES, RENTAL_TYPE_VALUES } from '../vo/apartment-enums.vo'
 

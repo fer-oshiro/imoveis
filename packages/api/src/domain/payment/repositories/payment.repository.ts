@@ -259,4 +259,27 @@ export class PaymentRepository
     await PaymentRepository.instance
     return
   }
+
+  protected mapFromEntity(entity: Payment): Record<string, any> {
+    return {
+      pk: `APARTMENT#${entity.apartmentUnitCodeValue}`,
+      sk: `PAYMENT#${entity.paymentIdValue}`,
+    }
+  }
+
+  protected mapToEntity(item: Record<string, any>): Payment {
+    const payment = new Payment(
+      item.pk.replace('APARTMENT#', ''),
+      item.sk.replace('PAYMENT#', ''),
+      item.amount,
+      item.dueDate,
+      item.paymentStatus,
+      item.contractId,
+      item.userPhoneNumber,
+      item.paymentDate,
+      item.createdAt,
+      item.updatedAt,
+    )
+    return payment
+  }
 }

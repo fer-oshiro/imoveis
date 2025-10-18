@@ -1,6 +1,5 @@
 import { Contract } from '../../entities/contract.entity'
 import { ContractStatus } from '../../vo/contract-enums.vo'
-import { ValidationError } from '../../../shared/errors/domain-error'
 
 // @ts-ignore - Test file with potential typing issues
 

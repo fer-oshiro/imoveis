@@ -8,6 +8,7 @@ import { Resource } from 'sst'
 import { BaseRepository, IBaseRepository } from '../../shared'
 import { Contract } from '../entities/contract.entity'
 import { ContractStatus } from '../vo/contract-enums.vo'
+import { logger } from '../../../infra/logger'
 
 export interface IContractRepository extends IBaseRepository<Contract, string> {
   findByApartment(apartmentUnitCode: string): Promise<Contract[]>
@@ -56,7 +57,7 @@ export class ContractRepository
       }
       return this.mapToEntity(result.Items[0])
     } catch (error) {
-      console.error('Error finding contract by ID:', error)
+      logger.error(error)
       throw error
     }
   }
@@ -78,7 +79,7 @@ export class ContractRepository
       }
       return result.Items.map((item) => this.mapToEntity(item))
     } catch (error) {
-      console.error('Error finding contracts by apartment:', error)
+      logger.error(error)
       throw error
     }
   }
@@ -109,7 +110,7 @@ export class ContractRepository
       }
       return result.Items.map((item) => this.mapToEntity(item))
     } catch (error) {
-      console.error('Error finding contracts by tenant:', error)
+      logger.error(error)
       throw error
     }
   }
@@ -132,7 +133,7 @@ export class ContractRepository
       }
       return result.Items.map((item) => this.mapToEntity(item))
     } catch (error) {
-      console.error('Error finding contracts by status:', error)
+      logger.error(error)
       throw error
     }
   }
@@ -163,7 +164,7 @@ export class ContractRepository
       await this.dynamoClient.send(command)
       return contract
     } catch (error) {
-      console.error('Error saving contract:', error)
+      logger.error(error)
       throw error
     }
   }
@@ -186,7 +187,7 @@ export class ContractRepository
     try {
       await this.dynamoClient.send(command)
     } catch (error) {
-      console.error('Error deleting contract:', error)
+      logger.error(error)
       throw error
     }
   }

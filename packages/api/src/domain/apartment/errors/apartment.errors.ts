@@ -5,7 +5,6 @@ import {
   BusinessRuleViolationError,
 } from '../../shared/errors/domain-error'
 
-// Apartment-specific errors
 export class ApartmentNotFoundError extends EntityNotFoundError {
   constructor(unitCode: string) {
     super('Apartment', unitCode)
