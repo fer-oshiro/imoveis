@@ -32,6 +32,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useMediaQuery } from '@/hook/useMediaQuery'
 import { parsePhoneNumber } from 'libphonenumber-js'
 import { DataFormatada } from './DataFormatada'
 
@@ -64,7 +65,16 @@ export const columns: ColumnDef<Apartment>[] = [
   {
     accessorKey: 'status',
     header: 'Status',
-    cell: ({ row }) => <div className="capitalize">{row.getValue('status')}</div>,
+    cell: ({ row }) => (
+      <div className="capitalize">
+        {row.getValue('status') === 'OCUPADO' && (
+          <div className="mx-auto h-3 w-3 rounded-full bg-red-300" />
+        )}
+        {row.getValue('status') === 'DESOCUPADO' && (
+          <div className="mx-auto h-3 w-3 rounded-full bg-green-300" />
+        )}
+      </div>
+    ),
   },
   {
     id: 'contactName',
@@ -113,18 +123,20 @@ export const columns: ColumnDef<Apartment>[] = [
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
+              <span className="sr-only">Abrir menu</span>
               <MoreHorizontal />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(payment.unitCode)}>
-              Copy payment ID
+            <DropdownMenuLabel>Ações</DropdownMenuLabel>
+            <DropdownMenuItem
+              onClick={() => navigator.clipboard.writeText(payment.contactInfo.phoneNumber)}
+            >
+              Copiar número de telefone
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuItem>Ver Detalhes</DropdownMenuItem>
+            <DropdownMenuItem>Tirar Inquelino</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )
@@ -137,6 +149,24 @@ export function ApartmentTable({ data = [], status }: { data?: Apartment[]; stat
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+
+  console.log(columnVisibility)
+
+  const mdUp = useMediaQuery(`(min-width: 768px)`)
+  const smUp = useMediaQuery(`(min-width: 640px)`)
+
+  React.useEffect(() => {
+    if (mdUp) setColumnVisibility({ code: false })
+    else if (smUp) setColumnVisibility({ unit: false, document: false, depatureAt: false })
+    else
+      setColumnVisibility({
+        unit: false,
+        document: false,
+        status: false,
+        depatureAt: false,
+        phone: false,
+      })
+  }, [mdUp, smUp])
 
   const table = useReactTable({
     data,
@@ -157,7 +187,7 @@ export function ApartmentTable({ data = [], status }: { data?: Apartment[]; stat
   })
 
   return (
-    <div className="w-full">
+    <div className="w-full max-w-[90vw]">
       <div className="flex items-center py-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -202,7 +232,8 @@ export function ApartmentTable({ data = [], status }: { data?: Apartment[]; stat
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length &&
+            {status === 'idle' &&
+              table.getRowModel().rows?.length &&
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map((cell) => (
