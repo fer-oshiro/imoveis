@@ -1,6 +1,6 @@
-import { ContractService } from '../../domain/contract/services/contract.service'
-import { ContractRepository } from '../../domain/contract/repositories/contract.repository'
 import { CreateContractDto, UpdateContractDto, RenewContractDto } from '../../domain/contract/dto'
+import { ContractRepository } from '../../domain/contract/repositories/contract.repository'
+import { ContractService } from '../../domain/contract/services/contract.service'
 import { ContractStatus } from '../../domain/contract/vo/contract-enums.vo'
 import { DomainError } from '../../domain/shared/errors/domain-error'
 

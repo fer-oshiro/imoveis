@@ -6,12 +6,13 @@ import {
   QueryCommand,
 } from '@aws-sdk/lib-dynamodb'
 import { Resource } from 'sst'
+
+import { IRelationshipRepository, RelationshipKey } from './relationship.repository.interface'
 import { PhoneNumberVO } from '../../shared'
 import { DatabaseError } from '../../shared/errors/domain-error'
 import { BaseRepository } from '../../shared/repositories/base-repository.abstract'
 import { UserApartmentRelation } from '../entities/user-apartment-relation.entity'
 import { UserRole, UserRoleVO } from '../vo/user-role.vo'
-import { IRelationshipRepository, RelationshipKey } from './relationship.repository.interface'
 
 export class RelationshipRepository
   extends BaseRepository<UserApartmentRelation, RelationshipKey>

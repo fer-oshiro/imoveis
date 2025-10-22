@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { logger } from '../../../infra/logger'
 import { Contract } from '../../contract/entities/contract.entity'
 import { Payment } from '../../payment/entities/payment.entity'

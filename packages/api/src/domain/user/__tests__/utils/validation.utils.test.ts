@@ -1,5 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import { z } from 'zod'
+
+import { DocumentType } from '../../../shared'
+import { ValidationError } from '../../../shared/errors/domain-error'
 import {
   validatePhoneNumber,
   validateDocument,
@@ -12,8 +15,6 @@ import {
   cpfValidator,
   cnpjValidator,
 } from '../../utils/validation.utils'
-import { DocumentType } from '../../../shared'
-import { ValidationError } from '../../../shared/errors/domain-error'
 
 describe('Validation Utils', () => {
   describe('validatePhoneNumber', () => {

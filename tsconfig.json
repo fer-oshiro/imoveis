@@ -1,1 +1,4 @@
-{}
+{
+  "include": ["types", "apps", "packages", "sst.config.ts"],
+  "exclude": [".sst", "dist", "build", "node_modules"]
+}

@@ -1,4 +1,5 @@
 import { FastifyInstance } from 'fastify'
+
 import { UserController } from './user.controller'
 import { UserStatus } from '../../domain/user/entities/user.entity'
 

@@ -1,6 +1,6 @@
-import { DocumentVO, DocumentType } from '../../vo/document.vo'
-import { CNPJVO } from '../../vo/cnpj.vo'
 import { ValidationError } from '../../errors/domain-error'
+import { CNPJVO } from '../../vo/cnpj.vo'
+import { DocumentVO, DocumentType } from '../../vo/document.vo'
 
 describe('Shared Value Objects', () => {
   describe('DocumentVO', () => {

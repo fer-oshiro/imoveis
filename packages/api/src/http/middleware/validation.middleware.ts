@@ -1,5 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
 import { ZodSchema, ZodError } from 'zod'
+
 import { ValidationError, ErrorHandler } from '../../domain/shared/errors'
 
 /**

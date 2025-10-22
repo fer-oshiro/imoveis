@@ -1,14 +1,14 @@
-import { Payment } from '../../payment/entities/payment.entity'
 import { Apartment } from '../../apartment/entities/apartment.entity'
-import { User } from '../../user/entities/user.entity'
 import { Contract } from '../../contract/entities/contract.entity'
+import { Payment } from '../../payment/entities/payment.entity'
+import { User } from '../../user/entities/user.entity'
+import { DomainError } from '../errors/domain-error'
 import {
   PaymentWithDetails,
   PaymentStatistics,
   ContractWithDetails,
 } from '../models/query-result.models'
 import { DataMapper } from '../utils/data-mapper.utils'
-import { DomainError } from '../errors/domain-error'
 
 /**
  * Service for aggregating payment data with related entities

@@ -1,12 +1,12 @@
-import { UserService } from '../../services/user.service'
-import { IUserRepository } from '../../repositories/user-repository.interface'
-import { User, UserStatus } from '../../entities/user.entity'
-import { CreateUserDto, UpdateUserDto } from '../../dto'
-import { UserNotFoundError, UserAlreadyExistsError } from '../../errors'
+import { vi } from 'vitest'
+
 import { EntityNotFoundError } from '../../../shared'
 import { ValidationError } from '../../../shared/errors/domain-error'
-
-import { vi } from 'vitest'
+import { CreateUserDto, UpdateUserDto } from '../../dto'
+import { User, UserStatus } from '../../entities/user.entity'
+import { UserNotFoundError, UserAlreadyExistsError } from '../../errors'
+import { IUserRepository } from '../../repositories/user-repository.interface'
+import { UserService } from '../../services/user.service'
 
 // Mock the repository
 // @ts-ignore - Mock typing issue

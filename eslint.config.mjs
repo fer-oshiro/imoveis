@@ -19,6 +19,7 @@ export default [
       '**/.artifacts/**',
       '**/*/vitest.setup.ts',
       '**/*/vitest.config.ts',
+      '**/*.d.ts',
     ],
   },
 
@@ -51,6 +52,8 @@ export default [
           groups: [['builtin', 'external'], 'internal', ['parent', 'sibling', 'index']],
         },
       ],
+      '@typescript-eslint/triple-slash-reference': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
       'no-console': 'warn',
     },
   },

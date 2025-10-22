@@ -2,6 +2,7 @@ import { type CountryCode } from 'libphonenumber-js'
 
 import { PhoneNumberVO } from './phone-number.vo'
 import { ValidationError } from '../errors/domain-error'
+import { logger } from '../../../infra/logger'
 
 export enum ContactMethod {
   WHATSAPP = 'whatsapp',
@@ -50,6 +51,7 @@ export class ContactInfoVO implements ContactInfo {
     try {
       return new PhoneNumberVO(contactPhone, defaultCountry || 'BR')
     } catch (error) {
+      logger.error(error)
       throw new ValidationError('Invalid phone number format', 'contactPhone')
     }
   }

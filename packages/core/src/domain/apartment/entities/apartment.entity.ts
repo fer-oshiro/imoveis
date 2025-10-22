@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { ContactInfoVO, ContactMethod, EntityMetadataVO } from '../../shared'
 import { type ApartmentAmenities, ApartmentAmenitiesVO } from '../vo/apartment-amenities.vo'
 import { ApartmentStatus, RentalType } from '../vo/apartment-enums.vo'

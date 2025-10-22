@@ -1,8 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
+
 import { ApartmentController } from '../apartment/apartment.controller'
-import { UserController } from '../user/user.controller'
 import { ContractController } from '../contract/contract.controller'
 import { PaymentController } from '../payment/payment.controller'
+import { UserController } from '../user/user.controller'
 
 // Mock the repositories
 vi.mock('../../domain/apartment/repositories/apartment.repository', () => ({

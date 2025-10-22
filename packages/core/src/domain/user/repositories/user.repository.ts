@@ -7,10 +7,12 @@ import {
   ScanCommand,
 } from '@aws-sdk/lib-dynamodb'
 import { Resource } from 'sst'
+
+import { type IUserRepository } from './user-repository.interface'
+import { docClient } from '../../../infra/database'
 import { BaseRepository, PhoneNumberVO } from '../../shared'
 import { DatabaseError } from '../../shared/errors/domain-error'
 import { User, UserStatus } from '../entities/user.entity'
-import { IUserRepository } from './user-repository.interface'
 
 export class UserRepository extends BaseRepository<User, string> implements IUserRepository {
   private static instance: UserRepository
@@ -22,9 +24,8 @@ export class UserRepository extends BaseRepository<User, string> implements IUse
   public static getInstance(): UserRepository {
     if (!UserRepository.instance) {
       // Import dynamoClient from infra
-      const { dynamoClient } = require('../../../infra/database')
       const tableName = Resource.table.name || 'imovel-oshiro-table'
-      UserRepository.instance = new UserRepository(tableName, dynamoClient)
+      UserRepository.instance = new UserRepository(tableName, docClient)
     }
     return UserRepository.instance
   }

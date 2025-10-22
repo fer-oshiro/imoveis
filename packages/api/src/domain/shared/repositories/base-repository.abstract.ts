@@ -1,4 +1,5 @@
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb'
+
 import { IBaseRepository } from '../interfaces/base-repository.interface'
 
 export abstract class BaseRepository<T, K> implements IBaseRepository<T, K> {

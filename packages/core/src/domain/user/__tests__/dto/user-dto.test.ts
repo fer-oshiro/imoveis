@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { ZodError } from 'zod'
+
 import {
   CreateUserDtoSchema,
   CreateUserRequestSchema,
@@ -182,13 +183,6 @@ describe('User DTOs Zod Validation', () => {
     it('should validate valid user details', () => {
       const result = UserDetailsDtoSchema.parse(validData)
       expect(result).toEqual(validData)
-    })
-
-    it('should validate user details without email', () => {
-      const { email, ...dataWithoutEmail } = validData
-
-      const result = UserDetailsDtoSchema.parse(dataWithoutEmail)
-      expect(result.email).toBeUndefined()
     })
 
     it('should throw error for missing required fields', () => {

@@ -1,6 +1,6 @@
+import { ValidationError } from '../../../shared/errors/domain-error'
 import { UserApartmentRelation } from '../../entities/user-apartment-relation.entity'
 import { UserRole } from '../../vo/user-role.vo'
-import { ValidationError } from '../../../shared/errors/domain-error'
 
 describe('UserApartmentRelation Entity', () => {
   const validData = {

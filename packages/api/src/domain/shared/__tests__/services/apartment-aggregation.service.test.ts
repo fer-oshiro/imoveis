@@ -1,14 +1,14 @@
-import { ApartmentAggregationService } from '../../services/apartment-aggregation.service'
 import { Apartment } from '../../../apartment/entities/apartment.entity'
-import { User } from '../../../user/entities/user.entity'
-import { Payment } from '../../../payment/entities/payment.entity'
-import { Contract } from '../../../contract/entities/contract.entity'
-import { UserApartmentRelation } from '../../../relationship/entities/user-apartment-relation.entity'
 import { ApartmentStatus, RentalType } from '../../../apartment/vo/apartment-enums.vo'
-import { UserRole } from '../../../relationship/vo/user-role.vo'
+import { Contract } from '../../../contract/entities/contract.entity'
 import { ContractStatus } from '../../../contract/vo/contract-enums.vo'
+import { Payment } from '../../../payment/entities/payment.entity'
 import { PaymentStatus } from '../../../payment/vo/payment-enums.vo'
+import { UserApartmentRelation } from '../../../relationship/entities/user-apartment-relation.entity'
+import { UserRole } from '../../../relationship/vo/user-role.vo'
+import { User } from '../../../user/entities/user.entity'
 import { DomainError } from '../../errors/domain-error'
+import { ApartmentAggregationService } from '../../services/apartment-aggregation.service'
 
 describe('ApartmentAggregationService', () => {
   let mockApartment: Apartment

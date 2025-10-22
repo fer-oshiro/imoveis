@@ -1,4 +1,5 @@
 import { z } from 'zod'
+
 import { APARTMENT_STATUS_VALUES, RENTAL_TYPE_VALUES } from '../vo/apartment-enums.vo'
 
 export const apartmentQueryDto = z.object({

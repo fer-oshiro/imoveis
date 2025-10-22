@@ -1,4 +1,5 @@
 import { FastifyInstance } from 'fastify'
+
 import { PaymentController } from './payment.controller'
 import {
   CreatePaymentDto,

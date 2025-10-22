@@ -5,10 +5,11 @@ import {
   QueryCommand,
 } from '@aws-sdk/lib-dynamodb'
 import { Resource } from 'sst'
+
+import { logger } from '../../../infra/logger'
 import { BaseRepository, IBaseRepository } from '../../shared'
 import { Contract } from '../entities/contract.entity'
 import { ContractStatus } from '../vo/contract-enums.vo'
-import { logger } from '../../../infra/logger'
 
 export interface IContractRepository extends IBaseRepository<Contract, string> {
   findByApartment(apartmentUnitCode: string): Promise<Contract[]>

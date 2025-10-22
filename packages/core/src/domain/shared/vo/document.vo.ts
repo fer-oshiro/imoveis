@@ -1,6 +1,6 @@
-import { ValidationError } from '../errors/domain-error'
-import { CPFVO } from './cpf.vo'
 import { CNPJVO } from './cnpj.vo'
+import { CPFVO } from './cpf.vo'
+import { ValidationError } from '../errors/domain-error'
 
 export enum DocumentType {
   CPF = 'cpf',
@@ -60,12 +60,14 @@ export class DocumentVO {
     type: DocumentType,
   ): { value?: string; formatted?: string; _cpf?: CPFVO; _cnpj?: CNPJVO } {
     switch (type) {
-      case DocumentType.CPF:
+      case DocumentType.CPF: {
         const cpf = CPFVO.create(document)
         return { value: cpf.value, formatted: cpf.formatted, _cpf: cpf }
-      case DocumentType.CNPJ:
+      }
+      case DocumentType.CNPJ: {
         const cnpj = CNPJVO.create(document)
         return { value: cnpj.value, formatted: cnpj.formatted, _cnpj: cnpj }
+      }
       case DocumentType.NONE:
         return { value: undefined, formatted: undefined }
       default:
