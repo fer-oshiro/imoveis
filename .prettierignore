@@ -42,4 +42,4 @@ coverage/
 
 # Gerados
 *.generated.*
-.sst-env.d.ts
+sst-env.d.ts
