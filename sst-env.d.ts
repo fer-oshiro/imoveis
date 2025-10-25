@@ -14,6 +14,10 @@ declare module "sst" {
       "sender": string
       "type": "sst.aws.Email"
     }
+    "EmailParser": {
+      "name": string
+      "type": "sst.aws.Function"
+    }
     "ImovelOshiroUserPool": {
       "id": string
       "type": "sst.aws.CognitoUserPool"
