@@ -47,5 +47,8 @@ jobs:
           role-session-name: gha-${{ github.run_id }}
           aws-region: us-east-1
 
+      - name: build core
+        run: npm run -w @imovel/core build
+
       - name: Deploy SST
         run: npx sst deploy --stage ${{ steps.sel.outputs.STAGE }}
