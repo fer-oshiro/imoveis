@@ -1,33 +1,9 @@
-import { describe, it, expect, beforeEach } from 'vitest'
-import { UserService } from '../../services/user.service'
-import { UserRepository } from '../../repositories/user.repository'
+import { beforeEach, describe, expect, it } from 'vitest'
+
 import { User, UserStatus } from '../../entities/user.entity'
 
-// Mock DynamoDB client for integration tests
-const mockDynamoClient = {
-  send: async (command: any) => {
-    // Mock implementation for   operations
-    if (command.constructor.name === 'GetCommand') {
-      return { Item: null } // User not found
-    }
-    if (command.constructor.name === 'PutCommand') {
-      return {} // Success
-    }
-    if (command.constructor.name === 'ScanCommand') {
-      return { Items: [] } // No items found
-    }
-    return {}
-  },
-} as any
-
 describe('User Integration Tests', () => {
-  let userService: UserService
-  let userRepository: UserRepository
-
-  beforeEach(() => {
-    userRepository = new UserRepository('test-table', mockDynamoClient)
-    userService = new UserService(userRepository)
-  })
+  beforeEach(() => {})
 
   const validUserData = {
     phoneNumber: '+5511987654321',

@@ -1,7 +1,4 @@
-import { Contract } from '../entities/contract.entity'
-import { IContractRepository } from '../repositories/contract.repository'
-import { ContractStatus } from '../vo/contract-enums.vo'
-import { ContractTerms } from '../vo/contract-terms.vo'
+import { BusinessRuleViolationError } from '../../shared'
 import {
   CreateContractDto,
   CreateContractDtoValidator,
@@ -12,7 +9,7 @@ import {
   ContractResponseDto,
   ContractResponseDtoMapper,
 } from '../dto'
-import { BusinessRuleViolationError } from '../../shared'
+import { Contract } from '../entities/contract.entity'
 import {
   ContractAlreadyExistsError,
   InvalidContractDateError,
@@ -22,6 +19,9 @@ import {
   ContractRenewalError,
   ContractCreateError,
 } from '../errors'
+import { IContractRepository } from '../repositories/contract.repository'
+import { ContractStatus } from '../vo/contract-enums.vo'
+import { ContractTerms } from '../vo/contract-terms.vo'
 
 export class ContractService {
   constructor(private readonly contractRepository: IContractRepository) {}

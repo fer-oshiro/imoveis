@@ -43,7 +43,6 @@ export class Contract {
     )
   }
 
-  // Getters
   get pkValue(): string {
     return this.pk
   }

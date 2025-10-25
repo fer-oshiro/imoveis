@@ -1,5 +1,5 @@
-import { UserRoleVO, UserRole } from '../../vo/user-role.vo'
 import { ValidationError } from '../../../shared/errors/domain-error'
+import { UserRoleVO, UserRole } from '../../vo/user-role.vo'
 
 describe('UserRoleVO', () => {
   describe('create', () => {

@@ -1,13 +1,13 @@
-import { UserService } from '../../domain/user/services/user.service'
-import { UserRepository } from '../../domain/user/repositories/user.repository'
-import { CreateUserDto, UpdateUserDto } from '../../domain/user/dto'
-import { UserStatus } from '../../domain/user/entities/user.entity'
 import {
   DomainError,
   EntityNotFoundError,
   ValidationError,
   BusinessRuleViolationError,
 } from '../../domain/shared/errors/domain-error'
+import { CreateUserDto, UpdateUserDto } from '../../domain/user/dto'
+import { UserStatus } from '../../domain/user/entities/user.entity'
+import { UserRepository } from '../../domain/user/repositories/user.repository'
+import { UserService } from '../../domain/user/services/user.service'
 
 export class UserController {
   private userService: UserService

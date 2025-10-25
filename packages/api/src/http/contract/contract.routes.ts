@@ -1,4 +1,5 @@
 import { FastifyInstance } from 'fastify'
+
 import { ContractController } from './contract.controller'
 import { CreateContractDto, UpdateContractDto, RenewContractDto } from '../../domain/contract/dto'
 import { ContractStatus } from '../../domain/contract/vo/contract-enums.vo'

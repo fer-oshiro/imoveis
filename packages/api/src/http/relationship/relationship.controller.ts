@@ -1,12 +1,13 @@
-import { RelationshipService } from '../../domain/relationship/services/relationship.service'
-import { RelationshipRepository } from '../../domain/relationship/repositories/relationship.repository'
 import {
-  CreateUserApartmentRelationDto,
-  UpdateUserApartmentRelationDto,
+  type CreateUserApartmentRelationDto,
+  type UpdateUserApartmentRelationDto,
 } from '../../domain/relationship/dto'
 import { CreateRelationshipDto } from '../../domain/relationship/dto/create-relationship.dto'
 import { UpdateRelationshipDto } from '../../domain/relationship/dto/update-relationship.dto'
+import { RelationshipRepository } from '../../domain/relationship/repositories/relationship.repository'
+import { RelationshipService } from '../../domain/relationship/services/relationship.service'
 import { UserRole } from '../../domain/relationship/vo/user-role.vo'
+import { logger } from '../../infra/logger'
 
 export class RelationshipController {
   private relationshipService: RelationshipService
@@ -27,7 +28,7 @@ export class RelationshipController {
         },
       }
     } catch (error) {
-      console.error('Error getting relationships by apartment:', error)
+      logger.error({ msg: 'Error getting relationships by apartment:', error })
       return {
         statusCode: 500,
         body: { message: 'Failed to get relationships by apartment' },

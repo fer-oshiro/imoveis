@@ -1,5 +1,6 @@
 import { isValidPhoneNumber, parsePhoneNumberFromString, type CountryCode } from 'libphonenumber-js'
 
+import { logger } from '../../../infra/logger'
 import { ValidationError } from '../errors/domain-error'
 
 export class PhoneNumberVO {
@@ -46,6 +47,7 @@ export class PhoneNumberVO {
         country: parsed.country,
       }
     } catch (error) {
+      logger.error(error)
       throw new ValidationError('Invalid phone number format')
     }
   }

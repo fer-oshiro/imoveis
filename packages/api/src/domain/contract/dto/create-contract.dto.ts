@@ -1,5 +1,5 @@
-import { ContractTerms } from '../vo/contract-terms.vo'
 import { ContractStatus } from '../vo/contract-enums.vo'
+import { ContractTerms } from '../vo/contract-terms.vo'
 
 export interface CreateContractDto {
   apartmentUnitCode: string

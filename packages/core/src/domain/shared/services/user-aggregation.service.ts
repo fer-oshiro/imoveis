@@ -1,3 +1,4 @@
+import { logger } from '../../../infra/logger'
 import { Apartment } from '../../apartment/entities/apartment.entity'
 import { Payment } from '../../payment/entities/payment.entity'
 import { UserApartmentRelation } from '../../relationship/entities/user-apartment-relation.entity'
@@ -82,6 +83,7 @@ export class UserAggregationService {
         relationships: userRelationships,
       }
     } catch (error) {
+      logger.error(error)
       throw new DomainError(
         `Failed to aggregate user details for ${user.phoneNumber.value}`,
         'USER_AGGREGATION_ERROR',
@@ -124,6 +126,7 @@ export class UserAggregationService {
         return aPriority - bPriority
       })
     } catch (error) {
+      logger.error(error)
       throw new DomainError(
         `Failed to aggregate users for apartment ${apartmentUnitCode}`,
         'USER_AGGREGATION_ERROR',
@@ -181,6 +184,7 @@ export class UserAggregationService {
 
       return relatedUsersWithRelations.sort((a, b) => a.user.name.localeCompare(b.user.name))
     } catch (error) {
+      logger.error(error)
       throw new DomainError(
         `Failed to aggregate related users for ${mainUser.phoneNumber.value}`,
         'USER_AGGREGATION_ERROR',
@@ -236,6 +240,7 @@ export class UserAggregationService {
         adminUsers,
       }
     } catch (error) {
+      logger.error(error)
       throw new DomainError('Failed to aggregate user statistics', 'USER_AGGREGATION_ERROR')
     }
   }
@@ -284,6 +289,7 @@ export class UserAggregationService {
 
       return potentialRelatedUsers
     } catch (error) {
+      logger.error(error)
       throw new DomainError(
         `Failed to find potential related users for ${mainUser.phoneNumber.value}`,
         'USER_AGGREGATION_ERROR',

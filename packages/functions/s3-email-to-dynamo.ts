@@ -1,5 +1,6 @@
-import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
+/* eslint-disable no-console */
 
+import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { ApartmentRepository, PaymentRepository, PaymentService } from '@imovel/core'
 import { htmlToText } from 'html-to-text'
 import { simpleParser } from 'mailparser'

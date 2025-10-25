@@ -1,4 +1,5 @@
 import { z } from 'zod'
+
 import { UserStatus } from '../entities/user.entity'
 import { phoneNumberValidator, documentValidator } from '../utils/validation.utils'
 

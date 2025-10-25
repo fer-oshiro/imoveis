@@ -1,3 +1,4 @@
+import { logger } from '../../../infra/logger'
 import { Apartment } from '../../apartment/entities/apartment.entity'
 import { Contract } from '../../contract/entities/contract.entity'
 import { Payment } from '../../payment/entities/payment.entity'
@@ -31,6 +32,7 @@ export class PaymentAggregationService {
         contract,
       }
     } catch (error) {
+      logger.error(error)
       throw new DomainError(
         `Failed to aggregate payment details for ${payment.paymentIdValue}`,
         'PAYMENT_AGGREGATION_ERROR',
@@ -64,6 +66,7 @@ export class PaymentAggregationService {
         paymentSummary,
       }
     } catch (error) {
+      logger.error(error)
       throw new DomainError(
         `Failed to aggregate contract details for ${contract.contractIdValue}`,
         'PAYMENT_AGGREGATION_ERROR',
@@ -140,6 +143,7 @@ export class PaymentAggregationService {
         paymentComplianceRate,
       }
     } catch (error) {
+      logger.error(error)
       throw new DomainError('Failed to aggregate payment statistics', 'PAYMENT_AGGREGATION_ERROR')
     }
   }
@@ -215,6 +219,7 @@ export class PaymentAggregationService {
       // Sort by total revenue (highest first)
       return results.sort((a, b) => b.totalRevenue - a.totalRevenue)
     } catch (error) {
+      logger.error(error)
       throw new DomainError(
         'Failed to aggregate payments by apartment',
         'PAYMENT_AGGREGATION_ERROR',
@@ -281,6 +286,7 @@ export class PaymentAggregationService {
       // Sort by total paid amount (highest first)
       return results.sort((a, b) => b.totalPaid - a.totalPaid)
     } catch (error) {
+      logger.error(error)
       throw new DomainError('Failed to aggregate payments by user', 'PAYMENT_AGGREGATION_ERROR')
     }
   }
@@ -328,6 +334,7 @@ export class PaymentAggregationService {
         return bDaysOverdue - aDaysOverdue
       })
     } catch (error) {
+      logger.error(error)
       throw new DomainError('Failed to aggregate overdue payments', 'PAYMENT_AGGREGATION_ERROR')
     }
   }

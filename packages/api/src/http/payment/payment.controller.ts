@@ -1,11 +1,11 @@
-import { PaymentService } from '../../domain/payment/services/payment.service'
-import { PaymentRepository } from '../../domain/payment/repositories/payment.repository'
 import {
   CreatePaymentDto,
   SubmitPaymentProofDto,
   ValidatePaymentDto,
   UpdatePaymentDto,
 } from '../../domain/payment/dto'
+import { PaymentRepository } from '../../domain/payment/repositories/payment.repository'
+import { PaymentService } from '../../domain/payment/services/payment.service'
 import { PaymentStatus } from '../../domain/payment/vo/payment-enums.vo'
 import { DomainError } from '../../domain/shared/errors/domain-error'
 

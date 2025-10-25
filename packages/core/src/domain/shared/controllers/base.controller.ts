@@ -1,5 +1,6 @@
 import { ZodError } from 'zod'
 
+import { logger } from '../../../infra/logger'
 import { DomainError, ErrorHandler, type ErrorResponse } from '../errors'
 import { ValidationError } from '../errors/domain-error'
 
@@ -70,8 +71,8 @@ export abstract class BaseController {
     }
 
     // Log unexpected errors for debugging
-    console.error(`Unexpected error in ${context}:`, error)
 
+    logger.error(error)
     // Return generic error for unknown errors
     return new DomainError(
       `An unexpected error occurred during ${context}`,

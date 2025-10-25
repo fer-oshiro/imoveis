@@ -5,7 +5,7 @@ export const swaggerOptions = {
       description: `Swagger documentation for Imoveis API`,
       version: '1.0.0',
     },
-    host: `localhost:${process.env.PORT || 3000}`,
+    host: `localhost:${process.env.PORT ?? 3000}`,
     schemes: ['http', 'https'],
     consumes: ['application/json'],
     produces: ['application/json'],

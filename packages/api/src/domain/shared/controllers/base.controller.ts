@@ -1,6 +1,7 @@
+import { ZodError } from 'zod'
+
 import { DomainError, ErrorHandler, ErrorResponse } from '../errors'
 import { ValidationError } from '../errors/domain-error'
-import { ZodError } from 'zod'
 
 /**
  * Base controller class that provides consistent error handling

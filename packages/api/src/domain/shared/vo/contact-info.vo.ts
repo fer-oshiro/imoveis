@@ -1,6 +1,7 @@
 import { type CountryCode } from 'libphonenumber-js'
-import { ValidationError } from '../errors/domain-error'
+
 import { PhoneNumberVO } from './phone-number.vo'
+import { ValidationError } from '../errors/domain-error'
 
 export enum ContactMethod {
   WHATSAPP = 'whatsapp',

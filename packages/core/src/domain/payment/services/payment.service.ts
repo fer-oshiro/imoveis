@@ -1,3 +1,4 @@
+import { logger } from '../../../infra/logger'
 import type { Apartment } from '../../apartment'
 import { type IApartmentRepository } from '../../apartment/repositories/apartment.repository'
 import {
@@ -230,6 +231,7 @@ export class PaymentService {
     // This would be used to generate recurring monthly payments for a contract
     // Implementation would depend on contract details and business rules
     // For now, this is a placeholder that would need contract service integration
+    logger.info(contractId)
     throw new Error('generateMonthlyPayments not yet implemented - requires contract integration')
   }
 

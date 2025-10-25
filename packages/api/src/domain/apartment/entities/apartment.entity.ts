@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { EntityMetadataVO, ContactInfoVO, ContactMethod } from '../../shared'
 import { ApartmentAmenities, ApartmentAmenitiesVO } from '../vo/apartment-amenities.vo'
 import { ApartmentStatus, RentalType } from '../vo/apartment-enums.vo'
@@ -54,7 +52,7 @@ export class Apartment {
     const contactInfo = ContactInfoVO.create(
       data.contactName,
       data.contactPhone,
-      data.contactMethod || ContactMethod.WHATSAPP,
+      data.contactMethod ?? ContactMethod.WHATSAPP,
       data.contactDocument,
     )
 
@@ -67,11 +65,11 @@ export class Apartment {
       data.unitCode,
       data.unitLabel,
       data.address,
-      data.status || ApartmentStatus.AVAILABLE,
-      data.rentalType || RentalType.LONG_TERM,
+      data.status ?? ApartmentStatus.AVAILABLE,
+      data.rentalType ?? RentalType.LONG_TERM,
       data.baseRent,
-      data.cleaningFee || 0,
-      data.images || [],
+      data.cleaningFee ?? 0,
+      data.images ?? [],
       amenities,
       contactInfo,
       data.airbnbLink,
@@ -220,9 +218,9 @@ export class Apartment {
 
   public static fromJSON(data: Record<string, any>): Apartment {
     const contactInfo = ContactInfoVO.fromJSON(
-      data.contactInfo || {
-        phoneNumber: data.contactPhone || '',
-        contactMethod: data.contactMethod || ContactMethod.WHATSAPP,
+      data.contactInfo ?? {
+        phoneNumber: data.contactPhone ?? '',
+        contactMethod: data.contactMethod ?? ContactMethod.WHATSAPP,
         contactName: data.contactName,
         contactDocument: data.contactDocument,
         preferredLanguage: data.preferredLanguage,
@@ -231,7 +229,7 @@ export class Apartment {
     )
 
     const amenities = ApartmentAmenitiesVO.fromJSON(
-      data.amenities || {
+      data.amenities ?? {
         hasCleaningService: data.hasCleaningService === 'yes' || data.hasCleaningService === true,
         waterIncluded: data.waterIncluded === 'yes' || data.waterIncluded === true,
         electricityIncluded:
@@ -248,10 +246,10 @@ export class Apartment {
       data.unitLabel,
       data.address,
       data.status as ApartmentStatus,
-      (data.rentalType as RentalType) || RentalType.LONG_TERM,
-      Number(data.baseRent) || 0,
-      Number(data.cleaningFee) || 0,
-      data.images || [],
+      (data.rentalType as RentalType) ?? RentalType.LONG_TERM,
+      Number(data.baseRent) ?? 0,
+      Number(data.cleaningFee) ?? 0,
+      data.images ?? [],
       amenities,
       contactInfo,
       data.airbnbLink,

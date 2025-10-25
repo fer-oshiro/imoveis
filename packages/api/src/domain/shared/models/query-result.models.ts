@@ -1,8 +1,8 @@
 import { Apartment } from '../../apartment/entities/apartment.entity'
-import { User } from '../../user/entities/user.entity'
 import { Contract } from '../../contract/entities/contract.entity'
 import { Payment } from '../../payment/entities/payment.entity'
 import { UserApartmentRelation } from '../../relationship/entities/user-apartment-relation.entity'
+import { User } from '../../user/entities/user.entity'
 
 // Timeline event for apartment log
 export interface TimelineEvent {

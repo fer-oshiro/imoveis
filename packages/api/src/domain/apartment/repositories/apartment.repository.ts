@@ -1,13 +1,14 @@
-import { PutCommand, ScanCommand, GetCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb'
+import { DeleteCommand, GetCommand, PutCommand, ScanCommand } from '@aws-sdk/lib-dynamodb'
 import { Resource } from 'sst'
 
 import { docClient } from '../../../infra/database'
-
-const TABLE_NAME = Resource.table.name || 'imovel-oshiro-table'
+import { logger } from '../../../infra/logger'
 import { DomainError } from '../../shared'
+import { ApartmentQueryDto } from '../dto'
 import { Apartment } from '../entities/apartment.entity'
 import { ApartmentStatus, RentalType } from '../vo/apartment-enums.vo'
-import { ApartmentQueryDto } from '../dto'
+
+const TABLE_NAME = Resource.table.name || 'imovel-oshiro-table'
 
 export interface IApartmentRepository {
   findAll(): Promise<Apartment[]>
@@ -48,6 +49,7 @@ export default class ApartmentRepository implements IApartmentRepository {
       )
       return response.Items?.map((item) => Apartment.fromJSON(item)) || []
     } catch (error) {
+      logger.error(error)
       throw new DomainError('Failed to find apartments', 'APARTMENT_REPOSITORY_ERROR')
     }
   }
@@ -66,7 +68,7 @@ export default class ApartmentRepository implements IApartmentRepository {
 
       return response.Item ? Apartment.fromJSON(response.Item) : null
     } catch (error) {
-      console.error('Error in findByUnitCode:', error)
+      logger.error(error)
       throw new DomainError('Failed to find apartment by unit code', 'APARTMENT_REPOSITORY_ERROR')
     }
   }
@@ -90,7 +92,7 @@ export default class ApartmentRepository implements IApartmentRepository {
 
       return response.Items?.map((item) => Apartment.fromJSON(item)) || []
     } catch (error) {
-      console.error('Error in findByStatus:', error)
+      logger.error(error)
       throw new DomainError('Failed to find apartments by status', 'APARTMENT_REPOSITORY_ERROR')
     }
   }
@@ -113,7 +115,7 @@ export default class ApartmentRepository implements IApartmentRepository {
 
       return response.Items?.map((item) => Apartment.fromJSON(item)) || []
     } catch (error) {
-      console.error('Error in findByRentalType:', error)
+      logger.error(error)
       throw new DomainError(
         'Failed to find apartments by rental type',
         'APARTMENT_REPOSITORY_ERROR',
@@ -137,7 +139,7 @@ export default class ApartmentRepository implements IApartmentRepository {
 
       return response.Items?.map((item) => Apartment.fromJSON(item)) || []
     } catch (error) {
-      console.error('Error in findAvailable:', error)
+      logger.error(error)
       throw new DomainError('Failed to find available apartments', 'APARTMENT_REPOSITORY_ERROR')
     }
   }
@@ -158,9 +160,9 @@ export default class ApartmentRepository implements IApartmentRepository {
         }),
       )
 
-      return response.Items?.map((item) => Apartment.fromJSON(item)) || []
+      return response.Items?.map((item) => Apartment.fromJSON(item)) ?? []
     } catch (error) {
-      console.error('Error in findAirbnbApartments:', error)
+      logger.error(error)
       throw new DomainError('Failed to find Airbnb apartments', 'APARTMENT_REPOSITORY_ERROR')
     }
   }
@@ -213,9 +215,8 @@ export default class ApartmentRepository implements IApartmentRepository {
         }),
       )
 
-      let apartments = response.Items?.map((item) => Apartment.fromJSON(item)) || []
+      let apartments = response.Items?.map((item) => Apartment.fromJSON(item)) ?? []
 
-      // Apply sorting
       if (query.sortBy) {
         apartments.sort((a, b) => {
           let aValue: any
@@ -250,14 +251,13 @@ export default class ApartmentRepository implements IApartmentRepository {
         })
       }
 
-      // Apply offset
       if (query.offset) {
         apartments = apartments.slice(query.offset)
       }
 
       return apartments
     } catch (error) {
-      console.error('Error in findWithQuery:', error)
+      logger.error(error)
       throw new DomainError('Failed to query apartments', 'APARTMENT_REPOSITORY_ERROR')
     }
   }
@@ -273,7 +273,7 @@ export default class ApartmentRepository implements IApartmentRepository {
 
       return apartment
     } catch (error) {
-      console.error('Error in save:', error)
+      logger.error(error)
       throw new DomainError('Failed to save apartment', 'APARTMENT_REPOSITORY_ERROR')
     }
   }
@@ -290,7 +290,7 @@ export default class ApartmentRepository implements IApartmentRepository {
 
       return apartment
     } catch (error) {
-      console.error('Error in update:', error)
+      logger.error(error)
       throw new DomainError('Failed to update apartment', 'APARTMENT_REPOSITORY_ERROR')
     }
   }
@@ -307,17 +307,15 @@ export default class ApartmentRepository implements IApartmentRepository {
         }),
       )
     } catch (error) {
-      console.error('Error in delete:', error)
+      logger.error(error)
       throw new DomainError('Failed to delete apartment', 'APARTMENT_REPOSITORY_ERROR')
     }
   }
 
-  // Legacy method for backward compatibility
   public async getApartments(): Promise<Apartment[]> {
     return this.findAll()
   }
 
-  // Legacy method for backward compatibility
   public async createApartment(apartment: Apartment): Promise<Apartment> {
     return this.save(apartment)
   }

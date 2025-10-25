@@ -1,4 +1,6 @@
 import { z } from 'zod'
+
+import { logger } from '../../../infra/logger'
 import { PhoneNumberVO, DocumentVO, DocumentType } from '../../shared'
 import { ValidationError } from '../../shared/errors/domain-error'
 
@@ -78,6 +80,7 @@ export function validatePhoneNumber(phoneNumber: string): PhoneNumberVO {
   try {
     return PhoneNumberVO.create(phoneNumber)
   } catch (error) {
+    logger.error(error)
     throw new ValidationError('Invalid phone number format', 'phoneNumber')
   }
 }
@@ -86,6 +89,7 @@ export function validateDocument(document?: string): DocumentVO {
   try {
     return DocumentVO.create(document)
   } catch (error) {
+    logger.error(error)
     throw new ValidationError('Invalid document format', 'document')
   }
 }

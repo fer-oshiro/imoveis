@@ -1,5 +1,5 @@
-import { User, UserStatus } from '../../entities/user.entity'
 import { ValidationError } from '../../../shared/errors/domain-error'
+import { User, UserStatus } from '../../entities/user.entity'
 
 describe('User Entity', () => {
   const validData = {

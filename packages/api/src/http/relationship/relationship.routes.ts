@@ -1,4 +1,5 @@
 import { FastifyInstance } from 'fastify'
+
 import { RelationshipController } from './relationship.controller'
 import {
   CreateUserApartmentRelationDto,

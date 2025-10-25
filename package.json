@@ -8,7 +8,6 @@
     "dev": "sst dev",
     "deploy:stg": "npx sst deploy --stage stg",
     "deploy:prod": "npx sst deploy --stage prod",
-    "remove:stg": "npx sst remove --stage stg",
     "test": "npm run test:unit",
     "test:unit": "vitest run",
     "test:sst": "sst shell vitest run",
@@ -16,14 +15,15 @@
     "test:ui": "vitest --ui",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint": "npm run lint --workspace=packages/api",
-    "lint:fix": "npm run lint:fix --workspace=packages/api",
+    "prepare": "husky",
+    "lint-staged": "lint-staged",
+    "lint": "eslint",
+    "lint:fix": "npm run lint -- --fix",
+    "lint:debug": "node -e \"console.log('node',process.version)\" && npx eslint --version && npm run -s lint",
     "typecheck": "tsc --noEmit --project packages/api/tsconfig.json",
     "typecheck:src": "tsc --noEmit --project packages/api/tsconfig.src.json",
-    "lint-staged": "lint-staged",
-    "prepare": "husky",
     "check-commit": "npm run lint-staged && npm run typecheck:src",
-    "lint:debug": "node -e \"console.log('node',process.version)\" && npx eslint --version && npm run -s lint"
+    "clean": "npx rimraf \"node_modules\" \"**/node_modules\" \"**/dist\" \"**/build\" \".sst\""
   },
   "devDependencies": {
     "@eslint/js": "^9.35.0",
@@ -52,13 +52,13 @@
   },
   "lint-staged": {
     "*.{json,css,scss,md}": [
-      "prettier --write"
+      "prettier --write  --ignore-unknown"
     ],
     "packages/api/src/**/*.{ts,tsx}": [
-      "prettier --write"
+      "prettier --write  --ignore-unknown"
     ],
     "packages/web/**/*.{js,jsx,ts,tsx}": [
-      "prettier --write"
+      "prettier --write  --ignore-unknown"
     ]
   },
   "packageManager": "npm@11.3.0"

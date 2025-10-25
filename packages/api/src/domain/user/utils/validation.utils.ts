@@ -1,4 +1,5 @@
 import { z } from 'zod'
+
 import { PhoneNumberVO, DocumentVO, DocumentType } from '../../shared'
 import { ValidationError } from '../../shared/errors/domain-error'
 

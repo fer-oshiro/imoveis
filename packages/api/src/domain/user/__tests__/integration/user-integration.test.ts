@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { UserService } from '../../services/user.service'
-import { UserRepository } from '../../repositories/user.repository'
+
 import { User, UserStatus } from '../../entities/user.entity'
+import { UserRepository } from '../../repositories/user.repository'
+import { UserService } from '../../services/user.service'
 
 // Mock DynamoDB client for integration tests
 const mockDynamoClient = {

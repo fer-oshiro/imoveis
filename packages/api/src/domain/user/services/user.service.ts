@@ -1,11 +1,13 @@
+import { Apartment } from '../../apartment/entities/apartment.entity'
+import { Payment } from '../../payment/entities/payment.entity'
+import { UserApartmentRelation } from '../../relationship/entities/user-apartment-relation.entity'
 import {
   EntityNotFoundError,
   ValidationError,
   BusinessRuleViolationError,
 } from '../../shared/errors/domain-error'
+import { UserDetails, UserWithRelation } from '../../shared/models/query-result.models'
 import { UserAggregationService } from '../../shared/services/user-aggregation.service'
-import { User, UserStatus } from '../entities/user.entity'
-import { IUserRepository } from '../repositories/user-repository.interface'
 import {
   CreateUserDto,
   CreateUserDtoSchema,
@@ -14,10 +16,8 @@ import {
   UserDetailsResponse,
   UserDetailsDto,
 } from '../dto'
-import { UserDetails, UserWithRelation } from '../../shared/models/query-result.models'
-import { Apartment } from '../../apartment/entities/apartment.entity'
-import { Payment } from '../../payment/entities/payment.entity'
-import { UserApartmentRelation } from '../../relationship/entities/user-apartment-relation.entity'
+import { User, UserStatus } from '../entities/user.entity'
+import { IUserRepository } from '../repositories/user-repository.interface'
 import { safeParseWithValidationError } from '../utils'
 
 export class UserService {

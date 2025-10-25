@@ -1,3 +1,6 @@
+import { awsLambdaFastify } from '@fastify/aws-lambda'
+
+import { app } from './app'
 import { img } from './img'
 
 // const client = new DynamoDBClient();
@@ -16,9 +19,6 @@ import { img } from './img'
 //     body: `${Example.hello()} Linked to ${Resource.bucket.name}. ${Resource.UserTable.name} \n JSON: ${JSON.stringify(asd)}`,
 //   };
 // };
-
-import { app } from './app'
-import { awsLambdaFastify } from '@fastify/aws-lambda'
 
 const proxy = awsLambdaFastify(app)
 

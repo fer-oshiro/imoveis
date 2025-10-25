@@ -1,40 +1,37 @@
-# name: CI
+name: CI
 
-# on:
-#   pull_request:
-#     branches: [main]
+on:
+  pull_request:
+    branches: [main]
 
-# permissions:
-#   contents: read
-#   id-token: write
+permissions:
+  contents: read
+  id-token: write
 
-# jobs:
-#   test:
-#     runs-on: ubuntu-latest
+jobs:
+  test:
+    runs-on: ubuntu-latest
 
-#     steps:
-#       - name: Checkout repo
-#         uses: actions/checkout@v4
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-#       - name: Setup Node.js
-#         uses: actions/setup-node@v4
-#         with:
-#           node-version: 20
-#           cache: npm
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
 
-#       - name: Configure AWS creds (PRs do mesmo repo)
-#         if: github.event.pull_request.head.repo.full_name == github.repository
-#         uses: aws-actions/configure-aws-credentials@v4
-#         with:
-#           role-to-assume: arn:aws:iam::121620439865:role/sst-deploy-stg
-#           aws-region: us-east-1
-#           audience: sts.amazonaws.com
+      - name: Configure AWS creds (PRs do mesmo repo)
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::121620439865:role/sst-deploy-stg
+          aws-region: us-east-1
+          audience: sts.amazonaws.com
 
-#       - name: Install dependencies
-#         run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-#       - name: Run format check
-#         run: npm run format:check
-
-#       - name: Run lint
-#         run: npm run lint
+      - name: Run format check
+        run: npm run format:check

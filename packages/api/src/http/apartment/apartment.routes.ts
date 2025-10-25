@@ -1,4 +1,5 @@
 import { FastifyInstance } from 'fastify'
+
 import { ApartmentController } from './apartment.controller'
 import {
   CreateApartmentDto,

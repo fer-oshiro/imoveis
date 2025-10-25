@@ -1,23 +1,19 @@
-import {
-  EntityNotFoundError,
-  ValidationError,
-  BusinessRuleViolationError,
-} from '../../shared/errors/domain-error'
-import { UserAggregationService } from '../../shared/services/user-aggregation.service'
-import { User, UserStatus } from '../entities/user.entity'
-import { IUserRepository } from '../repositories/user-repository.interface'
-import {
-  CreateUserDto,
-  CreateUserDtoSchema,
-  UpdateUserDto,
-  UpdateUserDtoSchema,
-  UserDetailsResponse,
-  UserDetailsDto,
-} from '../dto'
-import { UserDetails, UserWithRelation } from '../../shared/models/query-result.models'
 import { Apartment } from '../../apartment/entities/apartment.entity'
 import { Payment } from '../../payment/entities/payment.entity'
 import { UserApartmentRelation } from '../../relationship/entities/user-apartment-relation.entity'
+import { BusinessRuleViolationError, EntityNotFoundError } from '../../shared/errors/domain-error'
+import { type UserDetails, type UserWithRelation } from '../../shared/models/query-result.models'
+import { UserAggregationService } from '../../shared/services/user-aggregation.service'
+import {
+  type CreateUserDto,
+  CreateUserDtoSchema,
+  type UpdateUserDto,
+  UpdateUserDtoSchema,
+  type UserDetailsDto,
+  type UserDetailsResponse,
+} from '../dto'
+import { User, UserStatus } from '../entities/user.entity'
+import { type IUserRepository } from '../repositories/user-repository.interface'
 import { safeParseWithValidationError } from '../utils'
 
 export class UserService {

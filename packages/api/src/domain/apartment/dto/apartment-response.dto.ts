@@ -1,4 +1,3 @@
-// Re-export shared query result models for backward compatibility
 export {
   ApartmentWithPaymentInfo,
   ApartmentDetails,

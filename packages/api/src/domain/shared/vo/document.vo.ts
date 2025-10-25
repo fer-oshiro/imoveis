@@ -1,6 +1,6 @@
-import { ValidationError } from '../errors/domain-error'
-import { CPFVO } from './cpf.vo'
 import { CNPJVO } from './cnpj.vo'
+import { CPFVO } from './cpf.vo'
+import { ValidationError } from '../errors/domain-error'
 
 export enum DocumentType {
   CPF = 'cpf',

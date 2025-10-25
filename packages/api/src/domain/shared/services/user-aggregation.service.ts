@@ -1,10 +1,10 @@
-import { User } from '../../user/entities/user.entity'
 import { Apartment } from '../../apartment/entities/apartment.entity'
 import { Payment } from '../../payment/entities/payment.entity'
 import { UserApartmentRelation } from '../../relationship/entities/user-apartment-relation.entity'
+import { User } from '../../user/entities/user.entity'
+import { DomainError } from '../errors/domain-error'
 import { UserDetails, UserWithRelation, UserStatistics } from '../models/query-result.models'
 import { DataMapper } from '../utils/data-mapper.utils'
-import { DomainError } from '../errors/domain-error'
 
 /**
  * Service for aggregating user data with related entities

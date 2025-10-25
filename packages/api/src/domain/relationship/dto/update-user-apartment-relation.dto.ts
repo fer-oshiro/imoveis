@@ -1,4 +1,5 @@
 import { z } from 'zod'
+
 import { UserRole } from '../vo/user-role.vo'
 
 export const UpdateUserApartmentRelationDtoSchema = z.object({
