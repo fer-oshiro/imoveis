@@ -1,8 +1,5 @@
-import { ValidationError } from '../../../shared/errors/domain-error'
 import { Contract } from '../../entities/contract.entity'
 import { ContractStatus } from '../../vo/contract-enums.vo'
-
-// @ts-ignore - Test file with potential typing issues
 
 describe('Contract Entity', () => {
   const validData = {

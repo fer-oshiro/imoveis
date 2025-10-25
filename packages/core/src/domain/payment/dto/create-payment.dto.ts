@@ -12,7 +12,7 @@ const base = {
   description: z.string().trim().optional(),
 }
 const DOC_RE =
-  /^(?:[\dx]{3}\.[\dx]{3}\.[\dx]{3}-[\dx]{2}|[\dx]{2}\.[\dx]{3}\.[\dx]{3}\/[\dx]{4}-[\dx]{2}|[\dx.\-\/]{8,})$/i
+  /^(?:[\dx]{3}\.[\dx]{3}\.[\dx]{3}-[\dx]{2}|[\dx]{2}\.[\dx]{3}\.[\dx]{3}\/[\dx]{4}-[\dx]{2}|[\dx.\-/]{8,})$/i
 
 export const createPaymentDtoSchema = z.object({
   ...base,

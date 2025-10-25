@@ -51,6 +51,7 @@ export class ApartmentRepository implements IApartmentRepository {
       )
       return response.Items?.map((item) => Apartment.fromJSON(item)) || []
     } catch (error) {
+      logger.error(error)
       throw new DomainError('Failed to find apartments', 'APARTMENT_REPOSITORY_ERROR')
     }
   }
@@ -69,7 +70,7 @@ export class ApartmentRepository implements IApartmentRepository {
 
       return response.Item ? Apartment.fromJSON(response.Item) : null
     } catch (error) {
-      console.error('Error in findByUnitCode:', error)
+      logger.error(error)
       throw new DomainError('Failed to find apartment by unit code', 'APARTMENT_REPOSITORY_ERROR')
     }
   }
@@ -142,7 +143,7 @@ export class ApartmentRepository implements IApartmentRepository {
 
       return response.Items?.map((item) => Apartment.fromJSON(item)) || []
     } catch (error) {
-      console.error('Error in findByStatus:', error)
+      logger.error(error)
       throw new DomainError('Failed to find apartments by status', 'APARTMENT_REPOSITORY_ERROR')
     }
   }
@@ -165,7 +166,7 @@ export class ApartmentRepository implements IApartmentRepository {
 
       return response.Items?.map((item) => Apartment.fromJSON(item)) || []
     } catch (error) {
-      console.error('Error in findByRentalType:', error)
+      logger.error(error)
       throw new DomainError(
         'Failed to find apartments by rental type',
         'APARTMENT_REPOSITORY_ERROR',
@@ -212,7 +213,7 @@ export class ApartmentRepository implements IApartmentRepository {
 
       return response.Items?.map((item) => Apartment.fromJSON(item)) || []
     } catch (error) {
-      console.error('Error in findAirbnbApartments:', error)
+      logger.error(error)
       throw new DomainError('Failed to find Airbnb apartments', 'APARTMENT_REPOSITORY_ERROR')
     }
   }
@@ -309,7 +310,7 @@ export class ApartmentRepository implements IApartmentRepository {
 
       return apartments
     } catch (error) {
-      console.error('Error in findWithQuery:', error)
+      logger.error(error)
       throw new DomainError('Failed to query apartments', 'APARTMENT_REPOSITORY_ERROR')
     }
   }

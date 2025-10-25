@@ -1,3 +1,4 @@
+import { logger } from '../../../infra/logger'
 import { Apartment } from '../../apartment/entities/apartment.entity'
 import { Contract } from '../../contract/entities/contract.entity'
 import { Payment } from '../../payment/entities/payment.entity'
@@ -51,6 +52,7 @@ export class ApartmentAggregationService {
         totalPendingAmount,
       }
     } catch (error) {
+      logger.error(error)
       throw new DomainError(
         `Failed to aggregate apartment payment info for ${apartment.unitCodeValue}`,
         'APARTMENT_AGGREGATION_ERROR',
@@ -110,6 +112,7 @@ export class ApartmentAggregationService {
         paymentSummary,
       }
     } catch (error) {
+      logger.error(error)
       throw new DomainError(
         `Failed to aggregate apartment details for ${apartment.unitCodeValue}`,
         'APARTMENT_AGGREGATION_ERROR',
@@ -168,6 +171,7 @@ export class ApartmentAggregationService {
         statistics,
       }
     } catch (error) {
+      logger.error(error)
       throw new DomainError(
         `Failed to aggregate apartment log for ${apartment.unitCodeValue}`,
         'APARTMENT_AGGREGATION_ERROR',
@@ -182,6 +186,7 @@ export class ApartmentAggregationService {
     try {
       return DataMapper.mapApartmentListing(apartment)
     } catch (error) {
+      logger.error(error)
       throw new DomainError(
         `Failed to aggregate apartment listing for ${apartment.unitCodeValue}`,
         'APARTMENT_AGGREGATION_ERROR',
@@ -207,6 +212,7 @@ export class ApartmentAggregationService {
       )
       return aaa
     } catch (error) {
+      logger.error(error)
       throw new DomainError(
         'Failed to aggregate apartments with payment info',
         'APARTMENT_AGGREGATION_ERROR',
@@ -259,6 +265,7 @@ export class ApartmentAggregationService {
         longTermApartments,
       }
     } catch (error) {
+      logger.error(error)
       throw new DomainError(
         'Failed to aggregate apartment statistics',
         'APARTMENT_AGGREGATION_ERROR',

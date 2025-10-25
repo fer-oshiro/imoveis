@@ -1,3 +1,4 @@
+import { logger } from '../../../infra/logger'
 import { ContactInfoVO, ContactMethod, EntityMetadataVO } from '../../shared'
 import { type ApartmentAmenities, ApartmentAmenitiesVO } from '../vo/apartment-amenities.vo'
 import { ApartmentStatus, RentalType } from '../vo/apartment-enums.vo'
@@ -247,12 +248,7 @@ export class Apartment {
 
     const metadata = EntityMetadataVO.fromJSON(data)
 
-    console.log(
-      'Deserialized apartment:',
-      contactInfo?.toJSON(),
-      data.contactPhone,
-      data.contactInfo,
-    )
+    logger.info({ msg: 'apartment deserialized', data })
 
     return new Apartment(
       data.PK,

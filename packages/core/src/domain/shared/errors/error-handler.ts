@@ -1,4 +1,5 @@
 import { DomainError } from './domain-error'
+import { logger } from '../../../infra/logger'
 
 export interface ErrorResponse {
   error: {
@@ -20,8 +21,7 @@ export class ErrorHandler {
       }
     }
 
-    // Log unexpected errors
-    console.error('Unexpected error:', error)
+    logger.error(error)
 
     return {
       error: {
