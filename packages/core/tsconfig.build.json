@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "declaration": true,
+    "emitDeclarationOnly": false
+  },
+  "include": ["src/**/*.ts", "./sst-env.d.ts"],
+  "exclude": ["**/*.test.ts", "**/*.spec.ts"]
+}

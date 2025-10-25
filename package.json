@@ -6,8 +6,8 @@
   ],
   "scripts": {
     "dev": "sst dev",
-    "deploy:stg": "npx sst deploy --stage stg",
-    "deploy:prod": "npx sst deploy --stage prod",
+    "deploy:stg": "sst deploy --stage stg",
+    "deploy:prod": "sst deploy --stage prod",
     "test": "npm run test:unit",
     "test:unit": "vitest run",
     "test:sst": "sst shell vitest run",
