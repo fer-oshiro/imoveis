@@ -3,7 +3,7 @@ import { UserTable } from './dynamo'
 import { emailBucket } from './storage'
 
 export const parser = new sst.aws.Function('EmailParser', {
-  handler: 'packages/functions/s3-email-to-dynamo.main',
+  handler: 'apps/functions/s3-email-to-dynamo.main',
   timeout: '60 seconds',
   link: [emailBucket, myApi, UserTable],
   environment: {

@@ -58,31 +58,3 @@ export const saveToS3Rule = new aws.ses.ReceiptRule(
 
 export const sesRuleSetName = RULE_SET_NAME
 export const sesRuleName = saveToS3Rule.name
-
-// const ruleSet = new aws.ses.ReceiptRuleSet('RuleSet', {
-//   ruleSetName: RULE_SET_NAME,
-//   region: 'us-east-1',
-// })
-
-// export const rule = new aws.ses.ReceiptRule(
-//   'SaveToS3Rule',
-//   {
-//     ruleSetName: ruleSet.ruleSetName,
-//     enabled: true,
-//     scanEnabled: true,
-//     recipients: [SENDER],
-//     s3Actions: [
-//       {
-//         bucketName: emailBucket.name,
-//         objectKeyPrefix: 'raw/',
-//         position: 1,
-//       },
-//     ],
-//   },
-//   { dependsOn: [ruleSet] },
-// )
-
-// new aws.ses.ActiveReceiptRuleSet('ActiveRuleSet', {
-//   ruleSetName: ruleSet.ruleSetName,
-//   region: 'us-east-1',
-// })

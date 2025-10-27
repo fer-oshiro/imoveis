@@ -2,7 +2,8 @@
   "name": "imovel",
   "version": "0.1.0",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "apps/*"
   ],
   "scripts": {
     "dev": "sst dev",
