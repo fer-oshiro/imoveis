@@ -1,0 +1,74 @@
+import { Metadata, MetadataSchema } from '@entities/common/vo/metadata'
+
+import { APARTMENT_STATUS, ApartmentStatusSchema } from '../vo'
+
+export class Apartment {
+  constructor(
+    readonly pk: string,
+    readonly sk: string,
+    readonly apartmentId: string,
+    readonly rentAmount: number,
+    readonly status: APARTMENT_STATUS,
+    readonly location: string,
+    readonly description: string,
+    readonly images: string[] = [],
+    readonly airbnbLink: string = '',
+    readonly isOccupied: boolean = false,
+    readonly cleanCost?: number,
+    readonly metadata: Metadata = MetadataSchema.parse({}),
+  ) {}
+
+  public static create(data: {
+    pk: string
+    sk: string
+    apartmentId: string
+    rentAmount: number
+    status?: string
+    location: string
+    description: string
+    images: string[]
+    airbnbLink: string
+    isOccupied: boolean
+    cleanCost?: number
+    metadata?: any
+  }): Apartment {
+    if (ApartmentStatusSchema.safeParse(data.status).success === false) {
+      throw new Error(`Invalid apartment status: ${data.status}`)
+    }
+
+    if (data.metadata && MetadataSchema.safeParse(data.metadata).success === false) {
+      throw new Error(`Invalid metadata: ${JSON.stringify(data.metadata)}`)
+    }
+
+    return new Apartment(
+      data.pk,
+      data.sk,
+      data.apartmentId,
+      data.rentAmount,
+      ApartmentStatusSchema.parse(data.status),
+      data.location,
+      data.description,
+      data.images,
+      data.airbnbLink,
+      data.isOccupied,
+      data.cleanCost,
+      MetadataSchema.parse(data.metadata ?? {}),
+    )
+  }
+
+  public toJSON() {
+    return {
+      pk: this.pk,
+      sk: this.sk,
+      apartmentId: this.apartmentId,
+      rentAmount: this.rentAmount,
+      status: this.status,
+      location: this.location,
+      description: this.description,
+      images: this.images,
+      airbnbLink: this.airbnbLink,
+      isOccupied: this.isOccupied,
+      cleanCost: this.cleanCost,
+    }
+  }
+}
