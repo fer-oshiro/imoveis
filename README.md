@@ -1,5 +1,7 @@
 # Imovel - Gerenciamento dos Imoveis e Lading Page
 
+## 🚧 Em desenvolvimento 🚧  
+
 Plataforma pessoal desenvolvida para gerenciar imóveis, inquilinos e pagamentos, com arquitetura moderna baseada em **SST (Serverless Stack)**, **AWS Lambda** e **DynamoDB**.  
 O projeto combina **infraestrutura serverless**, **front-end em Next.js** 
 
