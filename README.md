@@ -1,13 +1,14 @@
 # Imovel - Gerenciamento dos Imoveis e Lading Page
 
-## 🚧 Em desenvolvimento 🚧  
+## 🚧 Em desenvolvimento 🚧
 
 Plataforma pessoal desenvolvida para gerenciar imóveis, inquilinos e pagamentos, com arquitetura moderna baseada em **SST (Serverless Stack)**, **AWS Lambda** e **DynamoDB**.  
-O projeto combina **infraestrutura serverless**, **front-end em Next.js** 
+O projeto combina **infraestrutura serverless**, **front-end em Next.js**
 
 ## Objetivo
 
 O projeto foi criado com propósito de estudo e demonstração prática de domínio técnico em:
+
 - Arquitetura **serverless** com AWS.
 - Integração entre **backend e frontend** em um monorepo.
 - Modelagem de dados com **DynamoDB (single-table design)**.
@@ -18,6 +19,7 @@ Este projeto é de **caráter pessoal**, criado para fins de portfólio e aprend
 ## Tecnologias Utilizadas
 
 ### Backend
+
 - **SST (Serverless Stack)** – infraestrutura e deploy AWS.
 - **AWS Lambda** – funções serverless.
 - **AWS DynamoDB** – armazenamento NoSQL.
@@ -29,12 +31,14 @@ Este projeto é de **caráter pessoal**, criado para fins de portfólio e aprend
 - **Fastify** – camada de roteamento.
 
 ### Frontend
+
 - **Next.js** – interface principal.
 - **Tailwind CSS** + **ShadCN/UI** – componentes e estilização.
 
 ---
 
-## 🧩 Estrutura do Projeto
+## Estrutura do Projeto
+
 ```
 imovel/
 ├── apps/
@@ -44,14 +48,14 @@ imovel/
 ├── packages/
 │   ├── core/         # Domínio: entidades, VOs, casos de uso, regras de negócio
 │   ├── data-access/  # Repositórios DynamoDB, gateways S3/SES, etc
-│   └──  shared/       # Tipos, DTOs, Zod schemas compartilhados
+│   └── shared/       # Tipos, DTOs, Zod schemas compartilhados
 ├── infra/            # Stacks do SST (Infra AWS)
 ├── docs/             # Diagramas, Draw.io, notas técnicas
 └── README.md
 ```
 
-
 ## Funcionalidades principais
+
 - Cadastro e listagem de imóveis (kitnets, apartamentos, galpões).
 - Associação de imóveis a inquilinos e contratos de aluguel.
 - Registro de pagamentos com status (pendente, pago, atrasado).
@@ -77,6 +81,3 @@ npm install
 # Subir infraestrutura e Lambdas em modo dev
 npm run dev
 ```
-
-
-

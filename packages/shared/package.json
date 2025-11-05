@@ -1,5 +1,5 @@
 {
-  "name": "@imovel/entities",
+  "name": "@imovel/shared",
   "private": true,
   "type": "module",
   "version": "0.0.0",
@@ -21,7 +21,7 @@
   },
   "scripts": {
     "test": "sst shell vitest",
-    "build": "tsc -p tsconfig.build.json",
+    "build": "tsc -p tsconfig.build.json --noResolve --noCheck ",
     "clean": "rm -rf dist",
     "dev": "tsdown --watch",
     "typecheck": "tsc --noEmit"

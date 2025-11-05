@@ -6,7 +6,7 @@
       "@web/*": ["apps/web/src/*"],
 
       "@core/*": ["packages/core/src/*"],
-      "@entities/*": ["packages/entities/src/*"]
+      "@shared/*": ["packages/shared/src/*"]
     }
   }
 }

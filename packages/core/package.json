@@ -21,7 +21,7 @@
   },
   "scripts": {
     "test": "sst shell vitest",
-    "build": "tsc -p tsconfig.build.json --noResolve --noCheck ",
+    "build": "tsc -p tsconfig.build.json",
     "clean": "rm -rf dist",
     "dev": "tsdown --watch",
     "typecheck": "tsc --noEmit"

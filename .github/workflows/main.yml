@@ -50,5 +50,8 @@ jobs:
       - name: build core
         run: npm run -w @imovel/core build
 
+      - name: build shared
+        run: npm run -w @imovel/shared build
+
       - name: Deploy SST
         run: npx sst deploy --stage ${{ steps.sel.outputs.STAGE }}
