@@ -1,1 +1,3 @@
-export * from './entities/apartment.entity'
+export * from './entities'
+
+export * from './vo'
