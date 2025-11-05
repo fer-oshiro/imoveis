@@ -1,1 +1,0 @@
-export { UserRole, UserRoleVO } from './user-role.vo'
