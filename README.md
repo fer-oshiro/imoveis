@@ -46,10 +46,8 @@ imovel/
 │   ├── web/          # Next.js (interface pública/admin)
 │   └── workers/      # Lambdas assíncronas: cron, S3, filas, etc
 ├── packages/
-│   ├── core/         # Domínio: entidades, VOs, casos de uso, regras de negócio
-│   ├── data-access/  # Repositórios DynamoDB, gateways S3/SES, etc
-│   └── shared/       # Tipos, DTOs, Zod schemas compartilhados
-├── infra/            # Stacks do SST (Infra AWS)
+│   ├── core/         # Domínio: entidades, VOs, casos de uso, regras de negócio, tipos, DTO's
+│   └── data-access/  # Repositórios DynamoDB, gateways S3/SES, etc
 ├── docs/             # Diagramas, Draw.io, notas técnicas
 └── README.md
 ```

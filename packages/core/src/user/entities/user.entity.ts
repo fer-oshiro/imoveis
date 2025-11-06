@@ -1,4 +1,4 @@
-import { Metadata } from '@core/common'
+import { Metadata, Status } from '@core/common'
 
 import { Role } from '../vo'
 
@@ -9,7 +9,7 @@ export class User {
     readonly name: string,
     readonly docName: string,
     readonly role: Role[],
-    readonly status: string,
+    readonly status: Status,
     readonly metadata: Metadata,
     readonly email?: string,
     readonly phone?: string,

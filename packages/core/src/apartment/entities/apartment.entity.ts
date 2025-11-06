@@ -1,4 +1,4 @@
-import { Metadata, MetadataSchema } from '@core/common/vo/metadata'
+import { Metadata, MetadataSchema } from '@core/common/vo/metadata.vo'
 
 import { APARTMENT_STATUS, ApartmentStatusSchema } from '../vo'
 
