@@ -1,4 +1,4 @@
-import { Metadata, Status } from '@core/common'
+import { Metadata, Status } from '@core/domain/common'
 
 import { RELATIONSHIP_TYPE } from '../vo'
 

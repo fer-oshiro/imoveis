@@ -1,4 +1,4 @@
-import { Metadata } from '@core/common'
+import { Metadata } from '@core/domain/common'
 
 export class InvoiceEntry {
   constructor(

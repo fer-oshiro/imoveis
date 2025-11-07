@@ -1,5 +1,5 @@
-import { Metadata, MetadataSchema } from '@core/common'
-import { User } from '@core/user'
+import { Metadata, MetadataSchema } from '@core/domain/common'
+import { User } from '@core/domain/user'
 
 import { Option } from '../vo'
 
