@@ -13,6 +13,7 @@ export class Contract {
     readonly images: string[] = [],
     readonly rentAmount: number = 0,
     readonly options: Option[] = [Option.FURNISHED],
+    readonly balance: number = 0,
     readonly metadata: Metadata = MetadataSchema.parse({}),
   ) {}
 }
