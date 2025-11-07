@@ -2,11 +2,15 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@api/*": ["apps/api/src/*"],
-      "@web/*": ["apps/web/src/*"],
+      "@imovel/api/*": ["apps/api/src/*"],
+      "@imovel/api": ["apps/api/src"],
+      "@imovel/web/*": ["apps/web/src/*"],
+      "@imovel/web": ["apps/web/src"],
 
-      "@core/*": ["packages/core/src/*"],
-      "@data-access/*": ["packages/data-access/src/*"]
+      "@imovel/core/*": ["packages/core/src/*"],
+      "@imovel/core": ["packages/core/src"],
+      "@imovel/data-access/*": ["packages/data-access/src/*"],
+      "@imovel/data-access": ["packages/data-access/src"]
     }
   }
 }

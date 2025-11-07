@@ -1,5 +1,5 @@
-import { Metadata, MetadataSchema } from '@core/domain/common'
-import { User } from '@core/domain/user'
+import { Metadata, MetadataSchema } from '@imovel/core/domain/common'
+import { User } from '@imovel/core/domain/user'
 
 import { Option } from '../vo'
 

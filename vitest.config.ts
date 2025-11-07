@@ -25,8 +25,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@api': './packages/api/src',
-      '@core': './packages/core/src',
+      '@imovel/api': './packages/api/src',
+      '@imovel/core': './packages/core/src',
     },
   },
 })

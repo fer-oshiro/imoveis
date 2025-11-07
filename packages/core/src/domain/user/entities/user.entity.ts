@@ -1,4 +1,4 @@
-import { Metadata, Status } from '@core/domain/common'
+import { Metadata, Status } from '@imovel/core/domain/common'
 
 import { Role } from '../vo'
 

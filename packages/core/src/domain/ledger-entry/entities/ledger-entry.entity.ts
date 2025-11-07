@@ -1,4 +1,4 @@
-import { Metadata } from '@core/domain/common'
+import { Metadata } from '@imovel/core/domain/common'
 
 export class LedgerEntry {
   constructor(

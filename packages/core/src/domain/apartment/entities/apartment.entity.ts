@@ -1,4 +1,4 @@
-import { Metadata, MetadataSchema } from '@core/domain/common/vo/metadata.vo'
+import { Metadata, MetadataSchema } from '@imovel/core/domain/common'
 
 import { APARTMENT_STATUS, ApartmentStatusSchema } from '../vo'
 
