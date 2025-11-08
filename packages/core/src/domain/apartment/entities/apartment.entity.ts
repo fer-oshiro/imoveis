@@ -4,9 +4,7 @@ import { APARTMENT_STATUS, ApartmentStatusSchema } from '../vo'
 
 export class Apartment {
   constructor(
-    readonly pk: string,
-    readonly sk: string,
-    readonly apartmentId: string,
+    readonly id: string,
     readonly rentAmount: number,
     readonly status: APARTMENT_STATUS,
     readonly location: string,
@@ -19,9 +17,7 @@ export class Apartment {
   ) {}
 
   public static create(data: {
-    pk: string
-    sk: string
-    apartmentId: string
+    id: string
     rentAmount: number
     status?: string
     location: string
@@ -41,9 +37,7 @@ export class Apartment {
     }
 
     return new Apartment(
-      data.pk,
-      data.sk,
-      data.apartmentId,
+      data.id,
       data.rentAmount,
       ApartmentStatusSchema.parse(data.status),
       data.location,
@@ -58,9 +52,7 @@ export class Apartment {
 
   public toJSON() {
     return {
-      pk: this.pk,
-      sk: this.sk,
-      apartmentId: this.apartmentId,
+      id: this.id,
       rentAmount: this.rentAmount,
       status: this.status,
       location: this.location,
