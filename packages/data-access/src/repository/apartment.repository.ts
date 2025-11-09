@@ -1,12 +1,18 @@
-import { DynamoDBDocumentClient, GetCommand, PutCommand } from '@aws-sdk/lib-dynamodb'
+import { DynamoDBDocumentClient, GetCommand, PutCommand, ScanCommand } from '@aws-sdk/lib-dynamodb'
 import { Apartment } from '@imovel/core/domain/apartment'
 import { ApartmentRepository } from '@imovel/core/ports'
 
+import { docClient, TABLE_NAME } from '../dynamo-client'
+import { mapDynamoToApartment } from '../mapper'
+
 export class ApartmentRepositoryDynamo implements ApartmentRepository {
-  constructor(
-    private readonly dbClient: DynamoDBDocumentClient,
-    private readonly tableName: string,
-  ) {}
+  private dbClient: DynamoDBDocumentClient
+  private tableName: string
+
+  constructor() {
+    this.dbClient = docClient
+    this.tableName = TABLE_NAME
+  }
 
   async findById(id: string): Promise<Apartment | null> {
     const result = await this.dbClient.send(
@@ -17,18 +23,22 @@ export class ApartmentRepositoryDynamo implements ApartmentRepository {
     )
 
     if (!result.Item) return null
-    return Apartment.create({
-      id: result.Item.id,
-      rentAmount: result.Item.rentAmount,
-      status: result.Item.status,
-      location: result.Item.location,
-      description: result.Item.description,
-      images: result.Item.images,
-      airbnbLink: result.Item.airbnbLink,
-      isOccupied: result.Item.isOccupied,
-      cleanCost: result.Item.cleanCost,
-      metadata: result.Item.metadata,
-    })
+    return mapDynamoToApartment(result.Item)
+  }
+
+  async findAll(): Promise<Apartment[]> {
+    const result = await this.dbClient.send(
+      new ScanCommand({
+        TableName: this.tableName,
+        FilterExpression: 'SK = :sk',
+        ExpressionAttributeValues: {
+          ':sk': 'METADATA',
+        },
+      }),
+    )
+    if (!result.Items) return []
+
+    return result.Items.map((item) => mapDynamoToApartment(item))
   }
 
   async save(apartment: Apartment): Promise<void> {

@@ -26,9 +26,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@imovel/core": "*",
     "libphonenumber-js": "^1.12.18",
     "sst": "*",
-    "@imovel/core": "*"
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "tsdown": "^0.15.4",

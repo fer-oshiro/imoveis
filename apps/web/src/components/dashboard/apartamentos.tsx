@@ -9,9 +9,9 @@ export const Apartamentos = () => {
     const fetchApartamentos = async () => {
       try {
         setStatus('loading')
-        const url = process.env.NEXT_PUBLIC_API_URL || '/apartamentos'
+        const url = process.env.NEXT_PUBLIC_API_URL
         const idToken = localStorage.getItem('idToken')
-        const response = await fetch(url + '/apartments', {
+        const response = await fetch(url + '/apartments/with-payment-info', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
