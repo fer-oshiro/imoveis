@@ -13,8 +13,8 @@ export const MetadataSchema = z.object({
     .string()
     .datetime()
     .default(() => new Date().toISOString()),
-  createdBy: z.string(),
-  updatedBy: z.string(),
+  createdBy: z.string().default('system'),
+  updatedBy: z.string().default('system'),
 })
 
 export type Metadata = z.infer<typeof MetadataSchema>

@@ -12,7 +12,6 @@ export class Apartment {
     readonly description: string,
     readonly images: string[] = [],
     readonly airbnbLink: string = '',
-    readonly isOccupied: boolean = false,
     readonly cleanCost?: number,
     readonly metadata: Metadata = MetadataSchema.parse({}),
   ) {}
@@ -26,7 +25,6 @@ export class Apartment {
     description: string
     images: string[]
     airbnbLink: string
-    isOccupied: boolean
     cleanCost?: number
     metadata?: any
   }): Apartment {
@@ -47,7 +45,6 @@ export class Apartment {
       data.description,
       data.images,
       data.airbnbLink,
-      data.isOccupied,
       data.cleanCost,
       MetadataSchema.parse(data.metadata ?? {}),
     )
@@ -63,7 +60,6 @@ export class Apartment {
       description: this.description,
       images: this.images,
       airbnbLink: this.airbnbLink,
-      isOccupied: this.isOccupied,
       cleanCost: this.cleanCost,
     }
   }

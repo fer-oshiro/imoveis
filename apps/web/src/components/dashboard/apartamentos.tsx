@@ -21,7 +21,7 @@ export const Apartamentos = () => {
         if (!response.ok) {
           throw new Error('Erro ao buscar apartamentos')
         }
-        const data = await response.json()
+        const { data } = await response.json()
         setApartamentos(data || [])
       } catch (error) {
         console.error('Erro ao buscar apartamentos:', error)

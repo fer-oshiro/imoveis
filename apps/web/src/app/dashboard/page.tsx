@@ -7,6 +7,21 @@ import React from 'react'
 export default function DashboardPage() {
   const [step, setStep] = React.useState(1)
 
+  const handleClick = async () => {
+    const url = process.env.NEXT_PUBLIC_API_URL
+    const idToken = localStorage.getItem('idToken')
+    const response = await fetch(url + '/apartments', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${idToken || ''}`,
+      },
+    })
+
+    const data = await response.json()
+    console.log('DATA TESTE', JSON.stringify(data, null, 2))
+  }
+
   return (
     <div className="flex h-full w-full flex-col items-center justify-center p-8">
       <h1 className="text-2xl font-bold">Dashboard</h1>
@@ -28,6 +43,13 @@ export default function DashboardPage() {
           Usuário
         </button>
       </div>
+
+      <button
+        className="m-4 cursor-pointer rounded-2xl bg-green-100 p-2 px-4"
+        onClick={handleClick}
+      >
+        TESTE
+      </button>
       {step === 1 && <Apartamentos />}
       {step === 2 && <Users />}
     </div>

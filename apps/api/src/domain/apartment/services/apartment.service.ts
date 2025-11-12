@@ -8,6 +8,12 @@ export default class ApartmentService {
   }
 
   public async getApartmentsWithLastPayment() {
-    return this.apartmentRepository.findAll()
+    const apartments = await this.apartmentRepository.findAll()
+    
+    return apartments
+  }
+
+  public async getAllApartments() {
+    return this.apartmentRepository.findById('12')
   }
 }

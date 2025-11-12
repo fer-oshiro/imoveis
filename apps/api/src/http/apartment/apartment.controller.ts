@@ -15,6 +15,14 @@ export class ApartmentController extends BaseController {
     const apartments = await this.apartmentService.getApartmentsWithLastPayment()
     return {
       status: 'success',
+      data: apartments.map((apartment) => apartment.toJSON()),
+    }
+  }
+
+  public async getAllApartments() {
+    const apartments = await this.apartmentService.getAllApartments()
+    return {
+      status: 'success',
       data: apartments,
     }
   }

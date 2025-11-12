@@ -10,4 +10,8 @@ export async function apartmentRoutes(app: FastifyInstance) {
   app.get('/with-payment-info', async () => {
     return controller.getApartmentsWithLastPayment()
   })
+
+  app.get('/', async () => {
+    return controller.getAllApartments()
+  })
 }
