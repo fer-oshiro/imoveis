@@ -9,10 +9,7 @@ export const MetadataSchema = z.object({
     .string()
     .datetime()
     .default(() => new Date().toISOString()),
-  deletedAt: z
-    .string()
-    .datetime()
-    .default(() => new Date().toISOString()),
+  deletedAt: z.string().datetime().optional(),
   createdBy: z.string().default('system'),
   updatedBy: z.string().default('system'),
 })
