@@ -2,12 +2,11 @@ import { Metadata } from '@imovel/core/domain/common'
 
 import { LedgerEntry } from './ledger-entry.entity'
 
-export class InvoiceEntry extends LedgerEntry {
+export class ChargeEntry extends LedgerEntry {
   constructor(
     readonly id: string,
     readonly contractId: string,
     readonly amount: number,
-    readonly payerId: string,
     readonly date: Date,
     readonly metadata: Metadata,
     readonly description?: string,
@@ -21,12 +20,8 @@ export class InvoiceEntry extends LedgerEntry {
     amount: number,
     date: Date,
     metadata: Metadata,
-    payerId: string,
     description?: string,
-  ): InvoiceEntry {
-    if (!payerId) {
-      throw new Error('Payer ID is required for InvoiceEntry')
-    }
-    return new InvoiceEntry(id, contractId, amount, payerId, date, metadata, description)
+  ): ChargeEntry {
+    return new ChargeEntry(id, contractId, amount, date, metadata, description)
   }
 }

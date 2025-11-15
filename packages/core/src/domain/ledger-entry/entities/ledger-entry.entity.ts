@@ -1,6 +1,6 @@
 import { Metadata } from '@imovel/core/domain/common'
 
-export class LedgerEntry {
+export abstract class LedgerEntry {
   constructor(
     readonly id: string,
     readonly contractId: string,
