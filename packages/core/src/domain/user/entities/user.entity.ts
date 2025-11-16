@@ -1,5 +1,3 @@
-import { randomUUID } from 'node:crypto'
-
 import { Metadata, MetadataSchema, Status } from '@imovel/core/domain/common'
 
 import { Role } from '../vo'
@@ -29,7 +27,7 @@ export class User {
     document?: string
   }): User {
     return new User(
-      props.id || randomUUID(),
+      props.id || crypto.randomUUID(),
       props.name || '',
       props.docName || '',
       props.role || [Role.TENANT],

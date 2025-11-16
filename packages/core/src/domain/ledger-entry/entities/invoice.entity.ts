@@ -1,5 +1,3 @@
-import { randomUUID } from 'node:crypto'
-
 import { Metadata, MetadataSchema } from '@imovel/core/domain/common'
 
 import { LedgerEntry } from './ledger-entry.entity'
@@ -30,7 +28,7 @@ export class InvoiceEntry extends LedgerEntry {
       throw new Error('Payer ID is required for InvoiceEntry')
     }
     return new InvoiceEntry(
-      id ?? randomUUID(),
+      id ?? crypto.randomUUID(),
       contractId,
       amount,
       payerId,
