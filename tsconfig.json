@@ -1,4 +1,4 @@
 {
-  "include": ["types", "apps", "packages", "sst.config.ts"],
+  "include": ["types", "apps", "packages", "sst.config.ts", "infra/auth"],
   "exclude": [".sst", "dist", "build", "node_modules"]
 }

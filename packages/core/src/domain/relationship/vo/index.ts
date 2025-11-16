@@ -1,1 +1,1 @@
-export { UserRole, UserRoleVO } from './user-role.vo'
+export * from './type.vo'

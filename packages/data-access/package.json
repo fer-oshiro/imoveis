@@ -1,0 +1,38 @@
+{
+  "name": "@imovel/data-access",
+  "private": true,
+  "type": "module",
+  "version": "0.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./*": {
+      "import": "./dist/*/index.js",
+      "require": "./dist/*/index.cjs"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "clean": "rm -rf dist",
+    "dev": "tsdown --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@imovel/core": "*",
+    "libphonenumber-js": "^1.12.18",
+    "sst": "*",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "tsdown": "^0.15.4",
+    "vitest": "^3"
+  }
+}

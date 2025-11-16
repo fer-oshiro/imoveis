@@ -1,0 +1,20 @@
+{
+  "extends": "@tsconfig/node22/tsconfig.json",
+
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@imovel/api/*": ["apps/api/src/*"],
+      "@imovel/api": ["apps/api/src"],
+      "@imovel/web/*": ["apps/web/src/*"],
+      "@imovel/web": ["apps/web/src"],
+      "@imovel/workers/*": ["apps/workers/src/*"],
+      "@imovel/workers": ["apps/workers/src"],
+
+      "@imovel/core/*": ["packages/core/src/*"],
+      "@imovel/core": ["packages/core/src"],
+      "@imovel/data-access/*": ["packages/data-access/src/*"],
+      "@imovel/data-access": ["packages/data-access/src"]
+    }
+  }
+}

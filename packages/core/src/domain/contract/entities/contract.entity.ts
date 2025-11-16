@@ -1,190 +1,116 @@
-import { EntityMetadataVO } from '../../shared'
-import { ContractStatus } from '../vo/contract-enums.vo'
-import { type ContractTerms, ContractTermsVO } from '../vo/contract-terms.vo'
+import { Metadata, MetadataSchema } from '@imovel/core/domain/common'
+
+import { Option } from '../vo'
 
 export class Contract {
   constructor(
-    private pk: string,
-    private sk: string,
-    private contractId: string,
-    private apartmentUnitCode: string,
-    private tenantPhoneNumber: string,
-    private startDate: Date,
-    private endDate: Date,
-    private status: ContractStatus,
-    private terms: ContractTermsVO,
-    private metadata: EntityMetadataVO = EntityMetadataVO.create(),
+    private _id: string,
+    private _userId: string,
+    private _document: string,
+    private _apartmentId: string,
+    private _valid: boolean,
+    private _dueDate: string | null = null,
+    private _images: string[] = [],
+    private _rentAmount: number = 0,
+    private _options: Option[] = [Option.FURNISHED],
+    private _balance: number = 0,
+    private _lastPaymentId: string | null = null,
+    private _lastPaymentDate: Date | null = null,
+    private _metadata: Metadata = MetadataSchema.parse({}),
   ) {}
 
-  public static create(data: {
-    contractId: string
-    apartmentUnitCode: string
-    tenantPhoneNumber: string
-    startDate: Date
-    endDate: Date
-    terms: ContractTerms
-    status?: ContractStatus
-    createdBy?: string
+  static create(props: {
+    id?: string
+    userId: string
+    document: string
+    apartmentId: string
+    valid: boolean
+    dueDate?: string | null
+    images?: string[]
+    rentAmount?: number
+    options?: Option[]
+    balance?: number
+    lastPaymentId?: string | null
+    lastPaymentDate?: string | null
+    metadata?: Metadata
   }): Contract {
-    const terms = ContractTermsVO.create(data.terms)
-    const metadata = EntityMetadataVO.create(data.createdBy)
-
     return new Contract(
-      `APARTMENT#${data.apartmentUnitCode}`,
-      `CONTRACT#${data.contractId}`,
-      data.contractId,
-      data.apartmentUnitCode,
-      data.tenantPhoneNumber,
-      data.startDate,
-      data.endDate,
-      data.status || ContractStatus.PENDING,
-      terms,
-      metadata,
+      props.id ?? crypto.randomUUID(),
+      props.userId,
+      props.document,
+      props.apartmentId,
+      props.valid,
+      props.dueDate ? props.dueDate : null,
+      props.images || [],
+      props.rentAmount || 0,
+      props.options || [Option.FURNISHED],
+      props.balance || 0,
+      props.lastPaymentId || null,
+      props.lastPaymentDate ? new Date(props.lastPaymentDate) : null,
+      props.metadata || MetadataSchema.parse({}),
     )
   }
 
-  // Getters
-  get pkValue(): string {
-    return this.pk
-  }
-
-  get skValue(): string {
-    return this.sk
-  }
-
-  get contractIdValue(): string {
-    return this.contractId
-  }
-
-  get apartmentUnitCodeValue(): string {
-    return this.apartmentUnitCode
-  }
-
-  get tenantPhoneNumberValue(): string {
-    return this.tenantPhoneNumber
-  }
-
-  get startDateValue(): Date {
-    return this.startDate
-  }
-
-  get endDateValue(): Date {
-    return this.endDate
-  }
-
-  get statusValue(): ContractStatus {
-    return this.status
-  }
-
-  get termsValue(): ContractTermsVO {
-    return this.terms
-  }
-
-  get metadataValue(): EntityMetadataVO {
-    return this.metadata
-  }
-
-  // Business methods
-  activate(updatedBy?: string): void {
-    if (this.status !== ContractStatus.PENDING) {
-      throw new Error('Only pending contracts can be activated')
-    }
-    this.status = ContractStatus.ACTIVE
-    this.metadata = this.metadata.update(updatedBy)
-  }
-
-  terminate(updatedBy?: string): void {
-    if (this.status !== ContractStatus.ACTIVE) {
-      throw new Error('Only active contracts can be terminated')
-    }
-    this.status = ContractStatus.TERMINATED
-    this.metadata = this.metadata.update(updatedBy)
-  }
-
-  expire(updatedBy?: string): void {
-    if (this.status !== ContractStatus.ACTIVE) {
-      throw new Error('Only active contracts can expire')
-    }
-    this.status = ContractStatus.EXPIRED
-    this.metadata = this.metadata.update(updatedBy)
-  }
-
-  extend(newEndDate: Date, updatedBy?: string): void {
-    if (this.status !== ContractStatus.ACTIVE) {
-      throw new Error('Only active contracts can be extended')
-    }
-    if (newEndDate <= this.endDate) {
-      throw new Error('New end date must be after current end date')
-    }
-    this.endDate = newEndDate
-    this.metadata = this.metadata.update(updatedBy)
-  }
-
-  updateTerms(newTerms: ContractTerms, updatedBy?: string): void {
-    this.terms = ContractTermsVO.create(newTerms)
-    this.metadata = this.metadata.update(updatedBy)
-  }
-
-  isActive(): boolean {
-    return this.status === ContractStatus.ACTIVE
-  }
-
-  isExpired(): boolean {
-    const now = new Date()
-    return this.endDate < now || this.status === ContractStatus.EXPIRED
-  }
-
-  isTerminated(): boolean {
-    return this.status === ContractStatus.TERMINATED
-  }
-
-  isPending(): boolean {
-    return this.status === ContractStatus.PENDING
-  }
-
-  getDurationInMonths(): number {
-    const diffTime = Math.abs(this.endDate.getTime() - this.startDate.getTime())
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-    return Math.ceil(diffDays / 30)
-  }
-
-  getRemainingDays(): number {
-    const now = new Date()
-    if (this.endDate < now) return 0
-    const diffTime = this.endDate.getTime() - now.getTime()
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-  }
-
-  public toJSON(): Record<string, any> {
+  toJSON(): { [key: string]: any } {
     return {
-      pk: this.pk,
-      sk: this.sk,
-      contractId: this.contractId,
-      apartmentUnitCode: this.apartmentUnitCode,
-      tenantPhoneNumber: this.tenantPhoneNumber,
-      startDate: this.startDate.toISOString(),
-      endDate: this.endDate.toISOString(),
-      status: this.status,
-      terms: this.terms.toJSON(),
-      ...this.metadata.toJSON(),
+      id: this._id,
+      userId: this._userId,
+      document: this._document,
+      apartmentId: this._apartmentId,
+      valid: this._valid,
+      dueDate: this._dueDate,
+      images: this._images,
+      rentAmount: this._rentAmount,
+      options: this._options,
+      balance: this._balance,
+      lastPaymentId: this._lastPaymentId,
+      lastPaymentDate: this._lastPaymentDate ? this._lastPaymentDate.toISOString() : null,
+      metadata: this._metadata,
     }
   }
 
-  public static fromJSON(data: Record<string, any>): Contract {
-    const terms = ContractTermsVO.fromJSON(data.terms || {})
-    const metadata = EntityMetadataVO.fromJSON(data)
+  updateLastPayment(paymentId: string, paymentDate: Date) {
+    this._lastPaymentId = paymentId
+    this._lastPaymentDate = paymentDate
+  }
 
-    return new Contract(
-      data.pk,
-      data.sk,
-      data.contractId,
-      data.apartmentUnitCode,
-      data.tenantPhoneNumber,
-      new Date(data.startDate),
-      new Date(data.endDate),
-      data.status as ContractStatus,
-      terms,
-      metadata,
-    )
+  get id() {
+    return this._id
+  }
+  get userId() {
+    return this._userId
+  }
+  get document() {
+    return this._document
+  }
+  get apartmentId() {
+    return this._apartmentId
+  }
+  get valid() {
+    return this._valid
+  }
+  get dueDate() {
+    return this._dueDate
+  }
+  get images() {
+    return this._images
+  }
+  get rentAmount() {
+    return this._rentAmount
+  }
+  get options() {
+    return this._options
+  }
+  get balance() {
+    return this._balance
+  }
+  get lastPaymentId() {
+    return this._lastPaymentId
+  }
+  get lastPaymentDate() {
+    return this._lastPaymentDate
+  }
+  get metadata() {
+    return this._metadata
   }
 }

@@ -1,52 +1,20 @@
-import { ContractStatus } from '../vo/contract-enums.vo'
-import { type ContractTerms } from '../vo/contract-terms.vo'
+import { z } from 'zod'
 
-export interface ContractResponseDto {
-  contractId: string
-  apartmentUnitCode: string
-  tenantPhoneNumber: string
-  startDate: string
-  endDate: string
-  status: ContractStatus
-  terms: ContractTerms
-  durationInMonths: number
-  remainingDays: number
-  isActive: boolean
-  isExpired: boolean
-  isTerminated: boolean
-  isPending: boolean
-  createdAt: string
-  updatedAt: string
-  createdBy?: string
-  updatedBy?: string
-  version: number
-}
+import { MetadataSchema } from '../../common'
+import { OptionSchema } from '../vo'
 
-export class ContractResponseDtoMapper {
-  static fromEntity(contract: any): ContractResponseDto {
-    return {
-      contractId: contract.contractIdValue,
-      apartmentUnitCode: contract.apartmentUnitCodeValue,
-      tenantPhoneNumber: contract.tenantPhoneNumberValue,
-      startDate: contract.startDateValue.toISOString(),
-      endDate: contract.endDateValue.toISOString(),
-      status: contract.statusValue,
-      terms: contract.termsValue.toJSON(),
-      durationInMonths: contract.getDurationInMonths(),
-      remainingDays: contract.getRemainingDays(),
-      isActive: contract.isActive(),
-      isExpired: contract.isExpired(),
-      isTerminated: contract.isTerminated(),
-      isPending: contract.isPending(),
-      createdAt: contract.metadataValue.createdAt.toISOString(),
-      updatedAt: contract.metadataValue.updatedAt.toISOString(),
-      createdBy: contract.metadataValue.createdBy,
-      updatedBy: contract.metadataValue.updatedBy,
-      version: contract.metadataValue.version,
-    }
-  }
-
-  static fromEntities(contracts: any[]): ContractResponseDto[] {
-    return contracts.map((contract) => this.fromEntity(contract))
-  }
-}
+export const ContractResponse = z.object({
+  id: z.string(),
+  apartmentId: z.string(),
+  balance: z.number(),
+  document: z.string(),
+  dueDate: z.string().optional().nullable().default(''),
+  images: z.array(z.string()),
+  lastPaymentDate: z.string().optional().nullable().default(''),
+  lastPaymentId: z.string().optional().nullable().default(''),
+  metadata: MetadataSchema,
+  options: OptionSchema,
+  rentAmount: z.number(),
+  userId: z.string(),
+  valid: z.boolean(),
+})

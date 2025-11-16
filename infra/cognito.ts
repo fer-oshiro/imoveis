@@ -6,9 +6,9 @@ export const userPool = new sst.aws.CognitoUserPool('ImovelOshiroUserPool', {
     snsRegion: 'us-east-1',
   },
   triggers: {
-    defineAuthChallenge: 'packages/auth/define-auth-challenge.handler',
+    defineAuthChallenge: 'apps/auth/define-auth-challenge.handler',
     createAuthChallenge: {
-      handler: 'packages/auth/create-auth-challenge.handler',
+      handler: 'apps/auth/create-auth-challenge.handler',
       permissions: [
         {
           actions: ['sns:Publish'],
@@ -16,7 +16,7 @@ export const userPool = new sst.aws.CognitoUserPool('ImovelOshiroUserPool', {
         },
       ],
     },
-    verifyAuthChallengeResponse: 'packages/auth/verify-auth-challenge.handler',
+    verifyAuthChallengeResponse: 'apps/auth/verify-auth-challenge.handler',
   },
 })
 
