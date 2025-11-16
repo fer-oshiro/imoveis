@@ -1,4 +1,4 @@
-import { ApartmentRepository } from '@imovel/core/ports'
+import { ApartmentRepository, ContractRepository, UserRepository } from '@imovel/core/ports'
 
 import { ApartmentService } from '../../domain/apartment'
 import { BaseController } from '../../domain/shared'
@@ -6,16 +6,28 @@ import { BaseController } from '../../domain/shared'
 export class ApartmentController extends BaseController {
   private apartmentService: ApartmentService
 
-  constructor(apartmentRepository: ApartmentRepository) {
+  constructor(
+    apartmentRepository: ApartmentRepository,
+    contractRepository: ContractRepository,
+    userRepository: UserRepository,
+  ) {
     super()
-    this.apartmentService = new ApartmentService(apartmentRepository)
+    this.apartmentService = new ApartmentService(
+      apartmentRepository,
+      contractRepository,
+      userRepository,
+    )
   }
 
   public async getApartmentsWithLastPayment() {
-    const apartments = await this.apartmentService.getApartmentsWithLastPayment()
+    const apartmentsWithPayment = await this.apartmentService.getApartmentsWithLastPayment()
     return {
       status: 'success',
-      data: apartments.map((apartment) => apartment.toJSON()),
+      data: apartmentsWithPayment.map((apWithPayment) => ({
+        apartment: apWithPayment.apartment.toJSON(),
+        contract: apWithPayment.contract[0],
+        user: apWithPayment.user[0],
+      })),
     }
   }
 

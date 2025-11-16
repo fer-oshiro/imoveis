@@ -12,13 +12,15 @@ export const mapContractToDynamo = (contract: Contract) => {
     rentAmount: contract.rentAmount,
     options: contract.options,
     balance: contract.balance,
+    lastPaymentId: contract.lastPaymentId,
+    lastPaymentDate: contract.lastPaymentDate,
     metadata: contract.metadata,
   }
 }
 
 export const mapDynamoToContract = (item: any): Contract => {
   return Contract.create({
-    id: item.PK.replace('CONTRACT#', ''),
+    id: item.SK.replace('CONTRACT#', ''),
     userId: item.userId.replace('USER#', ''),
     apartmentId: item.PK.replace('APARTMENT#', ''),
     document: item.document,
@@ -28,6 +30,8 @@ export const mapDynamoToContract = (item: any): Contract => {
     rentAmount: item.rentAmount || 0,
     options: item.options || ['FURNISHED'],
     balance: item.balance || 0,
+    lastPaymentDate: item.lastPaymentDate ? new Date(item.lastPaymentDate) : undefined,
+    lastPaymentId: item.lastPaymentId || null,
     metadata: item.metadata,
   })
 }

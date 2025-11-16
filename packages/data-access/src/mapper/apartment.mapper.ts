@@ -14,13 +14,13 @@ export function mapDynamoToApartment(item: unknown): Apartment {
   return Apartment.create({
     id,
     label: parsed.label,
-    rentAmount: parseFloat(parsed.rentAmount),
+    rentAmount: parsed.rentAmount,
     status: parsed.status,
     location: parsed.location,
     description: parsed.description,
     images: parsed.images,
     airbnbLink: parsed.airbnbLink,
-    cleanCost: parseFloat(parsed.cleanCost || '0'),
+    cleanCost: parsed.cleanCost,
     metadata: parsed.metadata,
   })
 }

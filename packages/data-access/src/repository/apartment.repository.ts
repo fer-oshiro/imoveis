@@ -39,9 +39,7 @@ export class ApartmentRepositoryDynamo implements ApartmentRepository {
 
     if (!result.Items) return []
 
-    return result.Items.filter((ap) => ap.PK.startsWith('AP#')).map((item) =>
-      mapDynamoToApartment(item),
-    )
+    return result.Items.map((item) => mapDynamoToApartment(item))
   }
 
   async save(apartment: Apartment): Promise<void> {
@@ -49,7 +47,7 @@ export class ApartmentRepositoryDynamo implements ApartmentRepository {
       new PutCommand({
         TableName: this.tableName,
         Item: {
-          PK: `AP#${apartment.id}`,
+          PK: `APARTMENT#${apartment.id}`,
           SK: `METADATA`,
           ...apartment.toJSON(),
         },

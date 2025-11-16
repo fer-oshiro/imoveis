@@ -9,11 +9,13 @@ export class Contract {
     readonly document: string,
     readonly apartmentId: string,
     readonly valid: boolean,
-    readonly dueDate: Date | null = null,
+    readonly dueDate: string | null = null,
     readonly images: string[] = [],
     readonly rentAmount: number = 0,
     readonly options: Option[] = [Option.FURNISHED],
     readonly balance: number = 0,
+    readonly lastPaymentId: string | null = null,
+    readonly lastPaymentDate: Date | null = null,
     readonly metadata: Metadata = MetadataSchema.parse({}),
   ) {}
 
@@ -23,11 +25,13 @@ export class Contract {
     document: string
     apartmentId: string
     valid: boolean
-    dueDate?: Date
+    dueDate?: string | null
     images?: string[]
     rentAmount?: number
     options?: Option[]
     balance?: number
+    lastPaymentId?: string | null
+    lastPaymentDate?: string | null
     metadata?: Metadata
   }): Contract {
     return new Contract(
@@ -36,11 +40,13 @@ export class Contract {
       props.document,
       props.apartmentId,
       props.valid,
-      props.dueDate,
+      props.dueDate ? props.dueDate : null,
       props.images || [],
       props.rentAmount || 0,
       props.options || [Option.FURNISHED],
       props.balance || 0,
+      props.lastPaymentId || null,
+      props.lastPaymentDate ? new Date(props.lastPaymentDate) : null,
       props.metadata || MetadataSchema.parse({}),
     )
   }

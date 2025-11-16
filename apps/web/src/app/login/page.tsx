@@ -1,7 +1,7 @@
 'use client'
-import { FormCode } from '@/components/login/code'
-import { FormPhone } from '@/components/login/phone'
-import { confirmCode, sendSMS } from '@/utils/cognito'
+import { FormCode } from '@imovel/web/components/login/code'
+import { FormPhone } from '@imovel/web/components/login/phone'
+import { confirmCode, sendSMS } from '@imovel/web/utils/cognito'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 

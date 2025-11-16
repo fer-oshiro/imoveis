@@ -4,7 +4,7 @@ import {
   RespondToAuthChallengeCommand,
 } from '@aws-sdk/client-cognito-identity-provider'
 
-import { logger } from '@/infra/logger'
+import { logger } from '@imovel/web/infra/logger'
 
 const client = new CognitoIdentityProviderClient({ region: 'us-east-1' })
 

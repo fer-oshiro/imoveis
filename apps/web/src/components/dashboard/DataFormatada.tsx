@@ -1,19 +1,19 @@
 type Props = {
-  dataISO?: string
+  date?: string | Date | null
 }
 
-export const DataFormatada = ({ dataISO }: Props) => {
-  if (!dataISO) return null
+export const DataFormatada = ({ date }: Props) => {
+  if (!date) return null
 
-  const data = new Date(dataISO)
+  const dateFormatted = date instanceof Date ? date : new Date(date)
   const agora = new Date()
 
-  const diffMs = agora.getTime() - data.getTime()
+  const diffMs = agora.getTime() - dateFormatted.getTime()
   const dias = diffMs / (1000 * 60 * 60 * 24)
 
-  const dia = String(data.getDate()).padStart(2, '0')
-  const mes = String(data.getMonth() + 1).padStart(2, '0')
-  const ano = String(data.getFullYear()).slice(-2)
+  const dia = String(dateFormatted.getDate()).padStart(2, '0')
+  const mes = String(dateFormatted.getMonth() + 1).padStart(2, '0')
+  const ano = String(dateFormatted.getFullYear()).slice(-2)
 
   const texto = `${dia}-${mes}-${ano}`
 

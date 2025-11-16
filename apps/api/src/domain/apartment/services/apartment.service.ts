@@ -1,19 +1,40 @@
-import { ApartmentRepository } from '@imovel/core/ports'
+import { ApartmentRepository, ContractRepository, UserRepository } from '@imovel/core/ports'
+import { Payment } from '../../payment'
+import { PaymentRepositoryDynamo } from '@imovel/data-access/repository'
 
 export default class ApartmentService {
-  private apartmentRepository: ApartmentRepository
-
-  constructor(apartmentRepository: ApartmentRepository) {
-    this.apartmentRepository = apartmentRepository
-  }
+  constructor(
+    private apartmentRepository: ApartmentRepository,
+    private contractRepository: ContractRepository,
+    private userRepository: UserRepository,
+  ) {}
 
   public async getApartmentsWithLastPayment() {
     const apartments = await this.apartmentRepository.findAll()
-    
+    const contracts = await this.contractRepository.findActiveContracts()
+    const users = await this.userRepository.findManyByIds(contracts.map((c) => c.userId))
+
     return apartments
+      .sort((a, b) => a.id.localeCompare(b.id))
+      .map((apartment) => {
+        const apartmentContracts = contracts.filter(
+          (contract) => contract.apartmentId === apartment.id,
+        )
+        const apartmentUsers = users.filter((user) =>
+          apartmentContracts.some((contract) => contract.userId === user.id),
+        )
+
+        return {
+          apartment,
+          contract: apartmentContracts,
+          user: apartmentUsers,
+        }
+      })
   }
 
   public async getAllApartments() {
-    return this.apartmentRepository.findById('12')
+    const apartments = await this.apartmentRepository.findAll()
+
+    return apartments
   }
 }

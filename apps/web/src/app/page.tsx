@@ -1,6 +1,6 @@
-import { Card } from '@/components/lading-page/card'
-import { Title } from '@/components/ui/title'
-import { LOCATIONS } from '@/constants/location'
+import { Card } from '@imovel/web/components/lading-page/card'
+import { Title } from '@imovel/web/components/ui/title'
+import { LOCATIONS } from '@imovel/web/constants/location'
 
 export default function Home() {
   return (

@@ -1,7 +1,7 @@
 'use client'
 
-import { Apartamentos } from '@/components/dashboard/apartamentos'
-import { Users } from '@/components/dashboard/users'
+import { Apartamentos } from '@imovel/web/components/dashboard/apartamentos'
+import { Users } from '@imovel/web/components/dashboard/users'
 import React from 'react'
 
 export default function DashboardPage() {

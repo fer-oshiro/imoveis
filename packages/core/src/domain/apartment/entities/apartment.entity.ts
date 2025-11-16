@@ -60,7 +60,7 @@ export class Apartment {
       description: this.description,
       images: this.images,
       airbnbLink: this.airbnbLink,
-      cleanCost: this.cleanCost,
+      cleanCost: this.cleanCost ? this.cleanCost : 120,
     }
   }
 }

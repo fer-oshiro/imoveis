@@ -1,4 +1,6 @@
-import { Metadata } from '@imovel/core/domain/common'
+import { randomUUID } from 'node:crypto'
+
+import { Metadata, MetadataSchema } from '@imovel/core/domain/common'
 
 import { LedgerEntry } from './ledger-entry.entity'
 
@@ -16,17 +18,25 @@ export class InvoiceEntry extends LedgerEntry {
   }
 
   static create(
-    id: string,
     contractId: string,
     amount: number,
     date: Date,
-    metadata: Metadata,
     payerId: string,
+    metadata?: Metadata,
+    id?: string,
     description?: string,
   ): InvoiceEntry {
     if (!payerId) {
       throw new Error('Payer ID is required for InvoiceEntry')
     }
-    return new InvoiceEntry(id, contractId, amount, payerId, date, metadata, description)
+    return new InvoiceEntry(
+      id ?? randomUUID(),
+      contractId,
+      amount,
+      payerId,
+      date,
+      metadata ?? MetadataSchema.parse({}),
+      description ?? '',
+    )
   }
 }

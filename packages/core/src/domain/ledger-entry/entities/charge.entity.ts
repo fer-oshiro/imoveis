@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto'
+
 import { Metadata } from '@imovel/core/domain/common'
 
 import { LedgerEntry } from './ledger-entry.entity'
@@ -15,13 +17,13 @@ export class ChargeEntry extends LedgerEntry {
   }
 
   static create(
-    id: string,
     contractId: string,
     amount: number,
     date: Date,
     metadata: Metadata,
+    id?: string,
     description?: string,
   ): ChargeEntry {
-    return new ChargeEntry(id, contractId, amount, date, metadata, description)
+    return new ChargeEntry(id ?? randomUUID(), contractId, amount, date, metadata, description)
   }
 }

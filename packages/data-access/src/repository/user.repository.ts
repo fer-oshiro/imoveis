@@ -1,4 +1,9 @@
-import { DynamoDBDocumentClient, PutCommand, ScanCommand } from '@aws-sdk/lib-dynamodb'
+import {
+  BatchGetCommand,
+  DynamoDBDocumentClient,
+  PutCommand,
+  ScanCommand,
+} from '@aws-sdk/lib-dynamodb'
 import { User } from '@imovel/core/domain/user'
 import { UserRepository } from '@imovel/core/ports'
 
@@ -31,7 +36,24 @@ export class UserRepositoryDynamo implements UserRepository {
     return result.Items.map((item) => mapDynamoToUser(item))
   }
 
-  findById(id: string): Promise<User | null> {
+  async findManyByIds(ids: string[]): Promise<User[]> {
+    const keys = ids.map((id) => ({ PK: `USER#${id}`, SK: 'PROFILE' }))
+    const result = await this.dbClient.send(
+      new BatchGetCommand({
+        RequestItems: {
+          [this.tableName]: {
+            Keys: keys,
+          },
+        },
+      }),
+    )
+
+    if (!result.Responses || !result.Responses[this.tableName]) return []
+
+    return result.Responses[this.tableName].map((item) => mapDynamoToUser(item))
+  }
+
+  async findById(id: string): Promise<User | null> {
     logger.info({ userId: id, message: 'Find user by ID called' })
     throw new Error('Method not implemented.')
   }

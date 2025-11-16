@@ -12,11 +12,11 @@
   },
   "iconLibrary": "lucide",
   "aliases": {
-    "components": "@/components",
-    "utils": "@/lib/utils",
-    "ui": "@/components/ui",
-    "lib": "@/lib",
-    "hooks": "@/hooks"
+    "components": "@imovel/web/components",
+    "utils": "@imovel/web/lib/utils",
+    "ui": "@imovel/web/components/ui",
+    "lib": "@imovel/web/lib",
+    "hooks": "@imovel/web/hooks"
   },
   "registries": {}
 }

@@ -14,7 +14,7 @@ import {
 import { ChevronDown, MoreHorizontal } from 'lucide-react'
 import * as React from 'react'
 
-import { Button } from '@/components/ui/button'
+import { Button } from '@imovel/web/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -23,7 +23,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@imovel/web/components/ui/dropdown-menu'
 import {
   Table,
   TableBody,
@@ -31,35 +31,30 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
-import { useMediaQuery } from '@/hook/useMediaQuery'
-import { parsePhoneNumber } from 'libphonenumber-js'
+} from '@imovel/web/components/ui/table'
+import { useMediaQuery } from '@imovel/web/hook/useMediaQuery'
+import { Apartment, APARTMENT_STATUS } from '@imovel/core/domain/apartment'
+import { Contract } from '@imovel/core/domain/contract'
+import { User } from '@imovel/core/domain/user'
 import { DataFormatada } from './DataFormatada'
+import { parsePhoneNumber } from 'libphonenumber-js/min'
 
-export type Apartment = {
-  unitLabel: string
-  unitCode: string
-  lastDepositedAt: string
-  status: string
-  contactInfo: {
-    contactName: string
-    contactDocument: string
-    phoneNumber: string
-  }
-}
-
-export const columns: ColumnDef<Apartment>[] = [
+export const columns: ColumnDef<{
+  apartment: Apartment
+  contract: Contract | null
+  user: User | null
+}>[] = [
   {
     id: 'code',
     header: 'Código',
     accessorKey: 'unitCode',
-    cell: ({ row }) => <div>{row.original.unitCode}</div>,
+    cell: ({ row }) => <div>{row.original.apartment.id}</div>,
   },
   {
     id: 'unit',
     header: 'Unidade',
     cell: ({ row }) => {
-      return <div>{row.original.unitLabel}</div>
+      return <div>{row.original.apartment.label}</div>
     },
   },
   {
@@ -67,10 +62,13 @@ export const columns: ColumnDef<Apartment>[] = [
     header: 'Status',
     cell: ({ row }) => (
       <div className="capitalize">
-        {row.getValue('status') === 'OCUPADO' && (
+        {row.original.apartment.status === APARTMENT_STATUS.OCCUPIED && (
           <div className="mx-auto h-3 w-3 rounded-full bg-red-300" />
         )}
-        {row.getValue('status') === 'DESOCUPADO' && (
+        {row.original.apartment.status === APARTMENT_STATUS.MAINTENANCE && (
+          <div className="mx-auto h-3 w-3 rounded-full bg-yellow-300" />
+        )}
+        {row.original.apartment.status === APARTMENT_STATUS.AVAILABLE && (
           <div className="mx-auto h-3 w-3 rounded-full bg-green-300" />
         )}
       </div>
@@ -80,22 +78,21 @@ export const columns: ColumnDef<Apartment>[] = [
     id: 'contactName',
     accessorKey: 'contactInfo.contactName',
     header: 'Nome',
-    cell: ({ row }) => (
-      <div>{row.original.contactInfo?.contactName?.split(' ')?.slice(0, 2).join(' ')}</div>
-    ),
+    cell: ({ row }) => <div>{row.original.user?.name}</div>,
   },
   {
     accessorKey: 'document',
     header: 'CPF/CNPJ',
-    cell: ({ row }) => <div>{row.original.contactInfo?.contactDocument}</div>,
+    cell: ({ row }) => <div>{row.original.user?.document}</div>,
   },
   {
     accessorKey: 'phone',
     header: 'Telefone',
     cell: ({ row }) => (
       <div>
-        {row.original.contactInfo?.phoneNumber &&
-          parsePhoneNumber(row.original.contactInfo?.phoneNumber).formatNational()}
+        {row.original.user?.phone
+          ? parsePhoneNumber(row.original.user?.phone || '')?.formatNational()
+          : ''}
       </div>
     ),
   },
@@ -109,7 +106,7 @@ export const columns: ColumnDef<Apartment>[] = [
     header: 'Último pagamento',
     cell: ({ row }) => (
       <div>
-        <DataFormatada dataISO={row.getValue('lastDepositedAt')} />
+        <DataFormatada date={row.original.contract?.lastPaymentDate} />
       </div>
     ),
   },
@@ -130,7 +127,7 @@ export const columns: ColumnDef<Apartment>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Ações</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.contactInfo.phoneNumber)}
+              onClick={() => navigator.clipboard.writeText(payment.contract?.lastPaymentId || '')}
             >
               Copiar número de telefone
             </DropdownMenuItem>
@@ -144,7 +141,13 @@ export const columns: ColumnDef<Apartment>[] = [
   },
 ]
 
-export function ApartmentTable({ data = [], status }: { data?: Apartment[]; status: string }) {
+export function ApartmentTable({
+  data = [],
+  status,
+}: {
+  data?: { apartment: Apartment; contract: Contract | null; user: User | null }[]
+  status: string
+}) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})

@@ -30,6 +30,22 @@ export class ContractRepositoryDynamo implements ContractRepository {
     return result.Items.map((item) => mapDynamoToContract(item))
   }
 
+  async findActiveContracts(): Promise<Contract[]> {
+    const result = await this.dbClient.send(
+      new ScanCommand({
+        TableName: this.tableName,
+        FilterExpression: 'begins_with(SK, :sk) AND valid = :valid',
+        ExpressionAttributeValues: {
+          ':sk': 'CONTRACT#',
+          ':valid': true,
+        },
+      }),
+    )
+
+    if (!result.Items) return []
+    return result.Items.map((item) => mapDynamoToContract(item))
+  }
+
   async findById(id: string): Promise<Contract | null> {
     const result = await this.dbClient.send(
       new ScanCommand({

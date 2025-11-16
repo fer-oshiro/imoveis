@@ -14,20 +14,20 @@ export class PaymentRepositoryDynamo implements PaymentRepository {
     this.tableName = TABLE_NAME
   }
 
-  async findAll(): Promise<LedgerEntry[]> {
+  async findAll(): Promise<any[]> {
     const result = await this.dbClient.send(
       new ScanCommand({
         TableName: this.tableName,
         FilterExpression: 'begins_with(SK, :sk)',
         ExpressionAttributeValues: {
-          ':sk': 'CONTRACT#',
+          ':sk': 'PAYMENT#',
         },
       }),
     )
 
     if (!result.Items) return []
 
-    return result.Items.map((item) => mapDynamoToPayment(item))
+    return result.Items
   }
 
   async findById(id: string): Promise<LedgerEntry | null> {
