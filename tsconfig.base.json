@@ -8,6 +8,8 @@
       "@imovel/api": ["apps/api/src"],
       "@imovel/web/*": ["apps/web/src/*"],
       "@imovel/web": ["apps/web/src"],
+      "@imovel/workers/*": ["apps/workers/src/*"],
+      "@imovel/workers": ["apps/workers/src"],
 
       "@imovel/core/*": ["packages/core/src/*"],
       "@imovel/core": ["packages/core/src"],

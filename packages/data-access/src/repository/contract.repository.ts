@@ -60,6 +60,25 @@ export class ContractRepositoryDynamo implements ContractRepository {
     return result.Items && result.Items.length > 0 ? mapDynamoToContract(result.Items[0]) : null
   }
 
+  async findByDocument(document: string): Promise<Contract | null> {
+    const result = await this.dbClient.send(
+      new ScanCommand({
+        TableName: this.tableName,
+        FilterExpression: '#document = :document AND begins_with(#sk, :sk)',
+        ExpressionAttributeValues: {
+          ':document': document,
+          ':sk': 'CONTRACT#',
+        },
+        ExpressionAttributeNames: {
+          '#document': 'document',
+          '#sk': 'SK',
+        },
+      }),
+    )
+
+    return result.Items && result.Items.length > 0 ? mapDynamoToContract(result.Items[0]) : null
+  }
+
   async save(contract: Contract): Promise<void> {
     await this.dbClient.send(
       new PutCommand({

@@ -58,6 +58,29 @@ export class UserRepositoryDynamo implements UserRepository {
     throw new Error('Method not implemented.')
   }
 
+  async findByDocument(document: string, name: string): Promise<User | null> {
+    const result = await this.dbClient.send(
+      new ScanCommand({
+        TableName: this.tableName,
+        FilterExpression: '#document = :document AND #sk = :sk AND begins_with(#name, :name)',
+        ExpressionAttributeValues: {
+          ':document': document,
+          ':sk': 'PROFILE',
+          ':name': name,
+        },
+        ExpressionAttributeNames: {
+          '#name': 'name',
+          '#document': 'document',
+          '#sk': 'SK',
+        },
+      }),
+    )
+
+    if (!result.Items || result.Items.length === 0) return null
+
+    return mapDynamoToUser(result.Items[0])
+  }
+
   async save(user: User): Promise<void> {
     await this.dbClient.send(
       new PutCommand({

@@ -25,7 +25,7 @@ export class ApartmentController extends BaseController {
       status: 'success',
       data: apartmentsWithPayment.map((apWithPayment) => ({
         apartment: apWithPayment.apartment.toJSON(),
-        contract: apWithPayment.contract[0],
+        contract: apWithPayment.contract[0]?.toJSON(),
         user: apWithPayment.user[0],
       })),
     }

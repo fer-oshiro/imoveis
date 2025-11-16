@@ -39,4 +39,16 @@ export class InvoiceEntry extends LedgerEntry {
       description ?? '',
     )
   }
+
+  toJson() {
+    return {
+      id: this.id,
+      contractId: this.contractId,
+      amount: this.amount,
+      payerId: this.payerId,
+      date: this.date.toISOString(),
+      metadata: this.metadata,
+      description: this.description,
+    }
+  }
 }

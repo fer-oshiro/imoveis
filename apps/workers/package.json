@@ -1,5 +1,5 @@
 {
-  "name": "@imovel/functions",
+  "name": "@imovel/workers",
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
@@ -10,9 +10,15 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.932.0",
     "@aws-sdk/client-lambda": "^3.893.0",
     "@imovel/core": "*",
+    "@imovel/data-access": "*",
     "html-to-text": "^9.0.5",
     "mailparser": "^3.7.4"
+  },
+  "devDependencies": {
+    "@types/html-to-text": "^9.0.4",
+    "@types/mailparser": "^3.4.6"
   }
 }

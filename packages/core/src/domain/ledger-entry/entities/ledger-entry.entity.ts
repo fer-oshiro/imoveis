@@ -8,4 +8,6 @@ export abstract class LedgerEntry {
     readonly date: Date,
     readonly metadata: Metadata,
   ) {}
+
+  abstract toJson(): any
 }

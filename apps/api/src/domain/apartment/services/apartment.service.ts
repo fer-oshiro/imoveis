@@ -1,6 +1,4 @@
 import { ApartmentRepository, ContractRepository, UserRepository } from '@imovel/core/ports'
-import { Payment } from '../../payment'
-import { PaymentRepositoryDynamo } from '@imovel/data-access/repository'
 
 export default class ApartmentService {
   constructor(

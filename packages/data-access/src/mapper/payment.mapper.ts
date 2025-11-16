@@ -5,7 +5,7 @@ export function mapPaymentToDynamo(payment: InvoiceEntry | ChargeEntry): any {
     PK: `CONTRACT#${payment.contractId}`,
     SK: `PAYMENT#${payment.id}`,
     type: payment instanceof InvoiceEntry ? 'INVOICE' : 'CHARGE',
-    ...payment,
+    ...payment.toJson(),
   }
 }
 

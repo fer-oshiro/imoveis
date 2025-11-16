@@ -4,19 +4,19 @@ import { Option } from '../vo'
 
 export class Contract {
   constructor(
-    readonly id: string,
-    readonly userId: string,
-    readonly document: string,
-    readonly apartmentId: string,
-    readonly valid: boolean,
-    readonly dueDate: string | null = null,
-    readonly images: string[] = [],
-    readonly rentAmount: number = 0,
-    readonly options: Option[] = [Option.FURNISHED],
-    readonly balance: number = 0,
-    readonly lastPaymentId: string | null = null,
-    readonly lastPaymentDate: Date | null = null,
-    readonly metadata: Metadata = MetadataSchema.parse({}),
+    private _id: string,
+    private _userId: string,
+    private _document: string,
+    private _apartmentId: string,
+    private _valid: boolean,
+    private _dueDate: string | null = null,
+    private _images: string[] = [],
+    private _rentAmount: number = 0,
+    private _options: Option[] = [Option.FURNISHED],
+    private _balance: number = 0,
+    private _lastPaymentId: string | null = null,
+    private _lastPaymentDate: Date | null = null,
+    private _metadata: Metadata = MetadataSchema.parse({}),
   ) {}
 
   static create(props: {
@@ -49,5 +49,68 @@ export class Contract {
       props.lastPaymentDate ? new Date(props.lastPaymentDate) : null,
       props.metadata || MetadataSchema.parse({}),
     )
+  }
+
+  toJSON(): { [key: string]: any } {
+    return {
+      id: this._id,
+      userId: this._userId,
+      document: this._document,
+      apartmentId: this._apartmentId,
+      valid: this._valid,
+      dueDate: this._dueDate,
+      images: this._images,
+      rentAmount: this._rentAmount,
+      options: this._options,
+      balance: this._balance,
+      lastPaymentId: this._lastPaymentId,
+      lastPaymentDate: this._lastPaymentDate ? this._lastPaymentDate.toISOString() : null,
+      metadata: this._metadata,
+    }
+  }
+
+  updateLastPayment(paymentId: string, paymentDate: Date) {
+    this._lastPaymentId = paymentId
+    this._lastPaymentDate = paymentDate
+  }
+
+  get id() {
+    return this._id
+  }
+  get userId() {
+    return this._userId
+  }
+  get document() {
+    return this._document
+  }
+  get apartmentId() {
+    return this._apartmentId
+  }
+  get valid() {
+    return this._valid
+  }
+  get dueDate() {
+    return this._dueDate
+  }
+  get images() {
+    return this._images
+  }
+  get rentAmount() {
+    return this._rentAmount
+  }
+  get options() {
+    return this._options
+  }
+  get balance() {
+    return this._balance
+  }
+  get lastPaymentId() {
+    return this._lastPaymentId
+  }
+  get lastPaymentDate() {
+    return this._lastPaymentDate
+  }
+  get metadata() {
+    return this._metadata
   }
 }

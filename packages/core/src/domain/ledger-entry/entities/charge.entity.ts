@@ -26,4 +26,15 @@ export class ChargeEntry extends LedgerEntry {
   ): ChargeEntry {
     return new ChargeEntry(id ?? randomUUID(), contractId, amount, date, metadata, description)
   }
+
+  toJson() {
+    return {
+      id: this.id,
+      contractId: this.contractId,
+      amount: this.amount,
+      date: this.date.toISOString(),
+      metadata: this.metadata,
+      description: this.description,
+    }
+  }
 }
