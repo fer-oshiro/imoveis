@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Imóveis | Oshiro',
+  title: 'Hiro Imóveis',
   description: 'Veja os imóveis disponíveis',
 }
 
@@ -26,13 +26,13 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <head>
-        <link rel="icon" href="/favicon.svg" />
+        <link rel="icon" sizes="32x32" href="/icon.png" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#000000" />
         <meta name="description" content="Veja os imóveis disponíveis no Oshiro Imóveis" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} flex flex-col antialiased`}>
-        <div className="container mx-auto flex-1 p-4">{children}</div>
+        <div className="flex-1">{children}</div>
         <Footer />
       </body>
     </html>
