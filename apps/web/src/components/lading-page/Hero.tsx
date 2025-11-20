@@ -1,51 +1,77 @@
 import Image from 'next/image'
 import { Building2Icon } from '../ui/icons/lucide-building-2'
 import { ChevronRightIcon } from '../ui/icons/lucide-chevron-right'
-import { Button } from '../ui/button'
+import { Checkbox } from '../ui/checkbox'
+import { Label } from '../ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select'
+
 export const Hero = () => {
   return (
-    <div className="relative flex min-h-[calc(100vh-250px)] w-full items-center overflow-hidden rounded-2xl sm:my-16 sm:h-[500px]">
+    <div className="relative flex min-h-[calc(100vh-250px)] w-full items-center overflow-hidden py-16 sm:my-16 sm:h-[500px]">
       <Image
         src="/hero.jpg"
         alt=""
         width={1200}
         height={600}
-        className="absolute left-1/2 -z-10 mx-auto max-h-[calc(100vh-250px)] w-full -translate-x-1/2 object-cover sm:w-[90vw] sm:rounded-2xl"
+        className="absolute left-1/2 -z-10 mx-auto min-h-full w-full -translate-x-1/2 object-cover brightness-50 lg:w-[90vw]"
       />
-      <div className="absolute left-1/2 -z-10 mx-auto min-h-[calc(100vh-250px)] min-w-full -translate-x-1/2 bg-linear-to-r from-black/60 via-black/40 to-transparent object-cover sm:min-w-[90vw] sm:rounded-2xl" />
+      <div className="absolute left-1/2 -z-10 mx-auto h-full min-w-full -translate-x-1/2 bg-linear-to-r from-black/60 via-black/40 to-transparent object-cover lg:min-w-[90vw]" />
 
-      <div className="sm:p-32 p-8">
-        <h1 className="max-w-[16ch] text-2xl sm:text-4xl font-bold text-white">
+      <div className="mx-auto flex min-w-[90vw] flex-col items-start gap-12 p-4 sm:max-w-4xl md:p-16">
+        <h1 className="mx-auto max-w-[16ch] text-4xl font-bold text-white md:text-6xl lg:mx-0">
           Encontre o melhor imóvel para você
         </h1>
-        <p className="my-6 max-w-fit rounded-xl bg-white p-4 font-bold text-red-700">
-          Explorar Imóveis
-        </p>
-        <div className="flex gap-8 rounded-xl bg-white p-6 sm:px-12 flex-col sm:flex-row min-w-full">
+        <div className="mx-auto flex min-w-fit flex-col gap-8 rounded-xl bg-white p-6 sm:px-12 lg:ml-0 lg:flex-row">
           <div className="flex flex-col">
-            <label>Tipo de imóvel:</label>
-            <select>
-              <option>Apartamento</option>
-              <option>Casa</option>
-              <option>Comercial</option>
-            </select>
+            <p className="mb-2 md:mb-4">Tipo de imóvel:</p>
+            <div className="flex flex-wrap gap-2 *:cursor-pointer">
+              <Label className="hover:bg-accent/50 rounded-full border p-3 px-4 has-aria-checked:border-red-600 has-aria-checked:bg-red-50 has-aria-checked:text-red-700 sm:px-6 dark:has-aria-checked:border-red-900 dark:has-aria-checked:bg-red-950">
+                <Checkbox id="toggle-2" defaultChecked className="hidden" />
+                <p className="text-sm leading-none font-medium">Kitnet</p>
+              </Label>
+              <Label className="hover:bg-accent/50 rounded-full border p-3 px-4 has-aria-checked:border-red-600 has-aria-checked:bg-red-50 has-aria-checked:text-red-700 sm:px-6 dark:has-aria-checked:border-red-900 dark:has-aria-checked:bg-red-950">
+                <Checkbox id="toggle-2" className="hidden" />
+                <p className="text-sm leading-none font-medium">Casas</p>
+              </Label>
+              <Label className="hover:bg-accent/50 rounded-full border p-3 px-4 has-aria-checked:border-red-600 has-aria-checked:bg-red-50 has-aria-checked:text-red-700 sm:px-6 dark:has-aria-checked:border-red-900 dark:has-aria-checked:bg-red-950">
+                <Checkbox id="toggle-2" className="hidden" />
+                <p className="text-sm leading-none font-medium">Galpão</p>
+              </Label>
+            </div>
           </div>
 
-          <div className="min-h-full w-px bg-gray-300" />
+          <div className="hidden min-h-full w-px bg-gray-300 lg:block" />
 
-          <div className="flex flex-col">
-            <label htmlFor="" className='flex gap-4 align-center align-baseline'><Building2Icon size={12} />Localização</label>
-            <select name="Localização" id="">
-              <option>São Paulo</option>
-              <option>Toledo</option>
-            </select>
+          <div className="flex flex-col gap-4">
+            <label htmlFor="" className="align-center flex items-center justify-start gap-2">
+              <Building2Icon size={16} />
+              <p>Localização</p>
+            </label>
+            <Select defaultValue="sp">
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Escolha uma região" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="sp">São Paulo</SelectItem>
+                  <SelectItem value="pt">Pedro de Toledo</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
 
-          <div className="min-h-full w-px bg-gray-300" />
+          <div className="hidden min-h-full w-px bg-gray-300 lg:block" />
 
-          <button className="rounded-full bg-red-700 p-4 px-8 font-bold text-white flex gap-2 items-center hover:bg-red-800 transition hover:cursor-pointer">
+          <button className="my-auto mr-auto flex items-center gap-2 rounded-full bg-red-700 p-4 px-8 font-bold text-white transition hover:cursor-pointer hover:bg-red-800">
             Buscar Imóveis
-            <ChevronRightIcon size={16} className="inline-block ml-2" />
+            <ChevronRightIcon size={16} className="ml-2 inline-block" />
           </button>
         </div>
       </div>
