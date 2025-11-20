@@ -12,10 +12,39 @@ export const Hero = () => {
       />
       <div className="absolute left-1/2 -z-10 mx-auto min-h-[calc(100vh-250px)] min-w-full -translate-x-1/2 bg-linear-to-r from-black/60 via-black/40 to-transparent object-cover sm:min-w-[90vw] sm:rounded-2xl" />
 
-      <div className="p-16">
+      <div className="p-32">
         <h1 className="max-w-sm text-4xl font-bold text-white">
           Encontre o melhor imóvel para você
         </h1>
+        <p className="my-6 max-w-fit rounded-xl bg-white p-4 font-bold text-red-700">
+          Explorar Imóveis
+        </p>
+        <div className="flex gap-8 rounded-xl bg-white p-6 px-12">
+          <div className="flex flex-col">
+            <label>Tipo de imóvel:</label>
+            <select>
+              <option>Apartamento</option>
+              <option>Casa</option>
+              <option>Comercial</option>
+            </select>
+          </div>
+
+          <div className="min-h-full w-px bg-gray-300" />
+
+          <div className="flex flex-col">
+            <label htmlFor="">Localização</label>
+            <select name="Localização" id="">
+              <option>São Paulo</option>
+              <option>Toledo</option>
+            </select>
+          </div>
+
+          <div className="min-h-full w-px bg-gray-300" />
+
+          <button className="rounded-full bg-red-700 p-4 font-bold text-white">
+            Buscar Imóveis
+          </button>
+        </div>
       </div>
     </div>
   )
