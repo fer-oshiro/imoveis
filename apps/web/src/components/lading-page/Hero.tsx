@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select'
+import { Divider } from './BestOption/Divider'
 
 export const Hero = () => {
   return (
