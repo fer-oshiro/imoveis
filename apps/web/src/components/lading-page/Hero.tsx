@@ -16,10 +16,13 @@ export const Hero = () => {
   return (
     <div className="relative flex min-h-[calc(100vh-250px)] w-full items-center overflow-hidden py-16 sm:my-16 sm:h-[500px]">
       <Image
-        src="/hero.jpg"
+        src="/hero.webp"
         alt=""
+        loading="eager"
+        priority
         width={1200}
         height={600}
+        sizes="(max-width: 768px) 100vw, 33vw"
         className="absolute left-1/2 -z-10 mx-auto min-h-full w-full -translate-x-1/2 object-cover brightness-50 lg:w-[90vw]"
       />
       <div className="absolute left-1/2 -z-10 mx-auto h-full min-w-full -translate-x-1/2 bg-linear-to-r from-black/60 via-black/40 to-transparent object-cover lg:min-w-[90vw]" />

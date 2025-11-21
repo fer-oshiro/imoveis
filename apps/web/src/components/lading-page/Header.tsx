@@ -7,11 +7,13 @@ export const Header = () => {
       <div className="container mx-auto flex items-center justify-between">
         <Link href="/" className="block max-w-fit">
           <Image
-            src="/logo.png"
+            src="/logo.webp"
             alt="Logo"
-            width={100}
-            height={50}
-            className="h-8 w-full sm:h-[50px]"
+            width={83}
+            height={49}
+            sizes="(max-width: 768px) 20vw, 100vw"
+            className="h-auto w-[60px] max-w-full object-contain md:w-[83px]"
+            loading="eager"
           />
         </Link>
 

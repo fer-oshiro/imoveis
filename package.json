@@ -9,6 +9,7 @@
     "dev": "sst dev",
     "deploy:stg": "sst deploy --stage stg",
     "deploy:prod": "sst deploy --stage prod",
+    "build": "sst shell build",
     "test": "npm run test:unit",
     "test:unit": "vitest run",
     "test:sst": "sst shell vitest run",

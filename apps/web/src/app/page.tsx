@@ -1,14 +1,13 @@
-import { Card } from '@imovel/web/components/lading-page/card'
-import { Title } from '@imovel/web/components/ui/title'
-import { LOCATIONS } from '@imovel/web/constants/location'
 import { Header } from '../components/lading-page/Header'
 import { Hero } from '../components/lading-page/Hero'
+import { BestOption } from '../components/lading-page/BestOption'
 
 export default function Home() {
   return (
     <>
       <Header />
       <Hero />
+      <BestOption />
     </>
   )
 }
