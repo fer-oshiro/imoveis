@@ -1,6 +1,7 @@
 'use client'
 
 import { CSSProperties, useMemo } from 'react'
+import { ChevronRightIcon } from '../../ui/icons/lucide-chevron-right'
 
 const text = '• Hiro Imóveis • Hiro Imóveis • Hiro Imóveis '
 
@@ -135,7 +136,21 @@ export const Divider = () => {
           </h1>
         </section>
       </div>
-      <div className="absolute top-0 left-1/2 aspect-square h-24 translate-x-[-50%] translate-y-[-50%] rounded-full border bg-white"></div>
+      <div
+        aria-hidden
+        className="absolute top-0 left-1/2 aspect-square h-24 translate-x-[-50%] translate-y-[-50%] rounded-full border bg-white"
+      >
+        <ChevronRightIcon
+          aria-hidden
+          focusable="false"
+          className="absolute top-[calc(45%)] left-1/2 mx-auto h-8 w-12 translate-[-50%] rotate-90 text-red-300"
+        />
+        <ChevronRightIcon
+          aria-hidden
+          focusable="false"
+          className="absolute top-[calc(57%)] left-1/2 mx-auto h-8 w-12 translate-[-50%] rotate-90 text-red-600"
+        />
+      </div>
     </>
   )
 }
