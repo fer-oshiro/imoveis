@@ -60,21 +60,21 @@ export const BestOption = () => {
             className="h-full max-w-full rounded-lg object-cover lg:w-[104px]"
           />
         </div>
-        <div className="flex flex-col justify-center px-6 py-4">
-          <span>asd</span>
-          <h1>Apartamento no Ipiranga, ao lado do Metrô Sacomã</h1>
-          <p>O equilíbrio perfeito entre conforto, mobilidade e qualidade de vida.</p>
-          <div>
-            <div>
-              <BedSingleIcon className="text-red-600" />
-              <p>asd</p>
+        <div className="flex flex-col justify-center px-2 sm:px-6 py-6">
+          <span className='text-xs uppercase text-red-700 border-2 tracking-tight font-bold w-fit border-red-700 p-2 py-1'>Melhor Avaliado</span>
+          <h1 className='text-xl my-4 font-bold'>Apartamento no Ipiranga, ao lado do Metrô Sacomã</h1>
+          <p className='text-sm my-4'>O equilíbrio perfeito entre conforto, mobilidade e qualidade de vida.</p>
+          <div className='flex flex-col md:flex-row gap-3 text-xs my-4'>
+            <div className='flex gap-3'>
+              <BedSingleIcon className="text-red-700" size={18} />
+              <p>Studio e suíte + 1</p>
             </div>
-            <div>
-              <NavigationIcon />
-              <p>asd</p>
+            <div className='flex gap-3'>
+              <NavigationIcon size={18} className='text-red-700' />
+              <p>Muitas atividades por perto</p>
             </div>
           </div>
-          <button>
+          <button className='mt-4 flex items-center gap-2 text-white bg-red-700 justify-center rounded-full py-3'>
             Quero conhecer <ArrowUpRightIcon />
           </button>
         </div>
