@@ -40,7 +40,7 @@ export const BestOption = () => {
             loading="lazy"
             width={318}
             height={269}
-            className="col-span-2 max-w-full lg:col-span-1 lg:row-span-2"
+            className="col-span-2 h-full max-w-full rounded-lg object-cover lg:col-span-1 lg:row-span-2"
           />
           <Image
             src="/stairs.png"
@@ -60,21 +60,27 @@ export const BestOption = () => {
             className="h-full max-w-full rounded-lg object-cover lg:w-[104px]"
           />
         </div>
-        <div className="flex flex-col justify-center px-2 sm:px-6 py-6">
-          <span className='text-xs uppercase text-red-700 border-2 tracking-tight font-bold w-fit border-red-700 p-2 py-1'>Melhor Avaliado</span>
-          <h1 className='text-xl my-4 font-bold'>Apartamento no Ipiranga, ao lado do Metrô Sacomã</h1>
-          <p className='text-sm my-4'>O equilíbrio perfeito entre conforto, mobilidade e qualidade de vida.</p>
-          <div className='flex flex-col md:flex-row gap-3 text-xs my-4'>
-            <div className='flex gap-3'>
+        <div className="flex flex-col justify-center px-2 py-6 sm:px-6">
+          <span className="w-fit border-2 border-red-700 p-2 py-1 text-xs font-bold tracking-tight text-red-700 uppercase">
+            Melhor Avaliado
+          </span>
+          <h1 className="my-4 text-xl font-bold">
+            Apartamento no Ipiranga, ao lado do Metrô Sacomã
+          </h1>
+          <p className="my-4 text-sm">
+            O equilíbrio perfeito entre conforto, mobilidade e qualidade de vida.
+          </p>
+          <div className="my-4 flex flex-col gap-3 text-xs md:flex-row">
+            <div className="flex gap-3">
               <BedSingleIcon className="text-red-700" size={18} />
               <p>Studio e suíte + 1</p>
             </div>
-            <div className='flex gap-3'>
-              <NavigationIcon size={18} className='text-red-700' />
+            <div className="flex gap-3">
+              <NavigationIcon size={18} className="text-red-700" />
               <p>Muitas atividades por perto</p>
             </div>
           </div>
-          <button className='mt-4 flex items-center gap-2 text-white bg-red-700 justify-center rounded-full py-3'>
+          <button className="mt-4 flex items-center justify-center gap-2 rounded-full bg-red-700 py-3 text-white">
             Quero conhecer <ArrowUpRightIcon />
           </button>
         </div>
