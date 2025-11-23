@@ -1,4 +1,5 @@
 'use client'
+
 import { AnimatePresence, motion, useAnimation, useInView } from 'motion/react'
 import { useEffect, useRef } from 'react'
 
@@ -23,6 +24,7 @@ export const Background = () => {
           initial="hidden"
           animate={controls}
           transition={{ duration: 1.5, ease: 'easeOut' }}
+          key="first"
         />
         <motion.div
           className="absolute top-52 left-0 h-44 w-4xl bg-red-800 opacity-30"
@@ -33,6 +35,7 @@ export const Background = () => {
           initial="hidden"
           animate={controls}
           transition={{ duration: 3.5, ease: 'easeOut', delay: 1 }}
+          key="second"
         />
       </AnimatePresence>
     </div>
