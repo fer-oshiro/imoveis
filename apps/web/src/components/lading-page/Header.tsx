@@ -28,7 +28,7 @@ export const Header = () => {
             <Link href="#">Dúvidas</Link>
           </li>
           <li className="cursor-pointer">
-            <Link href="#">Sobre</Link>
+            <Link href="#about">Sobre</Link>
           </li>
         </ul>
       </div>
