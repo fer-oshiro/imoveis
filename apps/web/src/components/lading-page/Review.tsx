@@ -1,4 +1,3 @@
-import { C } from 'vitest/dist/chunks/reporters.d.BFLkQcL6.js'
 import {
   Carousel,
   CarouselContent,
@@ -11,27 +10,33 @@ import { Star } from 'lucide-react'
 
 export const Review = () => {
   return (
-    <div className='px-4 sm:px-16'>
+    <div className="px-4 sm:px-16">
       <Carousel>
         <CarouselContent>
           {Array.from({ length: 5 }).map((_, index) => (
             <CarouselItem key={index} className="sm:basis-1/2 lg:basis-1/3">
-              <div className="rounded-sm bg-gray-100 p-4 border text-gray-600 text-sm">
+              <div className="rounded-sm border bg-gray-100 p-4 text-sm text-gray-600">
                 <p>
-                Um anfitrião muito bom, sempre atento a qualquer necessidade que eu tivesse. O lugar
-                é muito agradável, limpo e tem tudo o que você precisa. É a melhor opção para uma
-                estadia em São Paulo.
+                  Um anfitrião muito bom, sempre atento a qualquer necessidade que eu tivesse. O
+                  lugar é muito agradável, limpo e tem tudo o que você precisa. É a melhor opção
+                  para uma estadia em São Paulo.
                 </p>
-                <div className='flex justify-between items-center mt-16'>
-                  <Link href="airbnb.com/h/agostinhogomesap2" className='font-bold text-red-700'>Ver avaliação</Link>
-                  <div className='flex gap-2 items-center'>
+                <div className="mt-16 flex items-center justify-between">
+                  <Link href="airbnb.com/h/agostinhogomesap2" className="font-bold text-red-700">
+                    Ver avaliação
+                  </Link>
+                  <div className="flex items-center gap-2">
                     <p>(5.0)</p>
-                    <div className='flex gap-1'>
-                      {
-                        Array.from({ length: 5 }).map((_, starIndex) => (
-                          <Star key={starIndex} className='text-yellow-500' fill='var(--color-yellow-500)' height={12} width={12} />
-                        ))
-                      }
+                    <div className="flex gap-1">
+                      {Array.from({ length: 5 }).map((_, starIndex) => (
+                        <Star
+                          key={starIndex}
+                          className="text-yellow-500"
+                          fill="var(--color-yellow-500)"
+                          height={12}
+                          width={12}
+                        />
+                      ))}
                     </div>
                   </div>
                 </div>
