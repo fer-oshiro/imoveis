@@ -3,6 +3,7 @@ import { BestOption } from '../components/lading-page/BestOption'
 import { Header } from '../components/lading-page/Header'
 import { Hero } from '../components/lading-page/Hero'
 import { Options } from '../components/lading-page/Options'
+import { QuestionsBanner } from '../components/lading-page/QuestionsBanner'
 import { Review } from '../components/lading-page/Review'
 
 export default function Home() {
@@ -14,6 +15,7 @@ export default function Home() {
       <Options />
       <About />
       <Review />
+      <QuestionsBanner />
     </>
   )
 }
